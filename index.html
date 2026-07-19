@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MSS Club Management Demo v0.16</title>
+<style>
+:root{--navy:#0b2545;--blue:#1d4ed8;--bg:#f4f7fb;--border:#d9e2ec;--muted:#667085;--green:#067647;--amber:#b54708;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#172033}
+header{background:linear-gradient(135deg,#071b34,#123c68);color:#fff;padding:20px 24px}
+header h1{margin:0 0 5px}.wrap{max-width:1550px;margin:auto;padding:18px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.tab,button,.btn{border:0;border-radius:9px;padding:10px 13px;background:var(--blue);color:#fff;font-weight:700;cursor:pointer}.tab{background:#e6edf5;color:var(--navy)}.tab.active{background:var(--navy);color:#fff}
+.section{display:none}.section.active{display:block}.card{background:#fff;border:1px solid var(--border);border-radius:15px;padding:18px;margin-bottom:16px;box-shadow:0 2px 8px rgba(16,24,40,.05)}
+.grid2,.grid3,.grid4,.grid5,.grid6{display:grid;gap:12px}.grid2{grid-template-columns:repeat(2,1fr)}.grid3{grid-template-columns:repeat(3,1fr)}.grid4{grid-template-columns:repeat(4,1fr)}.grid5{grid-template-columns:repeat(5,1fr)}.grid6{grid-template-columns:repeat(6,1fr)}
+label{display:block;font-size:12px;font-weight:700;color:#475467;margin-bottom:5px}input,select,textarea{width:100%;border:1px solid #cfd8e3;border-radius:9px;padding:9px;font-size:14px;background:#fff}textarea{min-height:75px}
+.note,.small{color:var(--muted);font-size:13px}.actions{display:flex;gap:8px;flex-wrap:wrap}.light{background:#e7edf5;color:var(--navy)}.green{background:var(--green)}.amber{background:var(--amber)}.red{background:var(--red)}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{border-bottom:1px solid #e5eaf0;padding:8px;text-align:left;vertical-align:top}th{background:#f8fafc;font-size:11px;text-transform:uppercase;color:#475467}
+.metricrow{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}.metric{background:#fff;border:1px solid var(--border);border-radius:12px;padding:13px}.metric b{display:block;font-size:24px}
+.avatar{width:48px;height:48px;border-radius:9px;background:#dce6f2;display:flex;align-items:center;justify-content:center;font-weight:800;color:#35506f;overflow:hidden;flex:none}.avatar img{width:100%;height:100%;object-fit:cover}
+.board{display:grid;grid-template-columns:repeat(5,minmax(220px,1fr));gap:12px;overflow-x:auto}.teamcol{background:#f8fafc;border:1px solid var(--border);border-radius:14px;padding:10px;min-height:260px}.playercard{border:1px solid var(--border);border-radius:12px;padding:9px;background:#fff;margin:8px 0;display:flex;gap:10px;cursor:grab}
+.badge{display:inline-block;border-radius:999px;padding:4px 8px;background:#eef4ff;color:#1849a9;font-size:12px;font-weight:700}.success{background:#ecfdf3;color:#067647}.warn{background:#fff4e5;color:#b54708}.danger{background:#fee4e2;color:#b42318}
+@media(max-width:1100px){.grid5,.grid6,.metricrow,.board{grid-template-columns:repeat(2,1fr)}}@media(max-width:650px){.grid2,.grid3,.grid4,.grid5,.grid6,.metricrow,.board{grid-template-columns:1fr}}
+@media print{header,.tabs,.no-print,button,input,select,textarea{display:none!important}.section{display:none!important}.section.print-target{display:block!important}.card{box-shadow:none;border:0}}
+</style>
+</head>
+<body>
+<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.17 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, and Roster Activation</div></header>
+<div class="wrap">
+<div class="tabs no-print">
+<button class="tab active" data-tab="setup">Setup</button>
+<button class="tab" data-tab="registrations">Registrations</button>
+<button class="tab" data-tab="checkin">Check-In</button>
+<button class="tab" data-tab="assignments">Assignments</button>
+<button class="tab" data-tab="coach">Coach Quick Form</button>
+<button class="tab" data-tab="paper">Paper Packets</button>
+<button class="tab" data-tab="review">Director Review</button>
+<button class="tab" data-tab="board">Big Board</button>
+<button class="tab" data-tab="offers">Offers & Communication</button>
+<button class="tab" data-tab="parent">Parent Response</button>
+<button class="tab" data-tab="plans">Payment Plans</button>
+<button class="tab" data-tab="payments">Payments</button>
+<button class="tab" data-tab="activation">Roster Activation</button>
+</div>
+
+<section id="setup" class="section active">
+<div class="card"><h2>Organization & Tryout Setup</h2><div class="grid4"><div><label>Organization</label><input id="orgName"></div><div><label>Season</label><input id="season"></div><div><label>Event</label><input id="eventName"></div><div><label>Evaluation Method</label><select id="evalMethod"><option>Paper</option><option>Tablet</option><option>Hybrid</option></select></div></div></div>
+<div class="card"><h2>Courts, Teams, and Evaluators</h2><div class="grid5"><div><label>Active Courts</label><select id="courtCount"><option>1</option><option>2</option><option>3</option><option>4</option></select></div><div><label>Court 1</label><input id="court1"></div><div><label>Court 2</label><input id="court2"></div><div><label>Court 3</label><input id="court3"></div><div><label>Court 4</label><input id="court4"></div></div><div class="grid5" style="margin-top:12px"><div><label>Team A</label><input id="teamA"></div><div><label>Team B</label><input id="teamB"></div><div><label>Team C</label><input id="teamC"></div><div><label>Team D</label><input id="teamD"></div><div><label>Not Selected Label</label><input id="notSelectedLabel"></div></div><div class="grid4" style="margin-top:12px"><div><label>Evaluator 1</label><input id="eval1"></div><div><label>Evaluator 2</label><input id="eval2"></div><div><label>Evaluator 3</label><input id="eval3"></div><div><label>Evaluator 4</label><input id="eval4"></div></div></div>
+<div class="card"><h2>Grade / Graduation Year Team Setup</h2><p class="note">Select a grade/year and set the team names used for that group.</p><div class="grid3"><div><label>Grade</label><select id="teamGrade"><option>3rd</option><option>4th</option><option>5th</option><option>6th</option><option>7th</option></select></div><div><label>Graduation Year</label><select id="teamGrad"><option>2036</option><option>2035</option><option>2034</option><option>2033</option><option>2032</option></select></div><div style="align-self:end"><button onclick="saveGradeTeams()">Save Grade Team Names</button></div></div><div id="gradeTeamSummary"></div></div>
+<div class="card"><h2>Communication Templates</h2><div class="grid2"><div><label>Team Offer Message</label><textarea id="offerTemplate"></textarea></div><div><label>Not Selected / Follow-Up Message</label><textarea id="notSelectedTemplate"></textarea></div></div></div>
+</section>
+
+<section id="registrations" class="section">
+<div id="registrationMetrics" class="metricrow"></div>
+<div class="card"><h2>Registration Data</h2><div class="actions"><label class="btn">Import CSV<input type="file" id="csvFile" accept=".csv" style="display:none"></label><button class="amber" onclick="generate150()">Generate 150 Demo Players</button><button onclick="exportPlayers()">Export Players</button><button class="red" onclick="clearAll()">Clear All</button></div></div>
+<div class="card"><h2>Add Walk-In / Registration</h2><div class="grid6"><div><label>Tryout Number</label><input id="pId"></div><div><label>First Name</label><input id="pFirst"></div><div><label>Last Name</label><input id="pLast"></div><div><label>Grade</label><select id="pGrade"><option>3rd</option><option>4th</option><option>5th</option><option>6th</option><option>7th</option></select></div><div><label>Graduation Year</label><input id="pGrad"></div><div><label>Parent Email</label><input id="pEmail"></div></div><div class="grid3" style="margin-top:12px"><div><label>Parent Phone</label><input id="pPhone"></div><div><label>Headshot URL</label><input id="pPhoto"></div><div style="align-self:end"><button onclick="addPlayer()">Add Player</button></div></div></div>
+<div class="card"><h2>Master Registration List</h2><div id="registrationTable"></div></div>
+</section>
+
+<section id="checkin" class="section">
+<div id="checkinMetrics" class="metricrow"></div>
+<div class="card"><h2>Tryout Check-In</h2><p class="note">Search players, mark them checked in, assign a court, and confirm evaluator. Registered players who do not check in remain No-Shows.</p><div class="grid4"><div><label>Search</label><input id="checkSearch" oninput="renderCheckin()"></div><div><label>Grade</label><select id="checkGrade" onchange="renderCheckin()"></select></div><div><label>Status</label><select id="checkStatus" onchange="renderCheckin()"><option value="">All</option><option>Registered</option><option>Checked In</option><option>No-Show</option></select></div><div style="align-self:end"><button class="amber" onclick="markRemainingNoShows()">Mark Remaining No-Shows</button></div></div><div id="checkinTable"></div></div>
+</section>
+
+<section id="assignments" class="section">
+<div class="card"><h2>Assignment Manager</h2><p class="note">Only checked-in players appear here.</p><div class="actions"><button onclick="autoBalance()">Auto-Balance Checked-In Players</button></div><div id="assignmentTable"></div></div>
+</section>
+
+<section id="coach" class="section">
+<div class="card"><h2>Coach Quick Form</h2><p class="note">This is the evaluator scoring screen. It shows only checked-in players assigned to the selected evaluator.</p><div class="grid3"><div><label>Evaluator</label><select id="coachEvaluator" onchange="renderCoach()"></select></div><div><label>Grade</label><select id="coachGrade" onchange="renderCoach()"></select></div><div><label>Court</label><select id="coachCourt" onchange="renderCoach()"></select></div></div><div id="coachForm"></div></div>
+</section>
+
+<section id="paper" class="section">
+<div class="card no-print"><h2>Paper Evaluation Packets</h2><div class="grid3"><div><label>Evaluator</label><select id="paperEvaluator"></select></div><div><label>Grade</label><select id="paperGrade"></select></div><div><label>Court</label><select id="paperCourt"></select></div></div><div class="actions" style="margin-top:12px"><button onclick="renderPacket()">Preview</button><button class="green" onclick="printPacket()">Print</button></div></div><div class="card" id="packetOutput"></div>
+</section>
+
+<section id="review" class="section">
+<div class="card"><h2>Director Review</h2><p class="note">View scores, recommendations, and evaluator notes.</p><div id="reviewTable"></div></div>
+</section>
+
+<section id="board" class="section">
+<div class="card"><h2>Big Board / Placement</h2><div class="grid3"><div><label>Grade</label><select id="boardGrade" onchange="renderBoard()"></select></div><div><label>Graduation Year</label><select id="boardGrad" onchange="renderBoard()"></select></div><div style="align-self:end"><button class="green" onclick="finalizePlacements()">Finalize Placements</button></div></div></div><div id="bigBoard" class="board"></div>
+</section>
+
+<section id="offers" class="section">
+<div id="offerMetrics" class="metricrow"></div>
+<div class="card"><h2>Offers & Parent Communication</h2><p class="note">Create offers, generate communications, and track response status. In this standalone demo, messages are recorded but not actually sent.</p><div class="actions"><button onclick="createOffersForPlaced()">Create Offers for Placed Players</button><button class="amber" onclick="createFollowups()">Create Follow-Up Messages</button><button onclick="exportCommunications()">Export Communication List</button></div><div id="offerTable"></div></div>
+</section>
+
+<section id="parent" class="section">
+<div class="card"><h2>Parent Response Portal Demo</h2><p class="note">Select a player to simulate the parent response.</p><div class="grid3"><div><label>Player</label><select id="parentPlayer" onchange="renderParentPortal()"></select></div><div><label>Response</label><select id="parentResponse"><option>Accept</option><option>Decline</option><option>Request More Information</option></select></div><div style="align-self:end"><button onclick="submitParentResponse()">Submit Response</button></div></div><div id="parentPortal"></div></div>
+</section>
+
+<section id="plans" class="section">
+<div class="card"><h2>Payment Plan Setup</h2><p class="note">Plans can later feed directly into Team Accounting.</p><div class="grid5"><div><label>Plan Name</label><input id="planName" value="Monthly"></div><div><label>Total Fee</label><input id="planTotal" type="number" value="1800"></div><div><label>Deposit</label><input id="planDeposit" type="number" value="300"></div><div><label>Installments</label><input id="planInstallments" type="number" value="6"></div><div style="align-self:end"><button onclick="addPlan()">Add Plan</button></div></div><div id="planList"></div></div>
+<div class="card"><h2>Assign Payment Plans</h2><p class="note">Only accepted players are eligible.</p><div id="paymentAssignmentTable"></div></div>
+</section>
+
+
+<section id="payments" class="section">
+<div id="paymentMetrics" class="metricrow"></div>
+<div class="card">
+<h2>Record Payment or Adjustment</h2>
+<p class="note">Use this for MSS/Stripe, ACH, cash, check, invoice, external payments, scholarships, credits, refunds, and other adjustments.</p>
+<div class="grid6">
+<div><label>Player</label><select id="paymentPlayer"></select></div>
+<div><label>Transaction Type</label><select id="paymentType"><option>Payment</option><option>Credit / Scholarship</option><option>Refund</option><option>Charge Adjustment</option></select></div>
+<div><label>Method</label><select id="paymentMethod"><option>MSS / Stripe</option><option>ACH</option><option>Cash</option><option>Check</option><option>Invoice</option><option>External Payment</option><option>Scholarship</option><option>Other</option></select></div>
+<div><label>Amount</label><input id="paymentAmount" type="number" step="0.01"></div>
+<div><label>Date</label><input id="paymentDate" type="date"></div>
+<div><label>Applied To</label><select id="paymentAppliedTo"><option>Initial Deposit</option><option>Installment</option><option>Team Fee</option><option>Uniform</option><option>Tournament / Travel</option><option>Other</option></select></div>
+</div>
+<div class="grid3" style="margin-top:12px">
+<div><label>Reference / Check Number</label><input id="paymentReference"></div>
+<div><label>Entered By</label><input id="paymentEnteredBy" value="Club Administrator"></div>
+<div><label>Notes</label><input id="paymentNotes"></div>
+</div>
+<div class="actions" style="margin-top:12px">
+<button class="green" onclick="recordPayment()">Record Transaction</button>
+<label class="btn">Import Payment CSV<input id="paymentCsvFile" type="file" accept=".csv" style="display:none"></label>
+<button onclick="exportPayments()">Export Payment Ledger</button>
+</div>
+</div>
+<div class="card">
+<h2>Player Financial Status</h2>
+<p class="note">Balances and paid status are calculated from assigned plan charges, payments, credits, refunds, and adjustments.</p>
+<div id="financialStatusTable"></div>
+</div>
+<div class="card">
+<h2>Payment Ledger</h2>
+<div id="paymentLedgerTable"></div>
+</div>
+</section>
+
+<section id="activation" class="section">
+<div id="activationMetrics" class="metricrow"></div>
+<div class="card"><h2>Roster Activation</h2><p class="note">A player becomes active after accepting the offer, selecting a plan, and completing the deposit/first payment.</p><div id="activationTable"></div></div>
+</section>
+</div>
+
+<script>
+const KEY='mssClubDemoV017';
+let state={
+ setup:{orgName:'Oklahoma Swarm',season:'2026-27',eventName:'Oklahoma Swarm Tryouts',evalMethod:'Hybrid',courtCount:4,courts:['HIVE Court 1','HIVE Court 2','HIVE Court 3','HIVE Court 4'],teams:['Elite','Gold','Silver','Development'],notSelected:'Not Selected / Follow-Up',evaluators:['Coach Rob','Coach Taylor','Coach David','Coach Julie'],gradeTeams:{},offerTemplate:'Congratulations, {Player}! You have been offered a place on {Team}. Please respond by {Deadline}.',notSelectedTemplate:'Thank you for attending tryouts, {Player}. We would like to keep you informed about future opportunities.'},
+ players:[],evaluations:{},offers:{},payments:[],paymentPlans:[{id:'monthly',name:'Monthly',total:1800,deposit:300,installments:6},{id:'paidfull',name:'Paid in Full',total:1650,deposit:1650,installments:1}],placementsFinal:false
+};
+const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),uid=()=>Math.random().toString(36).slice(2,9);
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+function showTab(id){document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');document.querySelector(`[data-tab="${id}"]`).classList.add('active');renderAll()}
+function save(){readSetup();localStorage.setItem(KEY,JSON.stringify(state))}
+function load(){let x=localStorage.getItem(KEY);if(x)try{state=JSON.parse(x)}catch(e){} state.payments??=[];state.paymentPlans??=[];state.players??=[];bindSetup();renderAll()}
+function readSetup(){state.setup.orgName=orgName.value;state.setup.season=season.value;state.setup.eventName=eventName.value;state.setup.evalMethod=evalMethod.value;state.setup.courtCount=+courtCount.value;state.setup.courts=[court1.value,court2.value,court3.value,court4.value];state.setup.teams=[teamA.value,teamB.value,teamC.value,teamD.value];state.setup.notSelected=notSelectedLabel.value;state.setup.evaluators=[eval1.value,eval2.value,eval3.value,eval4.value].filter(Boolean);state.setup.offerTemplate=offerTemplate.value;state.setup.notSelectedTemplate=notSelectedTemplate.value}
+function bindSetup(){orgName.value=state.setup.orgName;season.value=state.setup.season;eventName.value=state.setup.eventName;evalMethod.value=state.setup.evalMethod;courtCount.value=state.setup.courtCount;[court1,court2,court3,court4].forEach((e,i)=>e.value=state.setup.courts[i]||'');[teamA,teamB,teamC,teamD].forEach((e,i)=>e.value=state.setup.teams[i]||'');notSelectedLabel.value=state.setup.notSelected;[eval1,eval2,eval3,eval4].forEach((e,i)=>e.value=state.setup.evaluators[i]||'');offerTemplate.value=state.setup.offerTemplate;notSelectedTemplate.value=state.setup.notSelectedTemplate;document.querySelectorAll('#setup input,#setup select,#setup textarea').forEach(e=>e.onchange=()=>{save();renderAll()})}
+function saveGradeTeams(){readSetup();state.setup.gradeTeams[teamGrade.value+'|'+teamGrad.value]=[...state.setup.teams];save();renderSetupSummary()}
+function renderSetupSummary(){gradeTeamSummary.innerHTML='<table><tr><th>Grade</th><th>Grad Year</th><th>Teams</th></tr>'+Object.entries(state.setup.gradeTeams).map(([k,v])=>{let[g,y]=k.split('|');return`<tr><td>${g}</td><td>${y}</td><td>${v.map(esc).join(', ')}</td></tr>`}).join('')+'</table>'}
+function gradeTeams(g,y){return state.setup.gradeTeams[g+'|'+y]||state.setup.teams}
+function opts(a,v='',label='All'){return`<option value="">${label}</option>`+a.map(x=>`<option ${x===v?'selected':''}>${esc(x)}</option>`).join('')}
+function fillSelects(){let grades=[...new Set(state.players.map(p=>p.grade).filter(Boolean))].sort(),grads=[...new Set(state.players.map(p=>p.grad).filter(Boolean))].sort(),courts=state.setup.courts.slice(0,state.setup.courtCount),evals=state.setup.evaluators;[['checkGrade',grades],['coachGrade',grades],['paperGrade',grades],['boardGrade',grades],['boardGrad',grads],['coachCourt',courts],['paperCourt',courts],['coachEvaluator',evals],['paperEvaluator',evals]].forEach(([id,a])=>{let e=$(id),v=e.value;e.innerHTML=opts(a,v);e.value=v});parentPlayer.innerHTML=state.players.filter(p=>state.offers[p.id]).map(p=>`<option value="${p.id}">${esc(p.first)} ${esc(p.last)} — ${esc(p.team||'')}</option>`).join('');let old=paymentPlayer.value;paymentPlayer.innerHTML=state.players.filter(p=>state.offers[p.id]?.status==='Accepted').map(p=>`<option value="${p.id}">${esc(p.first)} ${esc(p.last)} — ${esc(p.team||'')}</option>`).join('');paymentPlayer.value=old;if(!paymentDate.value)paymentDate.value=new Date().toISOString().slice(0,10)}
+function avatar(p){return p.photo?`<img src="${esc(p.photo)}">`:esc((p.first?.[0]||'')+(p.last?.[0]||''))}
+function addPlayer(){let id=pId.value||uid();state.players.push({id,first:pFirst.value,last:pLast.value,grade:pGrade.value,grad:pGrad.value,email:pEmail.value,phone:pPhone.value,photo:pPhoto.value,status:'Registered',checkedIn:false,court:'',evaluator:'',team:'',offerStatus:'Not Created',paymentPlanId:'',depositPaid:false,rosterStatus:'Not Active'});['pId','pFirst','pLast','pGrad','pEmail','pPhone','pPhoto'].forEach(x=>$(x).value='');save();renderAll()}
+function generate150(){let f=['Ava','Emma','Olivia','Sophia','Mia','Harper','Ella','Grace','Lily','Riley','Kennedy','Avery','Brooklyn','Addison','Claire'],l=['Smith','Johnson','Brown','Davis','Wilson','Moore','Taylor','Anderson','Thomas','Jackson','Harris','Martin','Clark','Lewis','Walker'];state.players=[];for(let i=0;i<150;i++){let x=Math.floor(i/30),g=['3rd','4th','5th','6th','7th'][x],y=['2036','2035','2034','2033','2032'][x];state.players.push({id:`${y}-${String(i+1).padStart(3,'0')}`,first:f[i%f.length],last:l[(i*7)%l.length],grade:g,grad:y,email:`parent${i+1}@example.com`,phone:`405-555-${1000+i}`,photo:'',status:'Registered',checkedIn:false,court:'',evaluator:'',team:'',offerStatus:'Not Created',paymentPlanId:'',depositPaid:false,rosterStatus:'Not Active'})}save();renderAll()}
+function clearAll(){if(confirm('Clear all data?')){state.players=[];state.evaluations={};state.offers={};save();renderAll()}}
+function renderRegistrations(){let counts={};state.players.forEach(p=>counts[p.grade]=(counts[p.grade]||0)+1);registrationMetrics.innerHTML=`<div class="metric">Registered<b>${state.players.length}</b></div>`+Object.entries(counts).map(([g,n])=>`<div class="metric">${g}<b>${n}</b></div>`).join('');registrationTable.innerHTML='<table><tr><th>Photo</th><th>ID</th><th>Player</th><th>Grade/Year</th><th>Parent</th><th>Status</th></tr>'+state.players.map(p=>`<tr><td><div class="avatar">${avatar(p)}</div></td><td>${esc(p.id)}</td><td><b>${esc(p.first)} ${esc(p.last)}</b></td><td>${esc(p.grade)} / ${esc(p.grad)}</td><td>${esc(p.email)}<br>${esc(p.phone)}</td><td>${esc(p.status)}</td></tr>`).join('')+'</table>'}
+function renderCheckin(){let q=checkSearch.value.toLowerCase(),g=checkGrade.value,s=checkStatus.value;let a=state.players.filter(p=>(!q||(`${p.first} ${p.last} ${p.id}`).toLowerCase().includes(q))&&(!g||p.grade===g)&&(!s||p.status===s));let reg=state.players.filter(p=>p.status==='Registered').length,ci=state.players.filter(p=>p.status==='Checked In').length,ns=state.players.filter(p=>p.status==='No-Show').length;checkinMetrics.innerHTML=`<div class="metric">Registered<b>${state.players.length}</b></div><div class="metric">Checked In<b>${ci}</b></div><div class="metric">Not Yet Checked In<b>${reg}</b></div><div class="metric">No-Shows<b>${ns}</b></div>`;checkinTable.innerHTML='<table><tr><th>Player</th><th>Grade</th><th>Status</th><th>Court</th><th>Evaluator</th><th>Action</th></tr>'+a.map(p=>`<tr><td><b>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</b></td><td>${esc(p.grade)}</td><td>${esc(p.status)}</td><td><select onchange="setPlayer('${p.id}','court',this.value)">${opts(state.setup.courts.slice(0,state.setup.courtCount),p.court,'Unassigned')}</select></td><td><select onchange="setPlayer('${p.id}','evaluator',this.value)">${opts(state.setup.evaluators,p.evaluator,'Unassigned')}</select></td><td>${p.checkedIn?`<button class="light" onclick="undoCheckin('${p.id}')">Undo</button>`:`<button class="green" onclick="checkIn('${p.id}')">Check In</button>`}</td></tr>`).join('')+'</table>'}
+function checkIn(id){let p=state.players.find(x=>x.id===id);p.checkedIn=true;p.status='Checked In';if(!p.court){let ci=state.players.filter(x=>x.checkedIn),courts=state.setup.courts.slice(0,state.setup.courtCount);p.court=courts[(ci.length-1)%courts.length]}if(!p.evaluator){p.evaluator=state.setup.evaluators[(state.players.filter(x=>x.checkedIn).length-1)%state.setup.evaluators.length]}save();renderAll()}
+function undoCheckin(id){let p=state.players.find(x=>x.id===id);p.checkedIn=false;p.status='Registered';save();renderAll()}
+function markRemainingNoShows(){state.players.filter(p=>!p.checkedIn).forEach(p=>p.status='No-Show');save();renderAll()}
+function setPlayer(id,k,v){let p=state.players.find(x=>x.id===id);p[k]=v;save();renderAll()}
+function autoBalance(){let a=state.players.filter(p=>p.checkedIn),courts=state.setup.courts.slice(0,state.setup.courtCount),evals=state.setup.evaluators;a.forEach((p,i)=>{p.court=courts[i%courts.length];p.evaluator=evals[i%evals.length]});save();renderAll()}
+function renderAssignments(){let a=state.players.filter(p=>p.checkedIn);assignmentTable.innerHTML='<table><tr><th>Player</th><th>Grade</th><th>Court</th><th>Evaluator</th></tr>'+a.map(p=>`<tr><td>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</td><td>${esc(p.grade)}</td><td><select onchange="setPlayer('${p.id}','court',this.value)">${opts(state.setup.courts.slice(0,state.setup.courtCount),p.court,'Unassigned')}</select></td><td><select onchange="setPlayer('${p.id}','evaluator',this.value)">${opts(state.setup.evaluators,p.evaluator,'Unassigned')}</select></td></tr>`).join('')+'</table>'}
+function ev(id,c){state.evaluations[id]??={};state.evaluations[id][c]??={scores:[0,0,0,0,0],recommendation:'',notes:''};return state.evaluations[id][c]}
+function renderCoach(){let a=state.players.filter(p=>p.checkedIn&&(!coachEvaluator.value||p.evaluator===coachEvaluator.value)&&(!coachGrade.value||p.grade===coachGrade.value)&&(!coachCourt.value||p.court===coachCourt.value));coachForm.innerHTML=a.map(p=>{let c=p.evaluator||'Evaluator',e=ev(p.id,c);return`<div class="card"><div style="display:flex;gap:10px"><div class="avatar">${avatar(p)}</div><div><b>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</b><div class="small">${esc(p.grade)} · ${esc(p.court)}</div></div></div><div class="grid5" style="margin-top:12px">${['Athleticism','Basketball Skill','Game IQ','Effort','Coachability'].map((x,i)=>`<div><label>${x}</label><select onchange="setScore('${p.id}','${esc(c)}',${i},this.value)"><option value="0">-</option>${[1,2,3,4,5].map(n=>`<option ${e.scores[i]==n?'selected':''}>${n}</option>`).join('')}</select></div>`).join('')}</div><div class="grid2" style="margin-top:12px"><div><label>Recommendation</label><select onchange="setRec('${p.id}','${esc(c)}',this.value)">${opts([...gradeTeams(p.grade,p.grad),state.setup.notSelected],e.recommendation,'Select')}</select></div><div><label>Evaluator Notes</label><textarea onchange="setNotes('${p.id}','${esc(c)}',this.value)">${esc(e.notes)}</textarea></div></div></div>`}).join('')||'<p class="note">No players assigned.</p>'}
+function setScore(id,c,i,v){ev(id,c).scores[i]=+v;save()}function setRec(id,c,v){ev(id,c).recommendation=v;save()}function setNotes(id,c,v){ev(id,c).notes=v;save()}
+function renderPacket(){let a=state.players.filter(p=>p.checkedIn&&(!paperEvaluator.value||p.evaluator===paperEvaluator.value)&&(!paperGrade.value||p.grade===paperGrade.value)&&(!paperCourt.value||p.court===paperCourt.value));packetOutput.innerHTML=`<h2>${esc(state.setup.orgName)} Evaluation Packet</h2><p>Evaluator: ${esc(paperEvaluator.value||'All')} · Grade: ${esc(paperGrade.value||'All')} · Court: ${esc(paperCourt.value||'All')}</p><p class="note">5 Excellent · 4 Above Average · 3 Average · 2 Below Average · 1 Poor.</p><table><tr><th>Player</th><th>Athleticism</th><th>Skill</th><th>IQ</th><th>Effort</th><th>Coachability</th><th>Recommendation</th><th>Notes</th></tr>${a.map(p=>`<tr><td><b>${esc(p.id)}</b><br>${esc(p.first)} ${esc(p.last)}</td>${Array(5).fill('<td>○1 ○2 ○3 ○4 ○5</td>').join('')}<td>____________</td><td>____________________<br>____________________</td></tr>`).join('')}</table>`}
+function printPacket(){renderPacket();document.querySelectorAll('.section').forEach(x=>x.classList.remove('print-target'));paper.classList.add('print-target');print()}
+function allEvals(p){return Object.values(state.evaluations[p.id]||{})}function avg(p){let a=allEvals(p).flatMap(e=>e.scores.filter(Boolean));return a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(2):'-'}
+function renderReview(){let a=state.players.filter(p=>p.checkedIn);reviewTable.innerHTML='<table><tr><th>Player</th><th>Grade</th><th>Court/Evaluator</th><th>Average</th><th>Recommendation</th><th>Notes</th></tr>'+a.map(p=>`<tr><td><b>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</b></td><td>${esc(p.grade)} / ${esc(p.grad)}</td><td>${esc(p.court)}<br>${esc(p.evaluator)}</td><td>${avg(p)}</td><td>${allEvals(p).map(e=>esc(e.recommendation)).filter(Boolean).join('<br>')||'-'}</td><td>${allEvals(p).map(e=>esc(e.notes)).filter(Boolean).join('<hr>')||'-'}</td></tr>`).join('')+'</table>'}
+let dragId='';
+function renderBoard(){let g=boardGrade.value,y=boardGrad.value,a=state.players.filter(p=>p.checkedIn&&(!g||p.grade===g)&&(!y||p.grad===y)),teams=(g&&y?gradeTeams(g,y):state.setup.teams),cols=[...teams,state.setup.notSelected];bigBoard.innerHTML=cols.map(t=>`<div class="teamcol" ondragover="event.preventDefault()" ondrop="dropPlayer('${esc(t)}')"><h3>${esc(t)}</h3>${a.filter(p=>(p.team||teams[0])===t).map(p=>`<div class="playercard" draggable="true" ondragstart="dragId='${p.id}'"><div class="avatar">${avatar(p)}</div><div><b>${esc(p.first)} ${esc(p.last)}</b><div class="small">${esc(p.id)} · Avg ${avg(p)}</div></div></div>`).join('')}</div>`).join('')}
+function dropPlayer(t){let p=state.players.find(x=>x.id===dragId);if(p){p.team=t;save();renderBoard()}}
+function finalizePlacements(){state.placementsFinal=true;save();alert('Placements finalized. You can now create offers and follow-up messages.')}
+function createOffersForPlaced(){state.players.filter(p=>p.checkedIn&&p.team&&p.team!==state.setup.notSelected).forEach(p=>{state.offers[p.id]={type:'Team Offer',team:p.team,status:'Offer Pending',message:state.setup.offerTemplate.replace('{Player}',p.first).replace('{Team}',p.team).replace('{Deadline}','7 days from offer'),created:new Date().toLocaleDateString()};p.offerStatus='Offer Pending'});save();renderAll()}
+function createFollowups(){state.players.filter(p=>p.team===state.setup.notSelected||p.status==='No-Show').forEach(p=>{state.offers[p.id]={type:'Follow-Up',team:p.team||'',status:'Message Ready',message:state.setup.notSelectedTemplate.replace('{Player}',p.first),created:new Date().toLocaleDateString()};p.offerStatus='Message Ready'});save();renderAll()}
+function renderOffers(){let vals=Object.values(state.offers),pending=vals.filter(o=>o.status==='Offer Pending').length,accepted=vals.filter(o=>o.status==='Accepted').length,declined=vals.filter(o=>o.status==='Declined').length;offerMetrics.innerHTML=`<div class="metric">Offers/Messages<b>${vals.length}</b></div><div class="metric">Pending<b>${pending}</b></div><div class="metric">Accepted<b>${accepted}</b></div><div class="metric">Declined<b>${declined}</b></div>`;offerTable.innerHTML='<table><tr><th>Player</th><th>Type</th><th>Team</th><th>Status</th><th>Message</th></tr>'+state.players.filter(p=>state.offers[p.id]).map(p=>{let o=state.offers[p.id];return`<tr><td>${esc(p.first)} ${esc(p.last)}</td><td>${esc(o.type)}</td><td>${esc(o.team)}</td><td>${esc(o.status)}</td><td>${esc(o.message)}</td></tr>`}).join('')+'</table>'}
+function renderParentPortal(){let p=state.players.find(x=>x.id===parentPlayer.value),o=p&&state.offers[p.id];parentPortal.innerHTML=p&&o?`<div class="card"><h3>${esc(p.first)} ${esc(p.last)}</h3><p>${esc(o.message)}</p><p><b>Current status:</b> ${esc(o.status)}</p></div>`:'<p class="note">Select a player with an offer.</p>'}
+function submitParentResponse(){let p=state.players.find(x=>x.id===parentPlayer.value);if(!p)return;let o=state.offers[p.id],r=parentResponse.value;o.status=r==='Accept'?'Accepted':r==='Decline'?'Declined':'Questions';p.offerStatus=o.status;save();renderAll()}
+function addPlan(){state.paymentPlans.push({id:uid(),name:planName.value,total:+planTotal.value,deposit:+planDeposit.value,installments:+planInstallments.value});save();renderAll()}
+function renderPlans(){planList.innerHTML='<table><tr><th>Plan</th><th>Total</th><th>Deposit</th><th>Installments</th></tr>'+state.paymentPlans.map(p=>`<tr><td>${esc(p.name)}</td><td>$${p.total}</td><td>$${p.deposit}</td><td>${p.installments}</td></tr>`).join('')+'</table>';let a=state.players.filter(p=>state.offers[p.id]?.status==='Accepted');paymentAssignmentTable.innerHTML='<table><tr><th>Player</th><th>Team</th><th>Payment Plan</th><th>Deposit Paid</th></tr>'+a.map(p=>`<tr><td>${esc(p.first)} ${esc(p.last)}</td><td>${esc(p.team)}</td><td><select onchange="assignPlan('${p.id}',this.value)">${opts(state.paymentPlans.map(x=>x.id),p.paymentPlanId,'Select Plan')}</select><div class="small">${p.paymentPlanId?esc(state.paymentPlans.find(x=>x.id===p.paymentPlanId)?.name||''):''}</div></td><td><select onchange="setDeposit('${p.id}',this.value)"><option value="false" ${!p.depositPaid?'selected':''}>Not Paid</option><option value="true" ${p.depositPaid?'selected':''}>Paid</option></select></td></tr>`).join('')+'</table>'}
+function assignPlan(id,v){let p=state.players.find(x=>x.id===id);p.paymentPlanId=v;save();renderAll()}
+function setDeposit(id,v){let p=state.players.find(x=>x.id===id);if(v==='true'){let plan=state.paymentPlans.find(x=>x.id===p.paymentPlanId);if(plan&&!state.payments.some(t=>t.playerId===id&&t.appliedTo==='Initial Deposit'&&t.type==='Payment'))state.payments.push({id:uid(),playerId:id,type:'Payment',method:'Manual Status',amount:+plan.deposit||0,date:new Date().toISOString().slice(0,10),appliedTo:'Initial Deposit',reference:'Legacy deposit status',enteredBy:'Club Administrator',notes:'Created from Deposit Paid selector'});}else{state.payments=state.payments.filter(t=>!(t.playerId===id&&t.reference==='Legacy deposit status'));}save();renderAll()}
+
+function money(n){return '$'+(+n||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}
+function planFor(p){return state.paymentPlans.find(x=>x.id===p.paymentPlanId)}
+function playerTransactions(id){return state.payments.filter(t=>t.playerId===id)}
+function financials(p){
+ let plan=planFor(p),charges=plan?+plan.total:0,payments=0,credits=0,refunds=0,adjustments=0;
+ playerTransactions(p.id).forEach(t=>{let a=+t.amount||0;if(t.type==='Payment')payments+=a;else if(t.type==='Credit / Scholarship')credits+=a;else if(t.type==='Refund')refunds+=a;else if(t.type==='Charge Adjustment')adjustments+=a;});
+ let balance=charges+adjustments+refunds-payments-credits;
+ let depositPaid=plan?payments+credits>=+plan.deposit:false;
+ let status=!plan?'Plan Not Selected':balance<=0?'Paid in Full':payments+credits===0?'Not Started':depositPaid?'Current':'Deposit Due';
+ return{charges,payments,credits,refunds,adjustments,balance,depositPaid,status};
+}
+function recordPayment(){
+ let playerId=paymentPlayer.value,amount=+paymentAmount.value;
+ if(!playerId)return alert('Select a player.');
+ if(!amount||amount<0)return alert('Enter a positive amount.');
+ state.payments.push({id:uid(),playerId,type:paymentType.value,method:paymentMethod.value,amount,date:paymentDate.value||new Date().toISOString().slice(0,10),appliedTo:paymentAppliedTo.value,reference:paymentReference.value,enteredBy:paymentEnteredBy.value,notes:paymentNotes.value});
+ paymentAmount.value=paymentReference.value=paymentNotes.value='';
+ save();renderAll();
+}
+function deletePayment(id){if(confirm('Remove this transaction?')){state.payments=state.payments.filter(t=>t.id!==id);save();renderAll()}}
+function renderPayments(){
+ let accepted=state.players.filter(p=>state.offers[p.id]?.status==='Accepted'),totalCharges=accepted.reduce((a,p)=>a+financials(p).charges,0),received=accepted.reduce((a,p)=>a+financials(p).payments,0),credits=accepted.reduce((a,p)=>a+financials(p).credits,0),balance=accepted.reduce((a,p)=>a+financials(p).balance,0);
+ paymentMetrics.innerHTML=`<div class="metric">Assigned Charges<b>${money(totalCharges)}</b></div><div class="metric">Payments Received<b>${money(received)}</b></div><div class="metric">Credits / Scholarships<b>${money(credits)}</b></div><div class="metric">Balance Due<b>${money(balance)}</b></div><div class="metric">Transactions<b>${state.payments.length}</b></div>`;
+ financialStatusTable.innerHTML='<table><tr><th>Player</th><th>Team</th><th>Plan</th><th>Charges</th><th>Payments</th><th>Credits</th><th>Refunds/Adjustments</th><th>Balance</th><th>Status</th></tr>'+accepted.map(p=>{let f=financials(p);return`<tr><td>${esc(p.first)} ${esc(p.last)}</td><td>${esc(p.team)}</td><td>${esc(planFor(p)?.name||'Not Selected')}</td><td>${money(f.charges)}</td><td>${money(f.payments)}</td><td>${money(f.credits)}</td><td>${money(f.refunds+f.adjustments)}</td><td><b>${money(f.balance)}</b></td><td><span class="badge ${f.status==='Paid in Full'?'success':f.status==='Deposit Due'?'danger':'warn'}">${esc(f.status)}</span></td></tr>`}).join('')+'</table>';
+ paymentLedgerTable.innerHTML='<table><tr><th>Date</th><th>Player</th><th>Type</th><th>Method</th><th>Amount</th><th>Applied To</th><th>Reference</th><th>Entered By</th><th>Notes</th><th></th></tr>'+[...state.payments].sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(t=>{let p=state.players.find(x=>x.id===t.playerId);return`<tr><td>${esc(t.date)}</td><td>${esc(p?`${p.first} ${p.last}`:t.playerId)}</td><td>${esc(t.type)}</td><td>${esc(t.method)}</td><td>${money(t.amount)}</td><td>${esc(t.appliedTo)}</td><td>${esc(t.reference)}</td><td>${esc(t.enteredBy)}</td><td>${esc(t.notes)}</td><td><button class="red" onclick="deletePayment('${t.id}')">Remove</button></td></tr>`}).join('')+'</table>';
+}
+function exportPayments(){
+ let rows=[['Transaction ID','Player ID','Player','Team','Date','Type','Method','Amount','Applied To','Reference','Entered By','Notes'],...state.payments.map(t=>{let p=state.players.find(x=>x.id===t.playerId);return[t.id,t.playerId,p?`${p.first} ${p.last}`:'',p?.team||'',t.date,t.type,t.method,t.amount,t.appliedTo,t.reference,t.enteredBy,t.notes]})];
+ downloadCSV('MSS_Payment_Ledger.csv',rows);
+}
+paymentCsvFile.onchange=()=>{let f=paymentCsvFile.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{let lines=r.result.split(/\r?\n/).filter(Boolean),h=lines.shift().split(',').map(x=>x.trim().toLowerCase());for(let line of lines){let a=line.split(','),get=n=>a[h.indexOf(n)]||'',pid=get('player id');if(!state.players.some(p=>p.id===pid))continue;state.payments.push({id:get('transaction id')||uid(),playerId:pid,type:get('type')||'Payment',method:get('method')||'External Payment',amount:+get('amount')||0,date:get('date')||new Date().toISOString().slice(0,10),appliedTo:get('applied to')||'Other',reference:get('reference'),enteredBy:get('entered by')||'CSV Import',notes:get('notes')});}save();renderAll()};r.readAsText(f)}
+
+function renderActivation(){state.players.forEach(p=>{let accepted=state.offers[p.id]?.status==='Accepted',f=financials(p),ready=accepted&&p.paymentPlanId&&f.depositPaid;p.depositPaid=f.depositPaid;p.rosterStatus=ready?'Active':'Not Active'});let active=state.players.filter(p=>p.rosterStatus==='Active').length,accepted=state.players.filter(p=>state.offers[p.id]?.status==='Accepted').length;activationMetrics.innerHTML=`<div class="metric">Accepted<b>${accepted}</b></div><div class="metric">Active Roster<b>${active}</b></div><div class="metric">Awaiting Plan/Deposit<b>${Math.max(0,accepted-active)}</b></div>`;activationTable.innerHTML='<table><tr><th>Player</th><th>Team</th><th>Offer</th><th>Plan</th><th>Deposit Requirement</th><th>Received/Credits</th><th>Balance</th><th>Roster Status</th></tr>'+state.players.filter(p=>state.offers[p.id]?.status==='Accepted').map(p=>{let f=financials(p),plan=planFor(p);return`<tr><td>${esc(p.first)} ${esc(p.last)}</td><td>${esc(p.team)}</td><td>${esc(p.offerStatus)}</td><td>${esc(plan?.name||'Not Selected')}</td><td>${money(plan?.deposit||0)}</td><td>${money(f.payments+f.credits)}</td><td>${money(f.balance)}</td><td><span class="badge ${p.rosterStatus==='Active'?'success':'warn'}">${esc(p.rosterStatus)}</span></td></tr>`}).join('')+'</table>'}
+function exportCommunications(){let rows=[['Player','Parent Email','Parent Phone','Type','Team','Status','Message'],...state.players.filter(p=>state.offers[p.id]).map(p=>{let o=state.offers[p.id];return[`${p.first} ${p.last}`,p.email,p.phone,o.type,o.team,o.status,o.message]})];downloadCSV('MSS_Parent_Communications.csv',rows)}
+function exportPlayers(){let rows=[['Player ID','First Name','Last Name','Grade','Graduation Year','Parent Email','Parent Phone','Status','Court','Evaluator','Team','Offer Status','Payment Plan','Deposit Paid','Roster Status'],...state.players.map(p=>[p.id,p.first,p.last,p.grade,p.grad,p.email,p.phone,p.status,p.court,p.evaluator,p.team,p.offerStatus,state.paymentPlans.find(x=>x.id===p.paymentPlanId)?.name||'',p.depositPaid,p.rosterStatus])];downloadCSV('MSS_Club_Players.csv',rows)}
+function downloadCSV(name,rows){let text=rows.map(r=>r.map(x=>{x=String(x??'');return /[",\n]/.test(x)?`"${x.replace(/"/g,'""')}"`:x}).join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'text/csv'}));a.download=name;a.click()}
+csvFile.onchange=()=>{let f=csvFile.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{let lines=r.result.split(/\r?\n/).filter(Boolean),h=lines.shift().split(',').map(x=>x.trim().toLowerCase());for(let line of lines){let a=line.split(','),get=n=>a[h.indexOf(n)]||'';state.players.push({id:get('player id')||uid(),first:get('first name'),last:get('last name'),grade:get('grade'),grad:get('graduation year'),email:get('parent email'),phone:get('parent phone'),photo:get('headshot url'),status:'Registered',checkedIn:false,court:'',evaluator:'',team:'',offerStatus:'Not Created',paymentPlanId:'',depositPaid:false,rosterStatus:'Not Active'})}save();renderAll()};r.readAsText(f)}
+function renderAll(){fillSelects();renderSetupSummary();renderRegistrations();renderCheckin();renderAssignments();renderCoach();renderPacket();renderReview();renderBoard();renderOffers();renderParentPortal();renderPlans();renderPayments();renderActivation()}
+load();
+</script>
+</body></html>
