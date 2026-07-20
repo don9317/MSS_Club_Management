@@ -1,17 +1,17 @@
-MSS Club Management Suite Demo v0.19
+MSS Club Management Suite Demo v0.20
 
-NEW IN v0.19
-- Check-In now has OPEN and CLOSED workflow states.
-- Close Check-In converts remaining Awaiting Check-In players to No-Shows.
-- Reopen Check-In returns No-Shows to Awaiting Check-In for late arrivals.
-- Check-in counters now clearly separate Registered, Checked In, Awaiting Check-In, and No-Shows.
-- Big Board starts with an All Evaluated / Unplaced column.
-- Players are no longer automatically placed on Elite.
-- Place by Recommendations optionally sorts players using the Director recommendation first and evaluator recommendation second.
-- Directors can drag players between Unplaced, team columns, and Not Selected / Follow-Up.
-- Return Filtered Players to Unplaced allows a placement reset.
-- Team and Unplaced columns display player counts, ratings, and recommendations.
-- Finalize Placements warns when evaluated players remain unplaced.
+FIXED IN v0.20
+- Corrected a JavaScript syntax error in v0.19 that prevented every navigation tab from working.
+- Restored initialization of the Setup screen and all workflow pages.
+- Automatically loads the 150-player sample registration list the first time the demo is opened.
+- Existing browser data is preserved if the user has already entered information.
+- The sample CSV remains included for testing manual CSV import.
 
 GITHUB PAGES
-Upload index.html and MSS_Tryout_Demo_150_Players.csv to the repository root.
+1. Delete or replace the previous index.html in the repository root.
+2. Upload the new index.html from this package.
+3. Upload MSS_Tryout_Demo_150_Players.csv to the same repository root.
+4. Commit the changes.
+5. Refresh the GitHub Pages site. A hard refresh may be needed: Ctrl+F5 on Windows.
+
+The sample player list should appear automatically on first use.

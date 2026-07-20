@@ -23,7 +23,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </style>
 </head>
 <body>
-<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.19 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, and Roster Activation</div></header>
+<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.20 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, and Roster Activation</div></header>
 <div class="wrap">
 <div class="tabs no-print">
 <button class="tab active" data-tab="setup">Setup</button>
@@ -174,7 +174,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </div>
 
 <script>
-const KEY='mssClubDemoV019';
+const KEY='mssClubDemoV020';
 let state={
  setup:{orgName:'Oklahoma Swarm',season:'2026-27',eventName:'Oklahoma Swarm Tryouts',evalMethod:'Hybrid',courtCount:4,courts:['HIVE Court 1','HIVE Court 2','HIVE Court 3','HIVE Court 4'],teams:['Elite','Gold','Silver','Development'],notSelected:'Not Selected / Follow-Up',evaluators:['Coach Rob','Coach Taylor','Coach David','Coach Julie'],gradeTeams:{},offerTemplate:'Congratulations, {Player}! You have been offered a place on {Team}. Please respond by {Deadline}.',notSelectedTemplate:'Thank you for attending tryouts, {Player}. We would like to keep you informed about future opportunities.'},
  players:[],evaluations:{},offers:{},payments:[],directorReviews:{},directorName:'',checkinClosed:false,paymentPlans:[{id:'monthly',name:'Monthly',total:1800,deposit:300,installments:6},{id:'paidfull',name:'Paid in Full',total:1650,deposit:1650,installments:1}],placementsFinal:false
@@ -183,7 +183,7 @@ const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 function showTab(id){document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');document.querySelector(`[data-tab="${id}"]`).classList.add('active');renderAll()}
 function save(){readSetup();localStorage.setItem(KEY,JSON.stringify(state))}
-function load(){let x=localStorage.getItem(KEY);if(x)try{state=JSON.parse(x)}catch(e){} state.payments??=[];state.paymentPlans??=[];state.players??=[];state.directorReviews??={};state.directorName??='';state.checkinClosed??=false;bindSetup();renderAll()}
+function load(){let x=localStorage.getItem(KEY);if(x)try{state=JSON.parse(x)}catch(e){} state.payments??=[];state.paymentPlans??=[];state.players??=[];state.directorReviews??={};state.directorName??='';state.checkinClosed??=false;bindSetup();if(!state.players.length){generate150();return}renderAll()}
 function readSetup(){state.setup.orgName=orgName.value;state.setup.season=season.value;state.setup.eventName=eventName.value;state.setup.evalMethod=evalMethod.value;state.setup.courtCount=+courtCount.value;state.setup.courts=[court1.value,court2.value,court3.value,court4.value];state.setup.teams=[teamA.value,teamB.value,teamC.value,teamD.value];state.setup.notSelected=notSelectedLabel.value;state.setup.evaluators=[eval1.value,eval2.value,eval3.value,eval4.value].filter(Boolean);state.setup.offerTemplate=offerTemplate.value;state.setup.notSelectedTemplate=notSelectedTemplate.value}
 function bindSetup(){orgName.value=state.setup.orgName;season.value=state.setup.season;eventName.value=state.setup.eventName;evalMethod.value=state.setup.evalMethod;courtCount.value=state.setup.courtCount;[court1,court2,court3,court4].forEach((e,i)=>e.value=state.setup.courts[i]||'');[teamA,teamB,teamC,teamD].forEach((e,i)=>e.value=state.setup.teams[i]||'');notSelectedLabel.value=state.setup.notSelected;[eval1,eval2,eval3,eval4].forEach((e,i)=>e.value=state.setup.evaluators[i]||'');offerTemplate.value=state.setup.offerTemplate;notSelectedTemplate.value=state.setup.notSelectedTemplate;document.querySelectorAll('#setup input,#setup select,#setup textarea').forEach(e=>e.onchange=()=>{save();renderAll()})}
 function saveGradeTeams(){readSetup();state.setup.gradeTeams[teamGrade.value+'|'+teamGrad.value]=[...state.setup.teams];save();renderSetupSummary()}
@@ -291,7 +291,7 @@ function prepopulateRecommendations(){
  });
  save();renderBoard();
 }
-function returnFilteredPlayersToUnplaced(){if(confirm('Return all currently filtered players to All Evaluated / Unplaced?')){boardPlayers().forEach(p=>p.team='');save();renderBoard()}}}
+function returnFilteredPlayersToUnplaced(){if(confirm('Return all currently filtered players to All Evaluated / Unplaced?')){boardPlayers().forEach(p=>p.team='');save();renderBoard()}}
 function finalizePlacements(){let unplaced=boardPlayers().filter(p=>!p.team).length;if(unplaced&&!confirm(`${unplaced} evaluated player(s) are still unplaced. Finalize anyway?`))return;state.placementsFinal=true;save();alert('Placements finalized. You can now create offers and follow-up messages.')}
 function createOffersForPlaced(){state.players.filter(p=>p.checkedIn&&p.team&&p.team!==state.setup.notSelected).forEach(p=>{state.offers[p.id]={type:'Team Offer',team:p.team,status:'Offer Pending',message:state.setup.offerTemplate.replace('{Player}',p.first).replace('{Team}',p.team).replace('{Deadline}','7 days from offer'),created:new Date().toLocaleDateString()};p.offerStatus='Offer Pending'});save();renderAll()}
 function createFollowups(){state.players.filter(p=>p.team===state.setup.notSelected||p.status==='No-Show').forEach(p=>{state.offers[p.id]={type:'Follow-Up',team:p.team||'',status:'Message Ready',message:state.setup.notSelectedTemplate.replace('{Player}',p.first),created:new Date().toLocaleDateString()};p.offerStatus='Message Ready'});save();renderAll()}
