@@ -23,7 +23,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </style>
 </head>
 <body>
-<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.18 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, and Roster Activation</div></header>
+<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.19 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, and Roster Activation</div></header>
 <div class="wrap">
 <div class="tabs no-print">
 <button class="tab active" data-tab="setup">Setup</button>
@@ -57,8 +57,9 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </section>
 
 <section id="checkin" class="section">
+<div class="card" id="checkinStatusCard"></div>
 <div id="checkinMetrics" class="metricrow"></div>
-<div class="card"><h2>Tryout Check-In</h2><p class="note">Search players, mark them checked in, assign a court, and confirm evaluator. Registered players who do not check in remain No-Shows.</p><div class="grid4"><div><label>Search</label><input id="checkSearch" oninput="renderCheckin()"></div><div><label>Grade</label><select id="checkGrade" onchange="renderCheckin()"></select></div><div><label>Status</label><select id="checkStatus" onchange="renderCheckin()"><option value="">All</option><option>Registered</option><option>Checked In</option><option>No-Show</option></select></div><div style="align-self:end"><button class="amber" onclick="markRemainingNoShows()">Mark Remaining No-Shows</button></div></div><div id="checkinTable"></div></div>
+<div class="card"><h2>Tryout Check-In</h2><p class="note">Search players, mark them checked in, assign a court, and confirm evaluator. Players become No-Shows only when check-in is closed.</p><div class="grid4"><div><label>Search</label><input id="checkSearch" oninput="renderCheckin()"></div><div><label>Grade</label><select id="checkGrade" onchange="renderCheckin()"></select></div><div><label>Status</label><select id="checkStatus" onchange="renderCheckin()"><option value="">All</option><option>Registered</option><option>Checked In</option><option>No-Show</option></select></div><div style="align-self:end"><button class="amber" id="checkinToggleButton" onclick="toggleCheckinStatus()">Close Check-In</button></div></div><div id="checkinTable"></div></div>
 </section>
 
 <section id="assignments" class="section">
@@ -104,7 +105,16 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </section>
 
 <section id="board" class="section">
-<div class="card"><h2>Big Board / Placement</h2><div class="grid3"><div><label>Grade</label><select id="boardGrade" onchange="renderBoard()"></select></div><div><label>Graduation Year</label><select id="boardGrad" onchange="renderBoard()"></select></div><div style="align-self:end"><button class="green" onclick="finalizePlacements()">Finalize Placements</button></div></div></div><div id="bigBoard" class="board"></div>
+<div class="card"><h2>Big Board / Placement</h2>
+<p class="note">Players begin in All Evaluated / Unplaced. Use the recommendation button to sort them automatically, then drag players between columns as the director finalizes teams.</p>
+<div class="grid4">
+<div><label>Grade</label><select id="boardGrade" onchange="renderBoard()"></select></div>
+<div><label>Graduation Year</label><select id="boardGrad" onchange="renderBoard()"></select></div>
+<div style="align-self:end"><button onclick="prepopulateRecommendations()">Place by Recommendations</button></div>
+<div style="align-self:end"><button class="green" onclick="finalizePlacements()">Finalize Placements</button></div>
+</div>
+<div class="actions" style="margin-top:12px"><button class="light" onclick="returnFilteredPlayersToUnplaced()">Return Filtered Players to Unplaced</button></div>
+</div><div id="bigBoard" class="board"></div>
 </section>
 
 <section id="offers" class="section">
@@ -164,16 +174,16 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </div>
 
 <script>
-const KEY='mssClubDemoV018';
+const KEY='mssClubDemoV019';
 let state={
  setup:{orgName:'Oklahoma Swarm',season:'2026-27',eventName:'Oklahoma Swarm Tryouts',evalMethod:'Hybrid',courtCount:4,courts:['HIVE Court 1','HIVE Court 2','HIVE Court 3','HIVE Court 4'],teams:['Elite','Gold','Silver','Development'],notSelected:'Not Selected / Follow-Up',evaluators:['Coach Rob','Coach Taylor','Coach David','Coach Julie'],gradeTeams:{},offerTemplate:'Congratulations, {Player}! You have been offered a place on {Team}. Please respond by {Deadline}.',notSelectedTemplate:'Thank you for attending tryouts, {Player}. We would like to keep you informed about future opportunities.'},
- players:[],evaluations:{},offers:{},payments:[],directorReviews:{},directorName:'',paymentPlans:[{id:'monthly',name:'Monthly',total:1800,deposit:300,installments:6},{id:'paidfull',name:'Paid in Full',total:1650,deposit:1650,installments:1}],placementsFinal:false
+ players:[],evaluations:{},offers:{},payments:[],directorReviews:{},directorName:'',checkinClosed:false,paymentPlans:[{id:'monthly',name:'Monthly',total:1800,deposit:300,installments:6},{id:'paidfull',name:'Paid in Full',total:1650,deposit:1650,installments:1}],placementsFinal:false
 };
 const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),uid=()=>Math.random().toString(36).slice(2,9);
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 function showTab(id){document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');document.querySelector(`[data-tab="${id}"]`).classList.add('active');renderAll()}
 function save(){readSetup();localStorage.setItem(KEY,JSON.stringify(state))}
-function load(){let x=localStorage.getItem(KEY);if(x)try{state=JSON.parse(x)}catch(e){} state.payments??=[];state.paymentPlans??=[];state.players??=[];state.directorReviews??={};state.directorName??='';bindSetup();renderAll()}
+function load(){let x=localStorage.getItem(KEY);if(x)try{state=JSON.parse(x)}catch(e){} state.payments??=[];state.paymentPlans??=[];state.players??=[];state.directorReviews??={};state.directorName??='';state.checkinClosed??=false;bindSetup();renderAll()}
 function readSetup(){state.setup.orgName=orgName.value;state.setup.season=season.value;state.setup.eventName=eventName.value;state.setup.evalMethod=evalMethod.value;state.setup.courtCount=+courtCount.value;state.setup.courts=[court1.value,court2.value,court3.value,court4.value];state.setup.teams=[teamA.value,teamB.value,teamC.value,teamD.value];state.setup.notSelected=notSelectedLabel.value;state.setup.evaluators=[eval1.value,eval2.value,eval3.value,eval4.value].filter(Boolean);state.setup.offerTemplate=offerTemplate.value;state.setup.notSelectedTemplate=notSelectedTemplate.value}
 function bindSetup(){orgName.value=state.setup.orgName;season.value=state.setup.season;eventName.value=state.setup.eventName;evalMethod.value=state.setup.evalMethod;courtCount.value=state.setup.courtCount;[court1,court2,court3,court4].forEach((e,i)=>e.value=state.setup.courts[i]||'');[teamA,teamB,teamC,teamD].forEach((e,i)=>e.value=state.setup.teams[i]||'');notSelectedLabel.value=state.setup.notSelected;[eval1,eval2,eval3,eval4].forEach((e,i)=>e.value=state.setup.evaluators[i]||'');offerTemplate.value=state.setup.offerTemplate;notSelectedTemplate.value=state.setup.notSelectedTemplate;document.querySelectorAll('#setup input,#setup select,#setup textarea').forEach(e=>e.onchange=()=>{save();renderAll()})}
 function saveGradeTeams(){readSetup();state.setup.gradeTeams[teamGrade.value+'|'+teamGrad.value]=[...state.setup.teams];save();renderSetupSummary()}
@@ -186,10 +196,31 @@ function addPlayer(){let id=pId.value||uid();state.players.push({id,first:pFirst
 function generate150(){let f=['Ava','Emma','Olivia','Sophia','Mia','Harper','Ella','Grace','Lily','Riley','Kennedy','Avery','Brooklyn','Addison','Claire'],l=['Smith','Johnson','Brown','Davis','Wilson','Moore','Taylor','Anderson','Thomas','Jackson','Harris','Martin','Clark','Lewis','Walker'];state.players=[];for(let i=0;i<150;i++){let x=Math.floor(i/30),g=['3rd','4th','5th','6th','7th'][x],y=['2036','2035','2034','2033','2032'][x];state.players.push({id:`${y}-${String(i+1).padStart(3,'0')}`,first:f[i%f.length],last:l[(i*7)%l.length],grade:g,grad:y,email:`parent${i+1}@example.com`,phone:`405-555-${1000+i}`,photo:'',status:'Registered',checkedIn:false,court:'',evaluator:'',team:'',offerStatus:'Not Created',paymentPlanId:'',depositPaid:false,rosterStatus:'Not Active'})}save();renderAll()}
 function clearAll(){if(confirm('Clear all data?')){state.players=[];state.evaluations={};state.offers={};save();renderAll()}}
 function renderRegistrations(){let counts={};state.players.forEach(p=>counts[p.grade]=(counts[p.grade]||0)+1);registrationMetrics.innerHTML=`<div class="metric">Registered<b>${state.players.length}</b></div>`+Object.entries(counts).map(([g,n])=>`<div class="metric">${g}<b>${n}</b></div>`).join('');registrationTable.innerHTML='<table><tr><th>Photo</th><th>ID</th><th>Player</th><th>Grade/Year</th><th>Parent</th><th>Status</th></tr>'+state.players.map(p=>`<tr><td><div class="avatar">${avatar(p)}</div></td><td>${esc(p.id)}</td><td><b>${esc(p.first)} ${esc(p.last)}</b></td><td>${esc(p.grade)} / ${esc(p.grad)}</td><td>${esc(p.email)}<br>${esc(p.phone)}</td><td>${esc(p.status)}</td></tr>`).join('')+'</table>'}
-function renderCheckin(){let q=checkSearch.value.toLowerCase(),g=checkGrade.value,s=checkStatus.value;let a=state.players.filter(p=>(!q||(`${p.first} ${p.last} ${p.id}`).toLowerCase().includes(q))&&(!g||p.grade===g)&&(!s||p.status===s));let reg=state.players.filter(p=>p.status==='Registered').length,ci=state.players.filter(p=>p.status==='Checked In').length,ns=state.players.filter(p=>p.status==='No-Show').length;checkinMetrics.innerHTML=`<div class="metric">Registered<b>${state.players.length}</b></div><div class="metric">Checked In<b>${ci}</b></div><div class="metric">Not Yet Checked In<b>${reg}</b></div><div class="metric">No-Shows<b>${ns}</b></div>`;checkinTable.innerHTML='<table><tr><th>Player</th><th>Grade</th><th>Status</th><th>Court</th><th>Evaluator</th><th>Action</th></tr>'+a.map(p=>`<tr><td><b>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</b></td><td>${esc(p.grade)}</td><td>${esc(p.status)}</td><td><select onchange="setPlayer('${p.id}','court',this.value)">${opts(state.setup.courts.slice(0,state.setup.courtCount),p.court,'Unassigned')}</select></td><td><select onchange="setPlayer('${p.id}','evaluator',this.value)">${opts(state.setup.evaluators,p.evaluator,'Unassigned')}</select></td><td>${p.checkedIn?`<button class="light" onclick="undoCheckin('${p.id}')">Undo</button>`:`<button class="green" onclick="checkIn('${p.id}')">Check In</button>`}</td></tr>`).join('')+'</table>'}
+function renderCheckin(){
+ let q=checkSearch.value.toLowerCase(),g=checkGrade.value,s=checkStatus.value;
+ let a=state.players.filter(p=>(!q||(`${p.first} ${p.last} ${p.id}`).toLowerCase().includes(q))&&(!g||p.grade===g)&&(!s||p.status===s));
+ let awaiting=state.players.filter(p=>p.status==='Registered').length,ci=state.players.filter(p=>p.status==='Checked In').length,ns=state.players.filter(p=>p.status==='No-Show').length;
+ checkinStatusCard.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><h2 style="margin:0">Tryout Status</h2><p class="note" style="margin:5px 0 0">Check-In is <b>${state.checkinClosed?'CLOSED':'OPEN'}</b>. ${state.checkinClosed?'Remaining unreturned players are recorded as No-Shows.':'Players who have not arrived remain Awaiting Check-In.'}</p></div><span class="badge ${state.checkinClosed?'danger':'success'}">${state.checkinClosed?'CHECK-IN CLOSED':'CHECK-IN OPEN'}</span></div>`;
+ checkinToggleButton.textContent=state.checkinClosed?'Reopen Check-In':'Close Check-In';
+ checkinToggleButton.className=state.checkinClosed?'green':'amber';
+ checkinMetrics.innerHTML=`<div class="metric">Registered<b>${state.players.length}</b></div><div class="metric">Checked In<b>${ci}</b></div><div class="metric">${state.checkinClosed?'Awaiting Check-In':'Awaiting Check-In'}<b>${awaiting}</b></div><div class="metric">No-Shows<b>${ns}</b></div>`;
+ checkinTable.innerHTML='<table><tr><th>Player</th><th>Grade</th><th>Status</th><th>Court</th><th>Evaluator</th><th>Action</th></tr>'+a.map(p=>`<tr><td><b>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</b></td><td>${esc(p.grade)}</td><td>${esc(p.status)}</td><td><select onchange="setPlayer('${p.id}','court',this.value)">${opts(state.setup.courts.slice(0,state.setup.courtCount),p.court,'Unassigned')}</select></td><td><select onchange="setPlayer('${p.id}','evaluator',this.value)">${opts(state.setup.evaluators,p.evaluator,'Unassigned')}</select></td><td>${p.checkedIn?`<button class="light" onclick="undoCheckin('${p.id}')">Undo</button>`:`<button class="green" onclick="checkIn('${p.id}')">Check In</button>`}</td></tr>`).join('')+'</table>';
+}
+function toggleCheckinStatus(){
+ if(!state.checkinClosed){
+  if(!confirm('Close check-in? All players who have not checked in will be marked as No-Shows.'))return;
+  state.players.filter(p=>!p.checkedIn).forEach(p=>p.status='No-Show');
+  state.checkinClosed=true;
+ }else{
+  if(!confirm('Reopen check-in? No-Shows will return to Awaiting Check-In so late arrivals can be checked in.'))return;
+  state.players.filter(p=>p.status==='No-Show').forEach(p=>p.status='Registered');
+  state.checkinClosed=false;
+ }
+ save();renderAll();
+}
 function checkIn(id){let p=state.players.find(x=>x.id===id);p.checkedIn=true;p.status='Checked In';if(!p.court){let ci=state.players.filter(x=>x.checkedIn),courts=state.setup.courts.slice(0,state.setup.courtCount);p.court=courts[(ci.length-1)%courts.length]}if(!p.evaluator){p.evaluator=state.setup.evaluators[(state.players.filter(x=>x.checkedIn).length-1)%state.setup.evaluators.length]}save();renderAll()}
 function undoCheckin(id){let p=state.players.find(x=>x.id===id);p.checkedIn=false;p.status='Registered';save();renderAll()}
-function markRemainingNoShows(){state.players.filter(p=>!p.checkedIn).forEach(p=>p.status='No-Show');save();renderAll()}
+
 function setPlayer(id,k,v){let p=state.players.find(x=>x.id===id);p[k]=v;save();renderAll()}
 function autoBalance(){let a=state.players.filter(p=>p.checkedIn),courts=state.setup.courts.slice(0,state.setup.courtCount),evals=state.setup.evaluators;a.forEach((p,i)=>{p.court=courts[i%courts.length];p.evaluator=evals[i%evals.length]});save();renderAll()}
 function renderAssignments(){let a=state.players.filter(p=>p.checkedIn);assignmentTable.innerHTML='<table><tr><th>Player</th><th>Grade</th><th>Court</th><th>Evaluator</th></tr>'+a.map(p=>`<tr><td>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</td><td>${esc(p.grade)}</td><td><select onchange="setPlayer('${p.id}','court',this.value)">${opts(state.setup.courts.slice(0,state.setup.courtCount),p.court,'Unassigned')}</select></td><td><select onchange="setPlayer('${p.id}','evaluator',this.value)">${opts(state.setup.evaluators,p.evaluator,'Unassigned')}</select></td></tr>`).join('')+'</table>'}
@@ -238,9 +269,30 @@ function renderReview(){
 }
 function exportDirectorReview(){let rows=[['Player ID','Player','Grade','Graduation Year','Attendance','Court','Evaluator','Evaluation Source','Evaluator Rating','Evaluator Recommendation','Evaluator Notes','Director Rating','Director Recommendation','Director Notes','Reviewed By','Review Date','Review Status']];state.players.filter(p=>(!reviewGrade.value||p.grade===reviewGrade.value)&&(!reviewGrad.value||p.grad===reviewGrad.value)).forEach(p=>{let o=originalEvalSummary(p),r=directorReviewFor(p.id);rows.push([p.id,`${p.first} ${p.last}`,p.grade,p.grad,p.checkedIn?'Attended':p.status,p.court,o.evaluators,o.source,o.average,o.recommendation,o.notes,r.directorRating,r.directorRecommendation,r.directorNotes,r.reviewedBy,r.reviewDate,r.status])});downloadCSV('MSS_Director_Review_Master_List.csv',rows)}
 let dragId='';
-function renderBoard(){let g=boardGrade.value,y=boardGrad.value,a=state.players.filter(p=>p.checkedIn&&(!g||p.grade===g)&&(!y||p.grad===y)),teams=(g&&y?gradeTeams(g,y):state.setup.teams),cols=[...teams,state.setup.notSelected];bigBoard.innerHTML=cols.map(t=>`<div class="teamcol" ondragover="event.preventDefault()" ondrop="dropPlayer('${esc(t)}')"><h3>${esc(t)}</h3>${a.filter(p=>(p.team||teams[0])===t).map(p=>`<div class="playercard" draggable="true" ondragstart="dragId='${p.id}'"><div class="avatar">${avatar(p)}</div><div><b>${esc(p.first)} ${esc(p.last)}</b><div class="small">${esc(p.id)} · Avg ${avg(p)}</div></div></div>`).join('')}</div>`).join('')}
-function dropPlayer(t){let p=state.players.find(x=>x.id===dragId);if(p){p.team=t;save();renderBoard()}}
-function finalizePlacements(){state.placementsFinal=true;save();alert('Placements finalized. You can now create offers and follow-up messages.')}
+function boardPlayers(){
+ let g=boardGrade.value,y=boardGrad.value;
+ return state.players.filter(p=>p.checkedIn&&Object.keys(state.evaluations[p.id]||{}).length&&(!g||p.grade===g)&&(!y||p.grad===y));
+}
+function renderBoard(){
+ let g=boardGrade.value,y=boardGrad.value,a=boardPlayers(),teams=(g&&y?gradeTeams(g,y):state.setup.teams),cols=['__UNPLACED__',...teams,state.setup.notSelected];
+ bigBoard.innerHTML=cols.map(t=>{
+  let title=t==='__UNPLACED__'?'All Evaluated / Unplaced':t;
+  let players=a.filter(p=>t==='__UNPLACED__'?!p.team:p.team===t);
+  return`<div class="teamcol" ondragover="event.preventDefault()" ondrop="dropPlayer('${esc(t)}')"><h3>${esc(title)} <span class="badge">${players.length}</span></h3>${players.map(p=>{let o=originalEvalSummary(p),r=directorReviewFor(p.id),rating=r.directorRating||o.average||'-',rec=r.directorRecommendation||o.recommendation||'No recommendation';return`<div class="playercard" draggable="true" ondragstart="dragId='${p.id}'"><div class="avatar">${avatar(p)}</div><div><b>${esc(p.first)} ${esc(p.last)}</b><div class="small">${esc(p.id)} · Rating ${esc(rating)}</div><div class="small">Rec: ${esc(rec)}</div></div></div>`}).join('')}</div>`;
+ }).join('');
+}
+function dropPlayer(t){let p=state.players.find(x=>x.id===dragId);if(p){p.team=t==='__UNPLACED__'?'':t;save();renderBoard()}}
+function prepopulateRecommendations(){
+ let a=boardPlayers(),teams=(boardGrade.value&&boardGrad.value?gradeTeams(boardGrade.value,boardGrad.value):state.setup.teams);
+ a.forEach(p=>{
+  let r=directorReviewFor(p.id),o=originalEvalSummary(p),rec=r.directorRecommendation||o.recommendation||'';
+  let exact=[...teams,state.setup.notSelected].find(t=>t===rec);
+  p.team=exact||'';
+ });
+ save();renderBoard();
+}
+function returnFilteredPlayersToUnplaced(){if(confirm('Return all currently filtered players to All Evaluated / Unplaced?')){boardPlayers().forEach(p=>p.team='');save();renderBoard()}}}
+function finalizePlacements(){let unplaced=boardPlayers().filter(p=>!p.team).length;if(unplaced&&!confirm(`${unplaced} evaluated player(s) are still unplaced. Finalize anyway?`))return;state.placementsFinal=true;save();alert('Placements finalized. You can now create offers and follow-up messages.')}
 function createOffersForPlaced(){state.players.filter(p=>p.checkedIn&&p.team&&p.team!==state.setup.notSelected).forEach(p=>{state.offers[p.id]={type:'Team Offer',team:p.team,status:'Offer Pending',message:state.setup.offerTemplate.replace('{Player}',p.first).replace('{Team}',p.team).replace('{Deadline}','7 days from offer'),created:new Date().toLocaleDateString()};p.offerStatus='Offer Pending'});save();renderAll()}
 function createFollowups(){state.players.filter(p=>p.team===state.setup.notSelected||p.status==='No-Show').forEach(p=>{state.offers[p.id]={type:'Follow-Up',team:p.team||'',status:'Message Ready',message:state.setup.notSelectedTemplate.replace('{Player}',p.first),created:new Date().toLocaleDateString()};p.offerStatus='Message Ready'});save();renderAll()}
 function renderOffers(){let vals=Object.values(state.offers),pending=vals.filter(o=>o.status==='Offer Pending').length,accepted=vals.filter(o=>o.status==='Accepted').length,declined=vals.filter(o=>o.status==='Declined').length;offerMetrics.innerHTML=`<div class="metric">Offers/Messages<b>${vals.length}</b></div><div class="metric">Pending<b>${pending}</b></div><div class="metric">Accepted<b>${accepted}</b></div><div class="metric">Declined<b>${declined}</b></div>`;offerTable.innerHTML='<table><tr><th>Player</th><th>Type</th><th>Team</th><th>Status</th><th>Message</th></tr>'+state.players.filter(p=>state.offers[p.id]).map(p=>{let o=state.offers[p.id];return`<tr><td>${esc(p.first)} ${esc(p.last)}</td><td>${esc(o.type)}</td><td>${esc(o.team)}</td><td>${esc(o.status)}</td><td>${esc(o.message)}</td></tr>`}).join('')+'</table>'}
