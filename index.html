@@ -23,7 +23,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </style>
 </head>
 <body>
-<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.20 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, and Roster Activation</div></header>
+<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.21 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, and Roster Activation</div></header>
 <div class="wrap">
 <div class="tabs no-print">
 <button class="tab active" data-tab="setup">Setup</button>
@@ -78,14 +78,18 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 <section id="paperentry" class="section">
 <div class="card">
 <h2>Paper Score Entry</h2>
-<p class="note">Enter completed paper evaluations here. The evaluator is the coach who completed the form; Entered By is the staff member typing it into the system.</p>
+<p class="note">All checked-in players are listed below. Filter the list, then select a player to enter or edit the completed paper evaluation. No-shows are excluded.</p>
 <div class="grid4">
 <div><label>Grade</label><select id="paperEntryGrade" onchange="renderPaperEntryPlayers()"></select></div>
-<div><label>Player</label><select id="paperEntryPlayer" onchange="renderPaperEntryForm()"></select></div>
-<div><label>Evaluator</label><select id="paperEntryEvaluator" onchange="renderPaperEntryForm()"></select></div>
+<div><label>Evaluation Status</label><select id="paperEntryStatus" onchange="renderPaperEntryPlayers()"><option value="">All</option><option>Not Entered</option><option>Entered</option></select></div>
+<div><label>Evaluator</label><select id="paperEntryEvaluator" onchange="renderPaperEntryPlayers()"></select></div>
 <div><label>Entered By</label><input id="paperEntryEnteredBy" value="Club Administrator"></div>
 </div>
-<div id="paperEntryForm" style="margin-top:14px"></div>
+<div id="paperEntryList" style="margin-top:14px"></div>
+</div>
+<div class="card">
+<h2>Selected Player Evaluation</h2>
+<div id="paperEntryForm"><p class="note">Select a player from the list above.</p></div>
 </div>
 </section>
 
@@ -174,7 +178,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </div>
 
 <script>
-const KEY='mssClubDemoV020';
+const KEY='mssClubDemoV021';
 let state={
  setup:{orgName:'Oklahoma Swarm',season:'2026-27',eventName:'Oklahoma Swarm Tryouts',evalMethod:'Hybrid',courtCount:4,courts:['HIVE Court 1','HIVE Court 2','HIVE Court 3','HIVE Court 4'],teams:['Elite','Gold','Silver','Development'],notSelected:'Not Selected / Follow-Up',evaluators:['Coach Rob','Coach Taylor','Coach David','Coach Julie'],gradeTeams:{},offerTemplate:'Congratulations, {Player}! You have been offered a place on {Team}. Please respond by {Deadline}.',notSelectedTemplate:'Thank you for attending tryouts, {Player}. We would like to keep you informed about future opportunities.'},
  players:[],evaluations:{},offers:{},payments:[],directorReviews:{},directorName:'',checkinClosed:false,paymentPlans:[{id:'monthly',name:'Monthly',total:1800,deposit:300,installments:6},{id:'paidfull',name:'Paid in Full',total:1650,deposit:1650,installments:1}],placementsFinal:false
@@ -228,28 +232,42 @@ function ev(id,c){state.evaluations[id]??={};state.evaluations[id][c]??={scores:
 function renderCoach(){let a=state.players.filter(p=>p.checkedIn&&(!coachEvaluator.value||p.evaluator===coachEvaluator.value)&&(!coachGrade.value||p.grade===coachGrade.value)&&(!coachCourt.value||p.court===coachCourt.value));coachForm.innerHTML=a.map(p=>{let c=p.evaluator||'Evaluator',e=ev(p.id,c);return`<div class="card"><div style="display:flex;gap:10px"><div class="avatar">${avatar(p)}</div><div><b>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</b><div class="small">${esc(p.grade)} · ${esc(p.court)}</div></div></div><div class="grid5" style="margin-top:12px">${['Athleticism','Basketball Skill','Game IQ','Effort','Coachability'].map((x,i)=>`<div><label>${x}</label><select onchange="setScore('${p.id}','${esc(c)}',${i},this.value)"><option value="0">-</option>${[1,2,3,4,5].map(n=>`<option ${e.scores[i]==n?'selected':''}>${n}</option>`).join('')}</select></div>`).join('')}</div><div class="grid2" style="margin-top:12px"><div><label>Recommendation</label><select onchange="setRec('${p.id}','${esc(c)}',this.value)">${opts([...gradeTeams(p.grade,p.grad),state.setup.notSelected],e.recommendation,'Select')}</select></div><div><label>Evaluator Notes</label><textarea onchange="setNotes('${p.id}','${esc(c)}',this.value)">${esc(e.notes)}</textarea></div></div></div>`}).join('')||'<p class="note">No players assigned.</p>'}
 function setScore(id,c,i,v){ev(id,c).scores[i]=+v;save()}function setRec(id,c,v){ev(id,c).recommendation=v;save()}function setNotes(id,c,v){ev(id,c).notes=v;save()}
 
-function renderPaperEntryPlayers(){
- let g=paperEntryGrade.value,old=paperEntryPlayer.value;
- let a=state.players.filter(p=>p.checkedIn&&(!g||p.grade===g));
- paperEntryPlayer.innerHTML=a.map(p=>`<option value="${p.id}">${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</option>`).join('');
- if(a.some(p=>p.id===old))paperEntryPlayer.value=old;
- renderPaperEntryForm();
+
+let selectedPaperEntryPlayerId='';
+function paperEvaluationForPlayer(p){
+ let entries=Object.entries(state.evaluations[p.id]||{}).filter(([_,e])=>e.source==='Paper');
+ return entries.length?entries[0]:null;
 }
+function renderPaperEntryPlayers(){
+ let g=paperEntryGrade.value,status=paperEntryStatus.value,evaluator=paperEntryEvaluator.value;
+ let a=state.players.filter(p=>p.checkedIn&&(!g||p.grade===g));
+ if(status)a=a.filter(p=>status==='Entered'?!!paperEvaluationForPlayer(p):!paperEvaluationForPlayer(p));
+ if(evaluator)a=a.filter(p=>p.evaluator===evaluator||paperEvaluationForPlayer(p)?.[0]===evaluator);
+ paperEntryList.innerHTML='<table><tr><th>Player</th><th>Grade / Year</th><th>Court</th><th>Evaluator</th><th>Status</th><th>Rating</th><th>Recommendation</th><th>Entered By</th><th>Action</th></tr>'+a.map(p=>{
+  let pe=paperEvaluationForPlayer(p),name=pe?.[0]||p.evaluator||'',e=pe?.[1],vals=e?.scores?.filter(Boolean)||[],rating=vals.length?(vals.reduce((x,y)=>x+y,0)/vals.length).toFixed(2):'-';
+  return`<tr><td><b>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</b></td><td>${esc(p.grade)} / ${esc(p.grad)}</td><td>${esc(p.court||'-')}</td><td>${esc(name||'-')}</td><td><span class="badge ${e?'success':'warn'}">${e?'Entered':'Not Entered'}</span></td><td>${esc(rating)}</td><td>${esc(e?.recommendation||'-')}</td><td>${esc(e?.enteredBy||'-')}</td><td><button onclick="selectPaperEntryPlayer('${p.id}')">${e?'Edit':'Enter Scores'}</button></td></tr>`;
+ }).join('')+'</table>';
+ if(selectedPaperEntryPlayerId&&!a.some(p=>p.id===selectedPaperEntryPlayerId)){selectedPaperEntryPlayerId='';paperEntryForm.innerHTML='<p class="note">Select a player from the list above.</p>'}
+}
+function selectPaperEntryPlayer(id){selectedPaperEntryPlayerId=id;renderPaperEntryForm()}
 function renderPaperEntryForm(){
- let p=state.players.find(x=>x.id===paperEntryPlayer.value);
- if(!p){paperEntryForm.innerHTML='<p class="note">Select a checked-in player.</p>';return}
- let evaluator=paperEntryEvaluator.value||p.evaluator||state.setup.evaluators[0]||'Paper Evaluator';
- paperEntryEvaluator.value=evaluator;
+ let p=state.players.find(x=>x.id===selectedPaperEntryPlayerId);
+ if(!p){paperEntryForm.innerHTML='<p class="note">Select a player from the list above.</p>';return}
+ let pe=paperEvaluationForPlayer(p),evaluator=pe?.[0]||p.evaluator||paperEntryEvaluator.value||state.setup.evaluators[0]||'Paper Evaluator';
  let e=ev(p.id,evaluator);
- paperEntryForm.innerHTML=`<div class="card"><b>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</b><div class="small">${esc(p.grade)} / ${esc(p.grad)} · ${esc(p.court||'Unassigned Court')}</div><div class="grid5" style="margin-top:12px">${['Athleticism','Basketball Skill','Game IQ','Effort','Coachability'].map((x,i)=>`<div><label>${x}</label><select id="paperScore${i}"><option value="0">-</option>${[1,2,3,4,5].map(n=>`<option ${e.scores[i]==n?'selected':''}>${n}</option>`).join('')}</select></div>`).join('')}</div><div class="grid2" style="margin-top:12px"><div><label>Evaluator Recommendation</label><select id="paperRecommendation">${opts([...gradeTeams(p.grade,p.grad),state.setup.notSelected],e.recommendation,'Select')}</select></div><div><label>Evaluator Notes</label><textarea id="paperNotes">${esc(e.notes)}</textarea></div></div><div class="actions" style="margin-top:12px"><button class="green" onclick="savePaperEvaluation()">Save Paper Evaluation</button></div></div>`;
+ paperEntryForm.innerHTML=`<div style="display:flex;gap:10px"><div class="avatar">${avatar(p)}</div><div><b>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</b><div class="small">${esc(p.grade)} / ${esc(p.grad)} · ${esc(p.court||'Unassigned Court')}</div></div></div><div class="grid5" style="margin-top:12px">${['Athleticism','Basketball Skill','Game IQ','Effort','Coachability'].map((x,i)=>`<div><label>${x}</label><select id="paperScore${i}"><option value="0">-</option>${[1,2,3,4,5].map(n=>`<option ${e.scores[i]==n?'selected':''}>${n}</option>`).join('')}</select></div>`).join('')}</div><div class="grid3" style="margin-top:12px"><div><label>Evaluator</label><select id="paperFormEvaluator">${state.setup.evaluators.map(x=>`<option ${x===evaluator?'selected':''}>${esc(x)}</option>`).join('')}</select></div><div><label>Evaluator Recommendation</label><select id="paperRecommendation">${opts([...gradeTeams(p.grade,p.grad),state.setup.notSelected],e.recommendation,'Select')}</select></div><div><label>Entered By</label><input id="paperFormEnteredBy" value="${esc(e.enteredBy||paperEntryEnteredBy.value||'Club Administrator')}"></div></div><div style="margin-top:12px"><label>Evaluator Notes</label><textarea id="paperNotes">${esc(e.notes)}</textarea></div><div class="actions" style="margin-top:12px"><button class="green" onclick="savePaperEvaluation()">Save Paper Evaluation</button></div>`;
 }
 function savePaperEvaluation(){
- let p=state.players.find(x=>x.id===paperEntryPlayer.value);if(!p)return;
- let evaluator=paperEntryEvaluator.value||'Paper Evaluator',e=ev(p.id,evaluator);
+ let p=state.players.find(x=>x.id===selectedPaperEntryPlayerId);if(!p)return;
+ let evaluator=paperFormEvaluator.value||p.evaluator||'Paper Evaluator';
+ let prior=paperEvaluationForPlayer(p);
+ if(prior&&prior[0]!==evaluator)delete state.evaluations[p.id][prior[0]];
+ let e=ev(p.id,evaluator);
  e.scores=[0,1,2,3,4].map(i=>+document.getElementById('paperScore'+i).value||0);
  e.recommendation=paperRecommendation.value;e.notes=paperNotes.value;e.source='Paper';
- e.enteredBy=paperEntryEnteredBy.value||'Club Administrator';e.enteredDate=new Date().toISOString().slice(0,10);
- p.evaluator=evaluator;save();renderAll();alert('Paper evaluation saved and added to Director Review.');
+ e.enteredBy=paperFormEnteredBy.value||paperEntryEnteredBy.value||'Club Administrator';
+ e.enteredDate=new Date().toISOString().slice(0,10);p.evaluator=evaluator;
+ save();renderAll();selectedPaperEntryPlayerId=p.id;renderPaperEntryForm();alert('Paper evaluation saved and added to Director Review.');
 }
 
 function renderPacket(){let a=state.players.filter(p=>p.checkedIn&&(!paperEvaluator.value||p.evaluator===paperEvaluator.value)&&(!paperGrade.value||p.grade===paperGrade.value)&&(!paperCourt.value||p.court===paperCourt.value));packetOutput.innerHTML=`<h2>${esc(state.setup.orgName)} Evaluation Packet</h2><p>Evaluator: ${esc(paperEvaluator.value||'All')} · Grade: ${esc(paperGrade.value||'All')} · Court: ${esc(paperCourt.value||'All')}</p><p class="note">5 Excellent · 4 Above Average · 3 Average · 2 Below Average · 1 Poor.</p><table><tr><th>Player</th><th>Athleticism</th><th>Skill</th><th>IQ</th><th>Effort</th><th>Coachability</th><th>Recommendation</th><th>Notes</th></tr>${a.map(p=>`<tr><td><b>${esc(p.id)}</b><br>${esc(p.first)} ${esc(p.last)}</td>${Array(5).fill('<td>○1 ○2 ○3 ○4 ○5</td>').join('')}<td>____________</td><td>____________________<br>____________________</td></tr>`).join('')}</table>`}
