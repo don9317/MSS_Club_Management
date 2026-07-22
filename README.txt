@@ -1,6 +1,4 @@
-MSS Club Management Suite Demo v0.21
+MSS Club Management Suite Demo v0.23
 
-Paper Score Entry now shows all checked-in players in a master list.
-Filter by grade, evaluator, and entry status.
-Select Enter Scores or Edit for any player.
-No-shows are excluded because they did not attend.
+Adds Tryout Sessions, offline payment receipts, team extensions, player transfers, fee adjustments, and team history.
+This is still a single-browser prototype; live multi-laptop sharing requires the production database.
