@@ -23,7 +23,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </style>
 </head>
 <body>
-<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.23 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, and Roster Activation</div></header>
+<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.24 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, and Roster Activation</div></header>
 <div class="wrap">
 <div class="tabs no-print">
 <button class="tab active" data-tab="setup">Setup</button>
@@ -180,7 +180,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </section>
 <section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div>
 <script>
-const KEY='mssClubDemoV023';
+const KEY='mssClubDemoV024';
 let state={
  setup:{orgName:'Oklahoma Swarm',season:'2026-27',eventName:'Oklahoma Swarm Tryouts',evalMethod:'Hybrid',courtCount:4,courts:['HIVE Court 1','HIVE Court 2','HIVE Court 3','HIVE Court 4'],teams:['Elite','Gold','Silver','Development'],notSelected:'Not Selected / Follow-Up',evaluators:['Coach Rob','','Coach Taylor','','Coach David','','Coach Julie',''],gradeTeams:{},offerTemplate:'Congratulations, {Player}! You have been offered a place on {Team}. Please respond by {Deadline}.',notSelectedTemplate:'Thank you for attending tryouts, {Player}. We would like to keep you informed about future opportunities.'},
  players:[],evaluations:{},offers:{},payments:[],directorReviews:{},directorName:'',checkinClosed:false,sessions:[],teamRecords:{},teamHistory:[],paymentPlans:[{id:'monthly',name:'Monthly',total:1800,deposit:300,installments:6},{id:'paidfull',name:'Paid in Full',total:1650,deposit:1650,installments:1}],placementsFinal:false
@@ -239,21 +239,37 @@ function toggleCheckinStatus(){
  }
  save();renderAll();
 }
-function checkIn(id){let p=state.players.find(x=>x.id===id);p.checkedIn=true;p.status='Checked In';if(!p.court){let ci=state.players.filter(x=>x.checkedIn),courts=state.setup.courts.slice(0,state.setup.courtCount);p.court=courts[(ci.length-1)%courts.length]}if(!p.evaluator){let ce=courtEvaluatorNames(p.court);p.evaluator=ce.length?ce[(state.players.filter(x=>x.checkedIn&&x.court===p.court).length-1)%ce.length]:(allEvaluators()[0]||'')}save();renderAll()}
+function checkIn(id){
+ let p=state.players.find(x=>x.id===id);
+ p.checkedIn=true;p.status='Checked In';
+ let courts=activeCourts();
+ if(!p.court&&courts.length){
+   let ci=state.players.filter(x=>x.checkedIn);
+   p.court=courts[(ci.length-1)%courts.length];
+ }
+ if(!p.evaluator){
+   let ce=courtEvaluatorNames(p.court);
+   p.evaluator=ce.length?ce[(state.players.filter(x=>x.checkedIn&&x.court===p.court).length-1)%ce.length]:(allEvaluators()[0]||'');
+ }
+ save();renderAll();
+}
 function undoCheckin(id){let p=state.players.find(x=>x.id===id);p.checkedIn=false;p.status='Registered';save();renderAll()}
 
 function setPlayer(id,k,v){let p=state.players.find(x=>x.id===id);p[k]=v;save();renderAll()}
-function autoBalance(){let a=state.players.filter(p=>p.checkedIn),courts=state.setup.courts.slice(0,state.setup.courtCount);a.forEach((p,i)=>{p.court=courts[i%courts.length];let ce=courtEvaluatorNames(p.court);p.evaluator=ce.length?ce[Math.floor(i/courts.length)%ce.length]:(allEvaluators()[0]||'')});save();renderAll()}
-function renderAssignments(){let a=state.players.filter(p=>p.checkedIn);assignmentTable.innerHTML='<table><tr><th>Player</th><th>Grade</th><th>Court</th><th>Evaluator</th></tr>'+a.map(p=>`<tr><td>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</td><td>${esc(p.grade)}</td><td><select onchange="setPlayer('${p.id}','court',this.value)">${opts(state.setup.courts.slice(0,state.setup.courtCount),p.court,'Unassigned')}</select></td><td><select onchange="setPlayer('${p.id}','evaluator',this.value)">${opts(allEvaluators(),p.evaluator,'Unassigned')}</select></td></tr>`).join('')+'</table>'}
-function ev(id,c){state.evaluations[id]??={};state.evaluations[id][c]??={scores:[0,0,0,0,0],recommendation:'',notes:''};return state.evaluations[id][c]}
-function renderCoach(){let a=state.players.filter(p=>p.checkedIn&&(!coachEvaluator.value||p.evaluator===coachEvaluator.value)&&(!coachGrade.value||p.grade===coachGrade.value)&&(!coachCourt.value||p.court===coachCourt.value));coachForm.innerHTML=a.map(p=>{let c=p.evaluator||'Evaluator',e=ev(p.id,c);return`<div class="card"><div style="display:flex;gap:10px"><div class="avatar">${avatar(p)}</div><div><b>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</b><div class="small">${esc(p.grade)} · ${esc(p.court)}</div></div></div><div class="grid5" style="margin-top:12px">${['Athleticism','Basketball Skill','Game IQ','Effort','Coachability'].map((x,i)=>`<div><label>${x}</label><select onchange="setScore('${p.id}','${esc(c)}',${i},this.value)"><option value="0">-</option>${[1,2,3,4,5].map(n=>`<option ${e.scores[i]==n?'selected':''}>${n}</option>`).join('')}</select></div>`).join('')}</div><div class="grid2" style="margin-top:12px"><div><label>Recommendation</label><select onchange="setRec('${p.id}','${esc(c)}',this.value)">${opts([...gradeTeams(p.grade,p.grad),state.setup.notSelected],e.recommendation,'Select')}</select></div><div><label>Evaluator Notes</label><textarea onchange="setNotes('${p.id}','${esc(c)}',this.value)">${esc(e.notes)}</textarea></div></div></div>`}).join('')||'<p class="note">No players assigned.</p>'}
-function setScore(id,c,i,v){ev(id,c).scores[i]=+v;save()}function setRec(id,c,v){ev(id,c).recommendation=v;save()}function setNotes(id,c,v){ev(id,c).notes=v;save()}
-
-
-let selectedPaperEntryPlayerId='';
-function paperEvaluationForPlayer(p){
- let entries=Object.entries(state.evaluations[p.id]||{}).filter(([_,e])=>e.source==='Paper');
- return entries.length?entries[0]:null;
+function autoBalance(){
+ let a=state.players.filter(p=>p.checkedIn),courts=activeCourts();
+ if(!courts.length)return alert('Please enter at least one court name in Setup.');
+ a.forEach((p,i)=>{
+   p.court=courts[i%courts.length];
+   let ce=courtEvaluatorNames(p.court);
+   p.evaluator=ce.length?ce[Math.floor(i/courts.length)%ce.length]:(allEvaluators()[0]||'');
+ });
+ save();renderAll();
+}
+function renderAssignments(){
+ let a=state.players.filter(p=>p.checkedIn),courts=activeCourts();
+ assignmentTable.innerHTML='<table><tr><th>Player</th><th>Grade</th><th>Court</th><th>Evaluator</th></tr>'+
+ a.map(p=>`<tr><td>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</td><td>${esc(p.grade)}</td><td><select onchange="setPlayer('${p.id}','court',this.value)">${opts(courts,p.court,'Unassigned')}</select></td><td><select onchange="setPlayer('${p.id}','evaluator',this.value)">${opts(allEvaluators(),p.evaluator,'Unassigned')}</select></td></tr>`).join('')+'</table>';
 }
 function renderPaperEntryPlayers(){
  let g=paperEntryGrade.value,status=paperEntryStatus.value,evaluator=paperEntryEvaluator.value;
