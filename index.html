@@ -23,7 +23,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </style>
 </head>
 <body>
-<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.25 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, and Roster Activation</div></header>
+<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.26 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, and Roster Activation</div></header>
 <div class="wrap">
 <div class="tabs no-print">
 <button class="tab active" data-tab="setup">Setup</button>
@@ -181,7 +181,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </section>
 <section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div>
 <script>
-const KEY='mssClubDemoV025';
+const KEY='mssClubDemoV026';
 let state={
  setup:{orgName:'Oklahoma Swarm',season:'2026-27',eventName:'Oklahoma Swarm Tryouts',evalMethod:'Hybrid',courtCount:4,courts:['HIVE Court 1','HIVE Court 2','HIVE Court 3','HIVE Court 4'],teams:['Elite','Gold','Silver','Development'],notSelected:'Not Selected / Follow-Up',evaluators:['Coach Rob','','Coach Taylor','','Coach David','','Coach Julie',''],gradeTeams:{},offerTemplate:'Congratulations, {Player}! You have been offered a place on {Team}. Please respond by {Deadline}.',notSelectedTemplate:'Thank you for attending tryouts, {Player}. We would like to keep you informed about future opportunities.'},
  players:[],evaluations:{},offers:{},payments:[],directorReviews:{},directorName:'',checkinClosed:false,sessions:[],teamRecords:{},teamHistory:[],paymentPlans:[{id:'monthly',name:'Monthly',total:1800,deposit:300,installments:6},{id:'paidfull',name:'Paid in Full',total:1650,deposit:1650,installments:1}],placementsFinal:false
@@ -201,9 +201,62 @@ function allEvaluators(){return (state.setup.evaluators||[]).filter(Boolean)}
 function activeCourts(){return (state.setup.courts||[]).slice(0,state.setup.courtCount).map(x=>(x||'').trim()).filter(Boolean)}
 function courtEvaluatorNames(courtName){let i=state.setup.courts.indexOf(courtName);return i<0?allEvaluators():[state.setup.evaluators[i*2],state.setup.evaluators[i*2+1]].filter(Boolean)}
 
+
 function sessionLabel(x){return `${x.name} — ${x.grade} — ${x.date||''} ${x.start||''}-${x.end||''}`}
-function addSession(){let courts=[...sessionCourts.selectedOptions].map(o=>o.value);if(!sessionName.value||!courts.length)return alert('Enter a session name and select at least one court.');let x={id:uid(),name:sessionName.value,date:sessionDate.value,start:sessionStart.value,end:sessionEnd.value,grade:sessionGrade.value,courts,eval1:sessionEval1.value.split(',').map(v=>v.trim()).filter(Boolean),eval2:sessionEval2.value.split(',').map(v=>v.trim()).filter(Boolean),notes:sessionNotes.value};state.sessions.push(x);state.players.filter(p=>p.grade===x.grade&&!p.sessionId).forEach(p=>p.sessionId=x.id);save();renderAll()}
-function deleteSession(id){if(confirm('Delete this session?')){state.sessions=state.sessions.filter(x=>x.id!==id);state.players.filter(p=>p.sessionId===id).forEach(p=>p.sessionId='');save();renderAll()}}
+function sameSessionGroup(a,b){
+ return a.grade===b.grade&&a.name===b.name&&(a.date||'')===(b.date||'')&&(a.start||'')===(b.start||'')&&(a.end||'')===(b.end||'');
+}
+function sessionGroupForPlayer(p){
+ let direct=state.sessions.find(x=>x.id===p.sessionId);
+ if(direct)return state.sessions.filter(x=>sameSessionGroup(x,direct));
+ return state.sessions.filter(x=>x.grade===p.grade);
+}
+function allowedCourtsForPlayer(p){
+ let group=sessionGroupForPlayer(p);
+ let courts=[...new Set(group.flatMap(x=>x.courts||[]).filter(Boolean))];
+ return courts.length?courts:activeCourts();
+}
+function sessionEvaluatorsForPlayerCourt(p,court){
+ let group=sessionGroupForPlayer(p);
+ for(let x of group){
+   let idx=(x.courts||[]).indexOf(court);
+   if(idx===0&&(x.eval1||[]).length)return x.eval1;
+   if(idx===1&&(x.eval2||[]).length)return x.eval2;
+ }
+ return courtEvaluatorNames(court);
+}
+function addSession(){
+ let courts=[...sessionCourts.selectedOptions].map(o=>o.value);
+ if(!sessionName.value||!courts.length)return alert('Enter a session name and select at least one court.');
+ let incoming={id:uid(),name:sessionName.value,date:sessionDate.value,start:sessionStart.value,end:sessionEnd.value,grade:sessionGrade.value,courts,eval1:sessionEval1.value.split(',').map(v=>v.trim()).filter(Boolean),eval2:sessionEval2.value.split(',').map(v=>v.trim()).filter(Boolean),notes:sessionNotes.value};
+ let existing=state.sessions.find(x=>sameSessionGroup(x,incoming));
+ if(existing){
+   existing.courts=[...new Set([...(existing.courts||[]),...courts])];
+   if(incoming.eval1.length)existing.eval1=incoming.eval1;
+   if(incoming.eval2.length)existing.eval2=incoming.eval2;
+   if(incoming.notes)existing.notes=incoming.notes;
+ }else{
+   state.sessions.push(incoming);
+   existing=incoming;
+ }
+ state.players.filter(p=>p.grade===existing.grade).forEach(p=>{
+   p.sessionId=existing.id;
+   if(p.court&&!allowedCourtsForPlayer(p).includes(p.court)){p.court='';p.evaluator=''}
+ });
+ save();renderAll();
+}
+function deleteSession(id){
+ if(confirm('Delete this session?')){
+   let removed=state.sessions.find(x=>x.id===id);
+   state.sessions=state.sessions.filter(x=>x.id!==id);
+   state.players.filter(p=>p.sessionId===id).forEach(p=>{
+     let replacement=state.sessions.find(x=>removed&&x.grade===removed.grade);
+     p.sessionId=replacement?.id||'';
+     if(p.court&&!allowedCourtsForPlayer(p).includes(p.court)){p.court='';p.evaluator=''}
+   });
+   save();renderAll();
+ }
+}
 function renderSessions(){
  let courtsEl=$("sessionCourts"),tableEl=$("sessionTable");
  if(!courtsEl||!tableEl)return;
@@ -249,33 +302,56 @@ function toggleCheckinStatus(){
 function checkIn(id){
  let p=state.players.find(x=>x.id===id);
  p.checkedIn=true;p.status='Checked In';
- let courts=activeCourts();
+ if(!p.sessionId){let se=state.sessions.find(x=>x.grade===p.grade);if(se)p.sessionId=se.id}
+ let courts=allowedCourtsForPlayer(p);
  if(!p.court&&courts.length){
-   let ci=state.players.filter(x=>x.checkedIn);
-   p.court=courts[(ci.length-1)%courts.length];
+   let peers=state.players.filter(x=>x.checkedIn&&x.grade===p.grade);
+   p.court=courts[(peers.length-1)%courts.length];
  }
  if(!p.evaluator){
-   let ce=courtEvaluatorNames(p.court);
+   let ce=sessionEvaluatorsForPlayerCourt(p,p.court);
    p.evaluator=ce.length?ce[(state.players.filter(x=>x.checkedIn&&x.court===p.court).length-1)%ce.length]:(allEvaluators()[0]||'');
  }
  save();renderAll();
 }
 function undoCheckin(id){let p=state.players.find(x=>x.id===id);p.checkedIn=false;p.status='Registered';save();renderAll()}
 
-function setPlayer(id,k,v){let p=state.players.find(x=>x.id===id);p[k]=v;save();renderAll()}
+function setPlayer(id,k,v){
+ let p=state.players.find(x=>x.id===id);
+ p[k]=v;
+ if(k==='court'){
+   let evals=sessionEvaluatorsForPlayerCourt(p,v);
+   if(!evals.includes(p.evaluator))p.evaluator=evals[0]||'';
+ }
+ save();renderAll();
+}
 function autoBalance(){
- let a=state.players.filter(p=>p.checkedIn),courts=activeCourts();
- if(!courts.length)return alert('Please enter at least one court name in Setup.');
- a.forEach((p,i)=>{
-   p.court=courts[i%courts.length];
-   let ce=courtEvaluatorNames(p.court);
-   p.evaluator=ce.length?ce[Math.floor(i/courts.length)%ce.length]:(allEvaluators()[0]||'');
+ let checked=state.players.filter(p=>p.checkedIn);
+ if(!checked.length)return;
+ let groups={};
+ checked.forEach(p=>{
+   let key=p.sessionId||`grade:${p.grade}`;
+   (groups[key]??=[]).push(p);
+ });
+ Object.values(groups).forEach(players=>{
+   players.forEach((p,i)=>{
+     let courts=allowedCourtsForPlayer(p);
+     if(!courts.length)return;
+     p.court=courts[i%courts.length];
+     let ce=sessionEvaluatorsForPlayerCourt(p,p.court);
+     p.evaluator=ce.length?ce[Math.floor(i/courts.length)%ce.length]:(allEvaluators()[0]||'');
+   });
  });
  save();renderAll();
 }
 function renderAssignments(){
- let a=state.players.filter(p=>p.checkedIn),courts=activeCourts();
- assignmentTable.innerHTML='<table><tr><th>Player</th><th>Grade</th><th>Court</th><th>Evaluator</th></tr>'+a.map(p=>`<tr><td>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</td><td>${esc(p.grade)}</td><td><select onchange="setPlayer('${p.id}','court',this.value)">${opts(courts,p.court,'Unassigned')}</select></td><td><select onchange="setPlayer('${p.id}','evaluator',this.value)">${opts(allEvaluators(),p.evaluator,'Unassigned')}</select></td></tr>`).join('')+'</table>';
+ let a=state.players.filter(p=>p.checkedIn);
+ assignmentTable.innerHTML='<table><tr><th>Player</th><th>Grade</th><th>Session</th><th>Court</th><th>Evaluator</th></tr>'+a.map(p=>{
+   let courts=allowedCourtsForPlayer(p),session=state.sessions.find(x=>x.id===p.sessionId);
+   if(p.court&&!courts.includes(p.court)){p.court='';p.evaluator=''}
+   let evals=p.court?sessionEvaluatorsForPlayerCourt(p,p.court):allEvaluators();
+   return `<tr><td>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</td><td>${esc(p.grade)}</td><td>${esc(session?.name||'Not Assigned')}</td><td><select onchange="setPlayer('${p.id}','court',this.value)">${opts(courts,p.court,'Unassigned')}</select></td><td><select onchange="setPlayer('${p.id}','evaluator',this.value)">${opts(evals,p.evaluator,'Unassigned')}</select></td></tr>`;
+ }).join('')+'</table>';
 }
 function renderPaperEntryPlayers(){
  let g=paperEntryGrade.value,status=paperEntryStatus.value,evaluator=paperEntryEvaluator.value;
