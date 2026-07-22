@@ -23,10 +23,11 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </style>
 </head>
 <body>
-<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.24 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, and Roster Activation</div></header>
+<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.25 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, and Roster Activation</div></header>
 <div class="wrap">
 <div class="tabs no-print">
 <button class="tab active" data-tab="setup">Setup</button>
+<button class="tab" data-tab="sessions">Tryout Sessions</button>
 <button class="tab" data-tab="registrations">Registrations</button>
 <button class="tab" data-tab="checkin">Check-In</button>
 <button class="tab" data-tab="assignments">Assignments</button>
@@ -180,7 +181,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </section>
 <section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div>
 <script>
-const KEY='mssClubDemoV024';
+const KEY='mssClubDemoV025';
 let state={
  setup:{orgName:'Oklahoma Swarm',season:'2026-27',eventName:'Oklahoma Swarm Tryouts',evalMethod:'Hybrid',courtCount:4,courts:['HIVE Court 1','HIVE Court 2','HIVE Court 3','HIVE Court 4'],teams:['Elite','Gold','Silver','Development'],notSelected:'Not Selected / Follow-Up',evaluators:['Coach Rob','','Coach Taylor','','Coach David','','Coach Julie',''],gradeTeams:{},offerTemplate:'Congratulations, {Player}! You have been offered a place on {Team}. Please respond by {Deadline}.',notSelectedTemplate:'Thank you for attending tryouts, {Player}. We would like to keep you informed about future opportunities.'},
  players:[],evaluations:{},offers:{},payments:[],directorReviews:{},directorName:'',checkinClosed:false,sessions:[],teamRecords:{},teamHistory:[],paymentPlans:[{id:'monthly',name:'Monthly',total:1800,deposit:300,installments:6},{id:'paidfull',name:'Paid in Full',total:1650,deposit:1650,installments:1}],placementsFinal:false
@@ -197,12 +198,18 @@ function renderSetupSummary(){gradeTeamSummary.innerHTML='<table><tr><th>Grade</
 function gradeTeams(g,y){return state.setup.gradeTeams[g+'|'+y]||state.setup.teams}
 function opts(a,v='',label='All'){return`<option value="">${label}</option>`+a.map(x=>`<option ${x===v?'selected':''}>${esc(x)}</option>`).join('')}
 function allEvaluators(){return (state.setup.evaluators||[]).filter(Boolean)}
+function activeCourts(){return (state.setup.courts||[]).slice(0,state.setup.courtCount).map(x=>(x||'').trim()).filter(Boolean)}
 function courtEvaluatorNames(courtName){let i=state.setup.courts.indexOf(courtName);return i<0?allEvaluators():[state.setup.evaluators[i*2],state.setup.evaluators[i*2+1]].filter(Boolean)}
 
 function sessionLabel(x){return `${x.name} — ${x.grade} — ${x.date||''} ${x.start||''}-${x.end||''}`}
 function addSession(){let courts=[...sessionCourts.selectedOptions].map(o=>o.value);if(!sessionName.value||!courts.length)return alert('Enter a session name and select at least one court.');let x={id:uid(),name:sessionName.value,date:sessionDate.value,start:sessionStart.value,end:sessionEnd.value,grade:sessionGrade.value,courts,eval1:sessionEval1.value.split(',').map(v=>v.trim()).filter(Boolean),eval2:sessionEval2.value.split(',').map(v=>v.trim()).filter(Boolean),notes:sessionNotes.value};state.sessions.push(x);state.players.filter(p=>p.grade===x.grade&&!p.sessionId).forEach(p=>p.sessionId=x.id);save();renderAll()}
 function deleteSession(id){if(confirm('Delete this session?')){state.sessions=state.sessions.filter(x=>x.id!==id);state.players.filter(p=>p.sessionId===id).forEach(p=>p.sessionId='');save();renderAll()}}
-function renderSessions(){sessionCourts.innerHTML=state.setup.courts.slice(0,state.setup.courtCount).map(c=>`<option>${esc(c)}</option>`).join('');sessionTable.innerHTML='<table><tr><th>Session</th><th>Date/Time</th><th>Grade</th><th>Courts</th><th>Evaluators</th><th></th></tr>'+state.sessions.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.date)} ${esc(x.start)}-${esc(x.end)}</td><td>${esc(x.grade)}</td><td>${esc(x.courts.join(', '))}</td><td>${esc([...(x.eval1||[]),...(x.eval2||[])].join(', '))}</td><td><button class="red" onclick="deleteSession('${x.id}')">Delete</button></td></tr>`).join('')+'</table>'}
+function renderSessions(){
+ let courtsEl=$("sessionCourts"),tableEl=$("sessionTable");
+ if(!courtsEl||!tableEl)return;
+ courtsEl.innerHTML=activeCourts().map(c=>`<option>${esc(c)}</option>`).join('');
+ tableEl.innerHTML='<table><tr><th>Session</th><th>Date/Time</th><th>Grade</th><th>Courts</th><th>Evaluators</th><th></th></tr>'+state.sessions.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.date)} ${esc(x.start)}-${esc(x.end)}</td><td>${esc(x.grade)}</td><td>${esc((x.courts||[]).join(', '))}</td><td>${esc([...(x.eval1||[]),...(x.eval2||[])].join(', '))}</td><td><button class="red" onclick="deleteSession('${x.id}')">Delete</button></td></tr>`).join('')+'</table>';
+}
 function isOfflineMethod(m){return ['Cash','Check','Invoice','External Payment','Other'].includes(m)}
 function recordOfflinePaymentAndReceipt(){if(!isOfflineMethod(paymentMethod.value))return alert('Choose Cash, Check, Invoice, External Payment, or Other.');recordPayment();let t=state.payments[state.payments.length-1];if(t)generateReceipt(t)}
 function generateReceipt(t){let p=state.players.find(x=>x.id===t.playerId);receiptPreview.innerHTML=`<div id="printableReceipt"><h2>${esc(state.setup.orgName||'Club')} Payment Receipt</h2><p><b>Receipt:</b> ${esc(t.id)}</p><p><b>Date:</b> ${esc(t.date)}</p><p><b>Player:</b> ${esc(p?`${p.first} ${p.last}`:'')}</p><p><b>Team:</b> ${esc(p?.team||'')}</p><p><b>Amount:</b> ${money(t.amount)}</p><p><b>Method:</b> ${esc(t.method)}</p><p><b>Reference:</b> ${esc(t.reference||'-')}</p><p><b>Received By:</b> ${esc(t.enteredBy||'')}</p><button onclick="printReceipt()">Print Receipt</button></div>`}
@@ -225,7 +232,7 @@ function renderCheckin(){
  checkinToggleButton.textContent=state.checkinClosed?'Reopen Check-In':'Close Check-In';
  checkinToggleButton.className=state.checkinClosed?'green':'amber';
  checkinMetrics.innerHTML=`<div class="metric">Registered<b>${state.players.length}</b></div><div class="metric">Checked In<b>${ci}</b></div><div class="metric">${state.checkinClosed?'Awaiting Check-In':'Awaiting Check-In'}<b>${awaiting}</b></div><div class="metric">No-Shows<b>${ns}</b></div>`;
- checkinTable.innerHTML='<table><tr><th>Player</th><th>Grade</th><th>Status</th><th>Court</th><th>Evaluator</th><th>Action</th></tr>'+a.map(p=>`<tr><td><b>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</b></td><td>${esc(p.grade)}</td><td>${esc(p.status)}</td><td><select onchange="setPlayer('${p.id}','court',this.value)">${opts(state.setup.courts.slice(0,state.setup.courtCount),p.court,'Unassigned')}</select></td><td><select onchange="setPlayer('${p.id}','evaluator',this.value)">${opts(allEvaluators(),p.evaluator,'Unassigned')}</select></td><td>${p.checkedIn?`<button class="light" onclick="undoCheckin('${p.id}')">Undo</button>`:`<button class="green" onclick="checkIn('${p.id}')">Check In</button>`}</td></tr>`).join('')+'</table>';
+ checkinTable.innerHTML='<table><tr><th>Player</th><th>Grade</th><th>Status</th><th>Court</th><th>Evaluator</th><th>Action</th></tr>'+a.map(p=>`<tr><td><b>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</b></td><td>${esc(p.grade)}</td><td>${esc(p.status)}</td><td><select onchange="setPlayer('${p.id}','court',this.value)">${opts(activeCourts(),p.court,'Unassigned')}</select></td><td><select onchange="setPlayer('${p.id}','evaluator',this.value)">${opts(allEvaluators(),p.evaluator,'Unassigned')}</select></td><td>${p.checkedIn?`<button class="light" onclick="undoCheckin('${p.id}')">Undo</button>`:`<button class="green" onclick="checkIn('${p.id}')">Check In</button>`}</td></tr>`).join('')+'</table>';
 }
 function toggleCheckinStatus(){
  if(!state.checkinClosed){
@@ -268,8 +275,7 @@ function autoBalance(){
 }
 function renderAssignments(){
  let a=state.players.filter(p=>p.checkedIn),courts=activeCourts();
- assignmentTable.innerHTML='<table><tr><th>Player</th><th>Grade</th><th>Court</th><th>Evaluator</th></tr>'+
- a.map(p=>`<tr><td>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</td><td>${esc(p.grade)}</td><td><select onchange="setPlayer('${p.id}','court',this.value)">${opts(courts,p.court,'Unassigned')}</select></td><td><select onchange="setPlayer('${p.id}','evaluator',this.value)">${opts(allEvaluators(),p.evaluator,'Unassigned')}</select></td></tr>`).join('')+'</table>';
+ assignmentTable.innerHTML='<table><tr><th>Player</th><th>Grade</th><th>Court</th><th>Evaluator</th></tr>'+a.map(p=>`<tr><td>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</td><td>${esc(p.grade)}</td><td><select onchange="setPlayer('${p.id}','court',this.value)">${opts(courts,p.court,'Unassigned')}</select></td><td><select onchange="setPlayer('${p.id}','evaluator',this.value)">${opts(allEvaluators(),p.evaluator,'Unassigned')}</select></td></tr>`).join('')+'</table>';
 }
 function renderPaperEntryPlayers(){
  let g=paperEntryGrade.value,status=paperEntryStatus.value,evaluator=paperEntryEvaluator.value;
@@ -387,7 +393,10 @@ function exportCommunications(){let rows=[['Player','Parent Email','Parent Phone
 function exportPlayers(){let rows=[['Player ID','First Name','Last Name','Grade','Graduation Year','Parent Email','Parent Phone','Status','Court','Evaluator','Team','Offer Status','Payment Plan','Deposit Paid','Roster Status'],...state.players.map(p=>[p.id,p.first,p.last,p.grade,p.grad,p.email,p.phone,p.status,p.court,p.evaluator,p.team,p.offerStatus,state.paymentPlans.find(x=>x.id===p.paymentPlanId)?.name||'',p.depositPaid,p.rosterStatus])];downloadCSV('MSS_Club_Players.csv',rows)}
 function downloadCSV(name,rows){let text=rows.map(r=>r.map(x=>{x=String(x??'');return /[",\n]/.test(x)?`"${x.replace(/"/g,'""')}"`:x}).join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'text/csv'}));a.download=name;a.click()}
 csvFile.onchange=()=>{let f=csvFile.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{let lines=r.result.split(/\r?\n/).filter(Boolean),h=lines.shift().split(',').map(x=>x.trim().toLowerCase());for(let line of lines){let a=line.split(','),get=n=>a[h.indexOf(n)]||'';state.players.push({id:get('player id')||uid(),first:get('first name'),last:get('last name'),grade:get('grade'),grad:get('graduation year'),email:get('parent email'),phone:get('parent phone'),photo:get('headshot url'),status:'Registered',checkedIn:false,court:'',evaluator:'',team:'',offerStatus:'Not Created',paymentPlanId:'',depositPaid:false,rosterStatus:'Not Active',sessionId:''})}save();renderAll()};r.readAsText(f)}
-function renderAll(){fillSelects();renderSessions();renderSetupSummary();renderRegistrations();renderCheckin();renderAssignments();renderCoach();renderPaperEntryPlayers();renderPacket();renderReview();renderBoard();renderOffers();renderParentPortal();renderPlans();renderPayments();renderActivation();renderTeamAdmin()}
+function safeRender(name,fn){try{fn()}catch(e){console.error(name,e)}}
+function renderAll(){
+ safeRender('fillSelects',fillSelects);safeRender('renderSessions',renderSessions);safeRender('renderSetupSummary',renderSetupSummary);safeRender('renderRegistrations',renderRegistrations);safeRender('renderCheckin',renderCheckin);safeRender('renderAssignments',renderAssignments);safeRender('renderCoach',renderCoach);safeRender('renderPaperEntryPlayers',renderPaperEntryPlayers);safeRender('renderPacket',renderPacket);safeRender('renderReview',renderReview);safeRender('renderBoard',renderBoard);safeRender('renderOffers',renderOffers);safeRender('renderParentPortal',renderParentPortal);safeRender('renderPlans',renderPlans);safeRender('renderPayments',renderPayments);safeRender('renderActivation',renderActivation);safeRender('renderTeamAdmin',renderTeamAdmin);
+}
 load();
 </script>
 </body></html>

@@ -1,9 +1,7 @@
-MSS Club Management Suite Demo v0.24
+MSS Club Management Suite Demo v0.25
 
 FIXED
-- Auto-Balance now uses only named courts.
-- Blank court setup slots are ignored.
-- Checked-in players will no longer be assigned to an unnamed Court 3 or Court 4.
-- Assignment dropdowns show only valid named courts.
-
-The issue in v0.23 occurred when Court Count was set higher than the number of court names entered.
+- Restored the Tryout Sessions tab.
+- Fixed a JavaScript error that could stop the registration list and demo-player generator from rendering.
+- Added module-level error isolation so one screen cannot prevent other screens from loading.
+- Assignment and Check-In court lists now ignore unnamed court slots.
