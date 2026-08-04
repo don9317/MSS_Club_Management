@@ -20,13 +20,27 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 .badge{display:inline-block;border-radius:999px;padding:4px 8px;background:#eef4ff;color:#1849a9;font-size:12px;font-weight:700}.success{background:#ecfdf3;color:#067647}.warn{background:#fff4e5;color:#b54708}.danger{background:#fee4e2;color:#b42318}
 @media(max-width:1100px){.grid5,.grid6,.metricrow,.board{grid-template-columns:repeat(2,1fr)}}@media(max-width:650px){.grid2,.grid3,.grid4,.grid5,.grid6,.metricrow,.board{grid-template-columns:1fr}}
 @media print{header,.tabs,.no-print,button,input,select,textarea{display:none!important}.section{display:none!important}.section.print-target{display:block!important}.card{box-shadow:none;border:0}}
+
+.workflow-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.workflow-tile{background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px;cursor:pointer}
+.workflow-tile h3{margin:0 0 8px}
+.workflow-progress{height:14px;background:#e6edf5;border-radius:999px;overflow:hidden}
+.workflow-progress div{height:100%;background:var(--green)}
+.stepbar{display:flex;gap:6px;overflow-x:auto;padding:8px 0 14px}
+.stepchip{white-space:nowrap;padding:7px 10px;border-radius:999px;background:#e6edf5;color:var(--navy);font-size:12px;font-weight:700}
+.stepchip.active{background:var(--navy);color:#fff}
+.workflow-footer{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.helpbox{display:none}.helpbox.open{display:block}
+.version-footer{text-align:center;color:var(--muted);font-size:12px;padding:24px}
+.alert-item{background:#fff4e5;border:1px solid #f6d59b;border-radius:10px;padding:10px;margin:7px 0;cursor:pointer}
+@media(max-width:1000px){.workflow-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.workflow-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.26 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, and Roster Activation</div></header>
+<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.27 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, and Roster Activation</div></header>
 <div class="wrap">
 <div class="tabs no-print">
-<button class="tab active" data-tab="setup">Setup</button>
+<button class="tab active" data-tab="workflow">Workflow Dashboard</button><button class="tab" data-tab="setup">Setup</button>
 <button class="tab" data-tab="sessions">Tryout Sessions</button>
 <button class="tab" data-tab="registrations">Registrations</button>
 <button class="tab" data-tab="checkin">Check-In</button>
@@ -35,7 +49,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 <button class="tab" data-tab="paper">Paper Packets</button>
 <button class="tab" data-tab="paperentry">Paper Score Entry</button>
 <button class="tab" data-tab="review">Director Review</button>
-<button class="tab" data-tab="board">Big Board</button>
+<button class="tab" data-tab="board">Team Placement</button>
 <button class="tab" data-tab="offers">Offers & Communication</button>
 <button class="tab" data-tab="parent">Parent Response</button>
 <button class="tab" data-tab="plans">Payment Plans</button>
@@ -43,7 +57,17 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 <button class="tab" data-tab="activation">Roster Activation</button><button class="tab" data-tab="teamadmin">Team Administration</button>
 </div>
 
-<section id="setup" class="section active">
+
+<section id="workflow" class="section active">
+<div class="card">
+<div class="grid3"><div><div class="small">Organization</div><h2 id="wfOrg"></h2></div><div><div class="small">Season</div><h2 id="wfSeason"></h2></div><div><div class="small">Event</div><h2 id="wfEvent"></h2></div></div>
+<div><div style="display:flex;justify-content:space-between"><b>Overall Progress</b><span id="wfPercent"></span></div><div class="workflow-progress"><div id="wfProgressBar"></div></div></div>
+</div>
+<div id="wfMetrics" class="metricrow"></div>
+<div class="card"><h2>Workflow</h2><div id="workflowTiles" class="workflow-grid"></div></div>
+<div class="card"><h2>Attention Required</h2><div id="workflowAlerts"></div></div>
+</section>
+<section id="setup" class="section">
 <div class="card"><h2>Organization & Tryout Setup</h2><div class="grid4"><div><label>Organization</label><input id="orgName"></div><div><label>Season</label><input id="season"></div><div><label>Event</label><input id="eventName"></div><div><label>Evaluation Method</label><select id="evalMethod"><option>Paper</option><option>Tablet</option><option>Hybrid</option></select></div></div></div>
 <div class="card"><h2>Courts, Teams, and Evaluators</h2>
 <div class="grid5"><div><label>Active Courts</label><select id="courtCount"><option>1</option><option>2</option><option>3</option><option>4</option></select></div><div><label>Court 1</label><input id="court1"></div><div><label>Court 2</label><input id="court2"></div><div><label>Court 3</label><input id="court3"></div><div><label>Court 4</label><input id="court4"></div></div>
@@ -114,7 +138,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </section>
 
 <section id="board" class="section">
-<div class="card"><h2>Big Board / Placement</h2>
+<div class="card"><h2>Team Placement</h2><h3>Big Board</h3>
 <p class="note">Players begin in All Evaluated / Unplaced. Use the recommendation button to sort them automatically, then drag players between columns as the director finalizes teams.</p>
 <div class="grid4">
 <div><label>Grade</label><select id="boardGrade" onchange="renderBoard()"></select></div>
@@ -179,18 +203,65 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 <div id="activationMetrics" class="metricrow"></div>
 <div class="card"><h2>Roster Activation</h2><p class="note">A player becomes active after accepting the offer, selecting a plan, and completing the deposit/first payment.</p><div id="activationTable"></div></div>
 </section>
-<section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div>
-<script>
-const KEY='mssClubDemoV026';
+<section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div class="version-footer">My Sport Space Club Management Suite · Version 0.27 · Prototype</div><script>
+const KEY='mssClubDemoV027';
 let state={
  setup:{orgName:'Oklahoma Swarm',season:'2026-27',eventName:'Oklahoma Swarm Tryouts',evalMethod:'Hybrid',courtCount:4,courts:['HIVE Court 1','HIVE Court 2','HIVE Court 3','HIVE Court 4'],teams:['Elite','Gold','Silver','Development'],notSelected:'Not Selected / Follow-Up',evaluators:['Coach Rob','','Coach Taylor','','Coach David','','Coach Julie',''],gradeTeams:{},offerTemplate:'Congratulations, {Player}! You have been offered a place on {Team}. Please respond by {Deadline}.',notSelectedTemplate:'Thank you for attending tryouts, {Player}. We would like to keep you informed about future opportunities.'},
  players:[],evaluations:{},offers:{},payments:[],directorReviews:{},directorName:'',checkinClosed:false,sessions:[],teamRecords:{},teamHistory:[],paymentPlans:[{id:'monthly',name:'Monthly',total:1800,deposit:300,installments:6},{id:'paidfull',name:'Paid in Full',total:1650,deposit:1650,installments:1}],placementsFinal:false
 };
+
+const WORKFLOW=[
+['workflow','Dashboard'],['setup','Setup'],['sessions','Tryout Sessions'],['registrations','Registrations'],['checkin','Check-In'],['assignments','Assignments'],['coach','Coach Evaluations'],['paper','Paper Packets'],['paperentry','Paper Score Entry'],['review','Director Review'],['board','Team Placement'],['offers','Parent Communication'],['parent','Parent Response'],['plans','Payment Plans'],['payments','Payments'],['activation','Roster Activation'],['teamadmin','Team Administration']
+];
+let currentSection='workflow';
+function wfIndex(id){return WORKFLOW.findIndex(x=>x[0]===id)}
+function addPageFooter(id){
+ let sec=document.getElementById(id); if(!sec||sec.querySelector('.workflow-footer'))return;
+ let i=wfIndex(id),prev=WORKFLOW[i-1],next=WORKFLOW[i+1];
+ let f=document.createElement('div');f.className='card workflow-footer no-print';
+ f.innerHTML=`<div>${prev?`<button class="light" onclick="showTab('${prev[0]}')">◀ ${prev[1]}</button>`:''}</div><div class="actions"><button class="light" onclick="document.getElementById('help-${id}').classList.toggle('open')">? Help</button>${next?`<button onclick="showTab('${next[0]}')">${next[1]} ▶</button>`:''}</div>`;
+ sec.appendChild(f);
+ let h=document.createElement('div');h.id='help-'+id;h.className='card helpbox no-print';h.innerHTML=`<b>${WORKFLOW[i][1]}</b><p class="note">Complete this step, then use Next Step to continue through the tryout workflow.</p>`;sec.appendChild(h);
+}
+function renderStepBar(){let i=wfIndex(currentSection);stepBar.innerHTML=WORKFLOW.map((x,n)=>`<span class="stepchip ${n===i?'active':''}">${n+1}. ${x[1]}</span>`).join('')}
+function evaluated(p){return Object.values(state.evaluations[p.id]||{}).some(e=>e.scores?.every(v=>+v>0))}
+function reviewed(p){return state.directorReviews?.[p.id]?.status==='Reviewed'}
+function stepStatus(id){
+ let total=state.players.length,checked=state.players.filter(p=>p.checkedIn).length,assigned=state.players.filter(p=>p.checkedIn&&p.court&&p.evaluator).length,ev=state.players.filter(evaluated).length,rv=state.players.filter(reviewed).length;
+ if(id==='setup')return [state.setup.orgName&&state.setup.eventName?'Complete':'In Progress',state.setup.orgName||'Not configured'];
+ if(id==='sessions')return [state.sessions.length?'Complete':'Not Started',`${state.sessions.length} configured`];
+ if(id==='registrations')return [total?'Complete':'Not Started',`${total} players`];
+ if(id==='checkin')return [checked===total&&total?'Complete':checked?'In Progress':'Not Started',`${checked}/${total}`];
+ if(id==='assignments')return [assigned===checked&&checked?'Complete':assigned?'In Progress':'Not Started',`${assigned}/${checked}`];
+ if(['coach','paper','paperentry'].includes(id))return [ev===checked&&checked?'Complete':ev?'In Progress':'Not Started',`${ev}/${checked}`];
+ if(id==='review')return [rv===checked&&checked?'Complete':rv?'In Progress':'Not Started',`${rv}/${checked}`];
+ if(id==='board')return [state.placementsFinal?'Complete':state.players.some(p=>p.team)?'In Progress':'Not Started',state.placementsFinal?'Finalized':''];
+ if(id==='offers')return [Object.keys(state.offers||{}).length?'In Progress':'Not Started',`${Object.keys(state.offers||{}).length} offers/messages`];
+ if(id==='parent')return [state.players.some(p=>state.offers?.[p.id]?.status==='Accepted')?'In Progress':'Not Started',''];
+ if(id==='plans')return [state.players.some(p=>p.paymentPlanId)?'In Progress':'Not Started',''];
+ if(id==='payments')return [(state.payments||[]).length?'In Progress':'Not Started',`${(state.payments||[]).length} transactions`];
+ if(id==='activation')return [state.players.some(p=>p.rosterStatus==='Active')?'In Progress':'Not Started',''];
+ if(id==='teamadmin')return [(state.teamHistory||[]).length?'In Progress':'Not Started',''];
+ return ['Available',''];
+}
+function renderWorkflow(){
+ if(!document.getElementById('workflowTiles'))return;
+ wfOrg.textContent=state.setup.orgName||'Not set';wfSeason.textContent=state.setup.season||'Not set';wfEvent.textContent=state.setup.eventName||'Not set';
+ let total=state.players.length,checked=state.players.filter(p=>p.checkedIn).length,noShows=state.players.filter(p=>p.status==='No-Show').length,ev=state.players.filter(evaluated).length,rv=state.players.filter(reviewed).length,active=state.players.filter(p=>p.rosterStatus==='Active').length;
+ wfMetrics.innerHTML=`<div class="metric">Registered<b>${total}</b></div><div class="metric">Checked In<b>${checked}</b></div><div class="metric">No-Shows<b>${noShows}</b></div><div class="metric">Evaluated<b>${ev}</b></div><div class="metric">Reviewed<b>${rv}</b></div><div class="metric">Active<b>${active}</b></div>`;
+ let items=WORKFLOW.slice(1).map(x=>[x[0],x[1],...stepStatus(x[0])]),complete=items.filter(x=>x[2]==='Complete').length,pct=Math.round(complete/items.length*100);
+ wfPercent.textContent=pct+'%';wfProgressBar.style.width=pct+'%';
+ workflowTiles.innerHTML=items.map(x=>`<div class="workflow-tile" onclick="showTab('${x[0]}')"><h3>${x[1]}</h3><span class="badge ${x[2]==='Complete'?'success':x[2]==='In Progress'?'warn':''}">${x[2]}</span><div class="small" style="margin-top:7px">${x[3]}</div></div>`).join('');
+ let alerts=[],ua=state.players.filter(p=>p.checkedIn&&(!p.court||!p.evaluator)).length,me=state.players.filter(p=>p.checkedIn&&!evaluated(p)).length,mr=state.players.filter(p=>p.checkedIn&&!reviewed(p)).length;
+ if(ua)alerts.push([`${ua} players need assignments`,'assignments']);if(me)alerts.push([`${me} evaluations are incomplete`,'coach']);if(mr)alerts.push([`${mr} players await Director Review`,'review']);
+ workflowAlerts.innerHTML=alerts.length?alerts.map(a=>`<div class="alert-item" onclick="showTab('${a[1]}')">⚠ ${a[0]}</div>`).join(''):'<span class="badge success">No urgent items</span>';
+}
+
 const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),uid=()=>Math.random().toString(36).slice(2,9);
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
-function showTab(id){document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');document.querySelector(`[data-tab="${id}"]`).classList.add('active');renderAll()}
+function showTab(id){currentSection=id;document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');let t=document.querySelector(`[data-tab="${id}"]`);if(t)t.classList.add('active');renderStepBar();renderAll();window.scrollTo(0,0)}
 function save(){readSetup();localStorage.setItem(KEY,JSON.stringify(state))}
-function load(){let x=localStorage.getItem(KEY);if(x)try{state=JSON.parse(x)}catch(e){} state.payments??=[];state.paymentPlans??=[];state.players??=[];state.directorReviews??={};state.directorName??='';state.checkinClosed??=false;state.sessions??=[];state.teamRecords??={};state.teamHistory??=[];bindSetup();if(!state.players.length){generate150();return}renderAll()}
+function load(){currentSection='workflow';let x=localStorage.getItem(KEY);if(x)try{state=JSON.parse(x)}catch(e){} state.payments??=[];state.paymentPlans??=[];state.players??=[];state.directorReviews??={};state.directorName??='';state.checkinClosed??=false;state.sessions??=[];state.teamRecords??={};state.teamHistory??=[];bindSetup();if(!state.players.length){generate150();return}renderAll()}
 function readSetup(){state.setup.orgName=orgName.value;state.setup.season=season.value;state.setup.eventName=eventName.value;state.setup.evalMethod=evalMethod.value;state.setup.courtCount=+courtCount.value;state.setup.courts=[court1.value,court2.value,court3.value,court4.value];state.setup.teams=[teamA.value,teamB.value,teamC.value,teamD.value];state.setup.notSelected=notSelectedLabel.value;state.setup.evaluators=[eval1a.value,eval1b.value,eval2a.value,eval2b.value,eval3a.value,eval3b.value,eval4a.value,eval4b.value];state.setup.offerTemplate=offerTemplate.value;state.setup.notSelectedTemplate=notSelectedTemplate.value}
 function bindSetup(){orgName.value=state.setup.orgName;season.value=state.setup.season;eventName.value=state.setup.eventName;evalMethod.value=state.setup.evalMethod;courtCount.value=state.setup.courtCount;[court1,court2,court3,court4].forEach((e,i)=>e.value=state.setup.courts[i]||'');[teamA,teamB,teamC,teamD].forEach((e,i)=>e.value=state.setup.teams[i]||'');notSelectedLabel.value=state.setup.notSelected;[eval1a,eval1b,eval2a,eval2b,eval3a,eval3b,eval4a,eval4b].forEach((e,i)=>e.value=state.setup.evaluators[i]||'');offerTemplate.value=state.setup.offerTemplate;notSelectedTemplate.value=state.setup.notSelectedTemplate;document.querySelectorAll('#setup input,#setup select,#setup textarea').forEach(e=>e.onchange=()=>{save();renderAll()})}
 function saveGradeTeams(){readSetup();state.setup.gradeTeams[teamGrade.value+'|'+teamGrad.value]=[...state.setup.teams];save();renderSetupSummary()}
