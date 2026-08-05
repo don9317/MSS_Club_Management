@@ -1,10 +1,10 @@
-MSS Club Management Suite Demo v0.31
+MSS Club Management Suite Demo v0.33
 
-FIXED
-- Generate 150 Demo Players works again.
-- The Master Registration List and Check-In list populate correctly.
-- Session start/end times use 15-minute increments.
-- Coaches remain visible in the master Coaches / Evaluators list after being added.
-- Setup court names populate the Tryout Sessions court selector.
-- Removed obsolete evaluator-field references that stopped saving and loading.
-- Existing v0.30/v0.29 browser data is migrated automatically when possible.
+NEW
+- Team Placement can be populated from completed Director Reviews.
+- Only players with Review Status = Reviewed and a Director Recommendation are automatically placed.
+- Players without approved Director Reviews remain in All Evaluated / Unplaced.
+- Existing placements are reset only after confirmation.
+- Paper Packets now includes a blank 18-row evaluation scoresheet with no player names.
+- Blank scoresheet can be previewed and printed separately.
+- Existing v0.32 browser data is migrated automatically.

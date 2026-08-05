@@ -42,7 +42,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </style>
 </head>
 <body>
-<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.31 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, and Roster Activation</div></header>
+<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.33 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, and Roster Activation</div></header>
 <div class="wrap">
 <div class="tabs no-print">
 <button class="tab active" data-tab="workflow">Workflow Dashboard</button><button class="tab" data-tab="setup">Setup</button>
@@ -117,7 +117,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </section>
 
 <section id="paper" class="section">
-<div class="card no-print"><h2>Paper Evaluation Packets</h2><div class="grid3"><div><label>Evaluator</label><select id="paperEvaluator"></select></div><div><label>Grade</label><select id="paperGrade"></select></div><div><label>Court</label><select id="paperCourt"></select></div></div><div class="actions" style="margin-top:12px"><button onclick="renderPacket()">Preview</button><button class="green" onclick="printPacket()">Print</button></div></div><div class="card" id="packetOutput"><p class="note">Click Preview to generate a paper evaluation packet.</p></div>
+<div class="card no-print"><h2>Paper Evaluation Packets</h2><div class="grid3"><div><label>Evaluator</label><select id="paperEvaluator"></select></div><div><label>Grade</label><select id="paperGrade"></select></div><div><label>Court</label><select id="paperCourt"></select></div></div><div class="actions" style="margin-top:12px"><button onclick="renderPacket()">Preview Named Packet</button><button class="green" onclick="printPacket()">Print Named Packet</button><button class="light" onclick="renderBlankScoreSheet()">Blank Scoresheet</button><button class="light" onclick="printBlankScoreSheet()">Print Blank Scoresheet</button></div></div><div class="card" id="packetOutput"><p class="note">Click Preview to generate a paper evaluation packet.</p></div>
 </section>
 
 
@@ -142,12 +142,12 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 <section id="review" class="section">
 <div class="card">
 <h2>Director Review / Master Grade List</h2>
-<p class="note">Includes every registered player, whether they attended or not, along with evaluator results and the director's final decision.</p>
+<p class="note">Includes every registered player, whether they attended or not, along with evaluator results and the director's final decision. Entering a rating creates a draft; click <b>Save Review</b> to mark the player Reviewed.</p>
 <div class="grid4">
 <div><label>Grade</label><select id="reviewGrade" onchange="renderReview()"></select></div>
 <div><label>Graduation Year</label><select id="reviewGrad" onchange="renderReview()"></select></div>
 <div><label>Reviewed By</label><input id="reviewedBy" placeholder="Program Director name" onchange="saveDirectorName()"></div>
-<div><label>Review Status</label><select id="reviewStatusFilter" onchange="renderReview()"><option value="">All</option><option>Not Reviewed</option><option>Reviewed</option></select></div>
+<div><label>Review Status</label><select id="reviewStatusFilter" onchange="renderReview()"><option value="">All</option><option>Not Reviewed</option><option>Draft</option><option>Reviewed</option></select></div>
 </div>
 <div class="actions" style="margin-top:12px"><button onclick="exportDirectorReview()">Export Master Grade List</button></div>
 <div id="reviewTable"></div>
@@ -156,11 +156,11 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 
 <section id="board" class="section">
 <div class="card"><h2>Team Placement</h2><h3>Big Board</h3>
-<p class="note">Players begin in All Evaluated / Unplaced. Use the recommendation button to sort them automatically, then drag players between columns as the director finalizes teams.</p>
+<p class="note">Players begin in All Evaluated / Unplaced. Populate teams from completed Director Reviews, then drag players between columns as needed before finalizing.</p>
 <div class="grid4">
 <div><label>Grade</label><select id="boardGrade" onchange="renderBoard()"></select></div>
 <div><label>Graduation Year</label><select id="boardGrad" onchange="renderBoard()"></select></div>
-<div style="align-self:end"><button onclick="prepopulateRecommendations()">Place by Recommendations</button></div>
+<div style="align-self:end"><button onclick="populateFromApprovedDirectorReviews()">Populate from Approved Director Reviews</button></div>
 <div style="align-self:end"><button class="green" onclick="finalizePlacements()">Finalize Placements</button></div>
 </div>
 <div class="actions" style="margin-top:12px"><button class="light" onclick="returnFilteredPlayersToUnplaced()">Return Filtered Players to Unplaced</button></div>
@@ -220,8 +220,8 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 <div id="activationMetrics" class="metricrow"></div>
 <div class="card"><h2>Roster Activation</h2><p class="note">A player becomes active after accepting the offer, selecting a plan, and completing the deposit/first payment.</p><div id="activationTable"></div></div>
 </section>
-<section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div class="version-footer">My Sport Space Club Management Suite · Version 0.31 · Prototype</div><script>
-const KEY='mssClubDemoV031';
+<section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div class="version-footer">My Sport Space Club Management Suite · Version 0.33 · Prototype</div><script>
+const KEY='mssClubDemoV033';
 let state={
  setup:{orgName:'Oklahoma Swarm',season:'2026-27',eventName:'Oklahoma Swarm Tryouts',evalMethod:'Hybrid',courtCount:4,courts:['HIVE Court 1','HIVE Court 2','HIVE Court 3','HIVE Court 4'],teams:['Elite','Gold','Silver','Development'],notSelected:'Not Selected / Follow-Up',evaluators:['Coach Rob','','Coach Taylor','','Coach David','','Coach Julie',''],gradeTeams:{},offerTemplate:'Congratulations, {Player}! You have been offered a place on {Team}. Please respond by {Deadline}.',notSelectedTemplate:'Thank you for attending tryouts, {Player}. We would like to keep you informed about future opportunities.'},
  players:[],evaluations:{},offers:{},payments:[],directorReviews:{},directorName:'',checkinClosed:false,sessions:[],teamRecords:{},teamHistory:[],paymentPlans:[{id:'monthly',name:'Monthly',total:1800,deposit:300,installments:6},{id:'paidfull',name:'Paid in Full',total:1650,deposit:1650,installments:1}],placementsFinal:false
@@ -284,7 +284,7 @@ function save(){
 }
 function load(){
  currentSection='workflow';
- let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV030')||localStorage.getItem('mssClubDemoV029');
+ let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV032')||localStorage.getItem('mssClubDemoV031')||localStorage.getItem('mssClubDemoV030')||localStorage.getItem('mssClubDemoV029');
  if(x)try{state=JSON.parse(x)}catch(e){console.error('Could not load saved data',e)}
  state.payments??=[];
  state.paymentPlans??=[];
@@ -451,7 +451,7 @@ function renderSessions(){
  }).join('')+'</table>';
 }
 function sessionEvaluatorsForPlayerCourt(p,court){let s=state.sessions.find(x=>x.id===p.sessionId),a=s?.assignments?.[court],ids=[a?.a,a?.b].filter(Boolean),names=ids.map(id=>state.setup.coaches.find(c=>c.id===id)?.name).filter(Boolean);return names.length?names:activeCoachNames()}
-const HELP_CONTENT={workflow:['Workflow Dashboard','See overall progress, alerts, and open any step.'],setup:['Setup','Enter organization, courts, teams, and maintain the master coach list.'],sessions:['Tryout Sessions','Create or edit sessions and assign up to two coaches per court.'],registrations:['Registrations','Import players, generate demo players, or add walk-ins.'],checkin:['Check-In','Mark arrivals and identify no-shows.'],assignments:['Assignments','Balance players among eligible courts and evaluators.'],coach:['Coach Evaluations','Enter 1–5 scores, recommendation, and notes.'],paper:['Paper Packets','Generate printable evaluation forms.'],paperentry:['Paper Score Entry','Enter completed paper forms.'],review:['Director Review','Review scores and enter final director decisions.'],board:['Team Placement','Drag players onto teams or Not Selected.'],offers:['Parent Communication','Create offers and follow-ups.'],parent:['Parent Response','Track accept, decline, or questions.'],plans:['Payment Plans','Create and assign plans.'],payments:['Payments','Record payments and print receipts.'],activation:['Roster Activation','Activate players after requirements are met.'],teamadmin:['Team Administration','Extend teams or transfer players.']}
+const HELP_CONTENT={workflow:['Workflow Dashboard','See overall progress, alerts, and open any step.'],setup:['Setup','Enter organization, courts, teams, and maintain the master coach list.'],sessions:['Tryout Sessions','Create or edit sessions and assign up to two coaches per court.'],registrations:['Registrations','Import players, generate demo players, or add walk-ins.'],checkin:['Check-In','Mark arrivals and identify no-shows.'],assignments:['Assignments','Balance players among eligible courts and evaluators.'],coach:['Coach Evaluations','Enter 1–5 scores, recommendation, and notes.'],paper:['Paper Packets','Generate named packets by evaluator, grade, or court, or print a completely blank scoresheet for walk-ins and backup use.'],paperentry:['Paper Score Entry','Enter completed paper forms.'],review:['Director Review','Review scores and enter final director decisions.'],board:['Team Placement','Populate teams from completed Director Reviews, then drag players to make final adjustments before placement is finalized.'],offers:['Parent Communication','Create offers and follow-ups.'],parent:['Parent Response','Track accept, decline, or questions.'],plans:['Payment Plans','Create and assign plans.'],payments:['Payments','Record payments and print receipts.'],activation:['Roster Activation','Activate players after requirements are met.'],teamadmin:['Team Administration','Extend teams or transfer players.']}
 let tourMode=false,tourIndex=0;
 function openHelpFor(id,step=''){let h=HELP_CONTENT[id]||['Help',''];helpTitle.textContent=h[0];helpBody.innerHTML=`<p>${esc(h[1])}</p>`;helpStep.textContent=step;helpModal.classList.add('open')}
 function closeHelpModal(){helpModal.classList.remove('open');tourMode=false}
@@ -683,6 +683,20 @@ function renderPacket(){
  out.innerHTML=`<h2>${esc(state.setup.orgName)} Evaluation Packet</h2><p>Evaluator: ${esc(evaluator||'All')} · Grade: ${esc(grade||'All')} · Court: ${esc(court||'All')}</p><p class="note">5 Excellent · 4 Above Average · 3 Average · 2 Below Average · 1 Poor.</p><table><tr><th>Player</th><th>Athleticism</th><th>Skill</th><th>IQ</th><th>Effort</th><th>Coachability</th><th>Recommendation</th><th>Notes</th></tr>${players.map(p=>`<tr><td><b>${esc(p.id)}</b><br>${esc(p.first)} ${esc(p.last)}</td>${Array(5).fill('<td>○1 ○2 ○3 ○4 ○5</td>').join('')}<td>____________</td><td>____________________<br>____________________</td></tr>`).join('')}</table>`;
 }
 function printPacket(){renderPacket();document.querySelectorAll('.section').forEach(x=>x.classList.remove('print-target'));paper.classList.add('print-target');print()}
+function renderBlankScoreSheet(){
+ let out=document.getElementById('packetOutput');if(!out)return;
+ let rows=Array.from({length:18},(_,i)=>`<tr><td>${i+1}</td><td style="min-width:170px"></td><td></td><td></td><td></td><td></td><td></td><td style="min-width:130px"></td><td style="min-width:190px"></td></tr>`).join('');
+ out.innerHTML=`<h2>${esc(state.setup.orgName||'Club')} Blank Evaluation Scoresheet</h2>
+ <div class="grid4" style="margin-bottom:12px"><div><b>Grade:</b> __________</div><div><b>Court:</b> __________</div><div><b>Evaluator:</b> __________</div><div><b>Date:</b> __________</div></div>
+ <p class="note">Rate players relative to their grade/year: 5 Excellent · 4 Above Average · 3 Average · 2 Below Average · 1 Poor.</p>
+ <table><tr><th>#</th><th>Player Name / Number</th><th>Athleticism</th><th>Skill</th><th>IQ</th><th>Effort</th><th>Coachability</th><th>Recommendation</th><th>Notes</th></tr>${rows}</table>`;
+}
+function printBlankScoreSheet(){
+ renderBlankScoreSheet();
+ document.querySelectorAll('.section').forEach(x=>x.classList.remove('print-target'));
+ paper.classList.add('print-target');
+ print();
+}
 function allEvals(p){return Object.values(state.evaluations[p.id]||{})}function avg(p){let a=allEvals(p).flatMap(e=>e.scores.filter(Boolean));return a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(2):'-'}
 function saveDirectorName(){state.directorName=reviewedBy.value;save()}
 function directorReviewFor(id){state.directorReviews[id]??={directorRating:'',directorRecommendation:'',directorNotes:'',reviewedBy:'',reviewDate:'',status:'Not Reviewed'};return state.directorReviews[id]}
@@ -705,7 +719,34 @@ function originalEvalSummary(p){
   source:entries.map(([_,e])=>e.source||'Tablet').join(', ')
  };
 }
-function updateDirectorReview(id,field,value){let r=directorReviewFor(id);r[field]=value;r.reviewedBy=reviewedBy.value||state.directorName||'';r.reviewDate=new Date().toISOString().slice(0,10);r.status='Reviewed';state.directorName=r.reviewedBy;save();renderReview()}
+function updateDirectorReview(id,field,value){
+ let r=directorReviewFor(id);
+ r[field]=value;
+ r.reviewedBy=reviewedBy.value||state.directorName||r.reviewedBy||'';
+ r.status=r.status==='Reviewed'?'Reviewed':'Draft';
+ state.directorName=r.reviewedBy;
+ save();
+ let badge=document.getElementById(`reviewStatus-${id}`);
+ if(badge&&r.status!=='Reviewed')badge.innerHTML='<span class="badge warn">Draft — Not Reviewed</span>';
+}
+function finalizeDirectorReview(id){
+ let r=directorReviewFor(id);
+ let director=reviewedBy.value||state.directorName||r.reviewedBy||'';
+ if(!director)return alert('Enter the Program Director name in Reviewed By before saving the review.');
+ if(!r.directorRating&&!r.directorRecommendation&&!r.directorNotes)return alert('Enter a Director rating, recommendation, or notes before saving.');
+ r.reviewedBy=director;
+ r.reviewDate=new Date().toISOString().slice(0,10);
+ r.status='Reviewed';
+ state.directorName=director;
+ save();
+ renderReview();
+}
+function reopenDirectorReview(id){
+ let r=directorReviewFor(id);
+ r.status='Draft';
+ save();
+ renderReview();
+}
 
 function renderReview(){
  let g=document.getElementById('reviewGrade')?.value||'',
@@ -713,16 +754,16 @@ function renderReview(){
      f=document.getElementById('reviewStatusFilter')?.value||'';
 
  let players=state.players.filter(p=>(!g||p.grade===g)&&(!y||p.grad===y));
- if(f)players=players.filter(p=>directorReviewFor(p.id).status===f);
+ if(f)players=players.filter(p=>f==='Not Reviewed'?directorReviewFor(p.id).status!=='Reviewed':directorReviewFor(p.id).status===f);
 
  let out=document.getElementById('reviewTable');if(!out)return;
  if(!players.length){
    out.innerHTML='<div class="card"><b>No players match these filters.</b><p class="note">Clear the filters or confirm registrations were loaded.</p></div>';
    return;
  }
- out.innerHTML='<table><tr><th>Player</th><th>Attendance</th><th>Court</th><th>Evaluator / Source</th><th>Evaluator Rating</th><th>Evaluator Recommendation</th><th>Evaluator Notes</th><th>Director Rating</th><th>Director Recommendation</th><th>Director Notes / Rationale</th><th>Reviewed By</th><th>Status</th></tr>'+players.map(p=>{
+ out.innerHTML='<table><tr><th>Player</th><th>Attendance</th><th>Court</th><th>Evaluator / Source</th><th>Evaluator Rating</th><th>Evaluator Recommendation</th><th>Evaluator Notes</th><th>Director Rating</th><th>Director Recommendation</th><th>Director Notes / Rationale</th><th>Reviewed By</th><th>Status</th><th>Action</th></tr>'+players.map(p=>{
    let o=originalEvalSummary(p),r=directorReviewFor(p.id),teams=[...gradeTeams(p.grade,p.grad),state.setup.notSelected];
-   return `<tr><td><b>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</b><br><span class="small">${esc(p.grade)} / ${esc(p.grad)}</span></td><td><span class="badge ${p.checkedIn?'success':p.status==='No-Show'?'danger':'warn'}">${esc(p.checkedIn?'Attended':p.status)}</span></td><td>${esc(p.court||'-')}</td><td>${esc(o.evaluators||'-')}<br><span class="small">${esc(o.source||'')}</span></td><td><b>${esc(o.average||'-')}</b><br><span class="small">${esc(o.categoryScores||'')}</span></td><td>${esc(o.recommendation||'-')}</td><td>${esc(o.notes||'-')}</td><td><input type="number" min="1" max="5" step=".01" value="${esc(r.directorRating)}" onchange="updateDirectorReview('${p.id}','directorRating',this.value)"></td><td><select onchange="updateDirectorReview('${p.id}','directorRecommendation',this.value)">${opts(teams,r.directorRecommendation,'Select')}</select></td><td><textarea onchange="updateDirectorReview('${p.id}','directorNotes',this.value)">${esc(r.directorNotes)}</textarea></td><td>${esc(r.reviewedBy||'-')}<br><span class="small">${esc(r.reviewDate||'')}</span></td><td><span class="badge ${r.status==='Reviewed'?'success':'warn'}">${esc(r.status)}</span></td></tr>`;
+   return `<tr><td><b>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</b><br><span class="small">${esc(p.grade)} / ${esc(p.grad)}</span></td><td><span class="badge ${p.checkedIn?'success':p.status==='No-Show'?'danger':'warn'}">${esc(p.checkedIn?'Attended':p.status)}</span></td><td>${esc(p.court||'-')}</td><td>${esc(o.evaluators||'-')}<br><span class="small">${esc(o.source||'')}</span></td><td><b>${esc(o.average||'-')}</b><br><span class="small">${esc(o.categoryScores||'')}</span></td><td>${esc(o.recommendation||'-')}</td><td>${esc(o.notes||'-')}</td><td><input type="number" min="1" max="5" step=".01" value="${esc(r.directorRating)}" onchange="updateDirectorReview('${p.id}','directorRating',this.value)"></td><td><select onchange="updateDirectorReview('${p.id}','directorRecommendation',this.value)">${opts(teams,r.directorRecommendation,'Select')}</select></td><td><textarea onchange="updateDirectorReview('${p.id}','directorNotes',this.value)">${esc(r.directorNotes)}</textarea></td><td>${esc(r.reviewedBy||'-')}<br><span class="small">${esc(r.reviewDate||'')}</span></td><td id="reviewStatus-${p.id}"><span class="badge ${r.status==='Reviewed'?'success':'warn'}">${esc(r.status==='Draft'?'Draft — Not Reviewed':r.status)}</span></td><td>${r.status==='Reviewed'?`<button class="light" onclick="reopenDirectorReview('${p.id}')">Edit Review</button>`:`<button class="green" onclick="finalizeDirectorReview('${p.id}')">Save Review</button>`}</td></tr>`;
  }).join('')+'</table>';
 }
 function exportDirectorReview(){let rows=[['Player ID','Player','Grade','Graduation Year','Attendance','Court','Evaluator','Evaluation Source','Evaluator Rating','Evaluator Recommendation','Evaluator Notes','Director Rating','Director Recommendation','Director Notes','Reviewed By','Review Date','Review Status']];state.players.filter(p=>(!reviewGrade.value||p.grade===reviewGrade.value)&&(!reviewGrad.value||p.grad===reviewGrad.value)).forEach(p=>{let o=originalEvalSummary(p),r=directorReviewFor(p.id);rows.push([p.id,`${p.first} ${p.last}`,p.grade,p.grad,p.checkedIn?'Attended':p.status,p.court,o.evaluators,o.source,o.average,o.recommendation,o.notes,r.directorRating,r.directorRecommendation,r.directorNotes,r.reviewedBy,r.reviewDate,r.status])});downloadCSV('MSS_Director_Review_Master_List.csv',rows)}
@@ -740,14 +781,30 @@ function renderBoard(){
  }).join('');
 }
 function dropPlayer(t){let p=state.players.find(x=>x.id===dragId);if(p){p.team=t==='__UNPLACED__'?'':t;save();renderBoard()}}
-function prepopulateRecommendations(){
- let a=boardPlayers(),teams=(boardGrade.value&&boardGrad.value?gradeTeams(boardGrade.value,boardGrad.value):state.setup.teams);
- a.forEach(p=>{
-  let r=directorReviewFor(p.id),o=originalEvalSummary(p),rec=r.directorRecommendation||o.recommendation||'';
-  let exact=[...teams,state.setup.notSelected].find(t=>t===rec);
-  p.team=exact||'';
+function populateFromApprovedDirectorReviews(){
+ let players=boardPlayers();
+ let approved=players.filter(p=>{
+   let r=directorReviewFor(p.id);
+   return r.status==='Reviewed'&&r.directorRecommendation;
  });
- save();renderBoard();
+ let unapproved=players.length-approved.length;
+ let alreadyPlaced=players.filter(p=>p.team).length;
+
+ let message=`${approved.length} reviewed player(s) will be placed using the Director's approved recommendation.`;
+ if(unapproved)message+=`\n${unapproved} player(s) without a completed Director Review will remain Unplaced.`;
+ if(alreadyPlaced)message+=`\n${alreadyPlaced} player(s) currently have a placement. Existing placements will be replaced.`;
+ if(!confirm(message+'\n\nContinue?'))return;
+
+ players.forEach(p=>p.team='');
+ approved.forEach(p=>{
+   let r=directorReviewFor(p.id);
+   let teams=(p.grade&&p.grad)?gradeTeams(p.grade,p.grad):state.setup.teams;
+   let allowed=[...teams,state.setup.notSelected];
+   p.team=allowed.includes(r.directorRecommendation)?r.directorRecommendation:'';
+ });
+ save();
+ renderBoard();
+ alert(`Placed ${approved.filter(p=>p.team).length} player(s) from approved Director Reviews. ${unapproved} remain Unplaced.`);
 }
 function returnFilteredPlayersToUnplaced(){if(confirm('Return all currently filtered players to All Evaluated / Unplaced?')){boardPlayers().forEach(p=>p.team='');save();renderBoard()}}
 function finalizePlacements(){let unplaced=boardPlayers().filter(p=>!p.team).length;if(unplaced&&!confirm(`${unplaced} evaluated player(s) are still unplaced. Finalize anyway?`))return;state.placementsFinal=true;save();alert('Placements finalized. You can now create offers and follow-up messages.')}
