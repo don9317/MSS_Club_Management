@@ -1,9 +1,9 @@
-MSS Club Management Suite Demo v0.29
+MSS Club Management Suite Demo v0.30
 
-FIXED
-- Coach evaluations now save explicitly and display a Saved indicator.
-- A Save Evaluation button is included on every player evaluation card.
-- Director Review ignores empty evaluation records created only by viewing a player.
-- Director Review displays the overall evaluator average and category-level scores.
-- Existing v0.28 browser data is migrated automatically on first use.
-- Recommendations and evaluator notes continue to flow into Director Review.
+- Master coach/evaluator list in Setup
+- Session evaluator dropdowns from master coaches
+- Up to two evaluators per selected court
+- Edit, duplicate, or delete sessions
+- Add Coach shortcut from Sessions
+- Context-sensitive Help
+- Guided Tour from Workflow Dashboard
