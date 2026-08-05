@@ -1,12 +1,9 @@
-MSS Club Management Suite v0.27 — Workflow Edition
+MSS Club Management Suite Demo v0.28
 
-New:
-- Workflow Dashboard landing page
-- Automatic progress tiles and director summary
-- Attention Required alerts
-- Previous, Next, and Help controls
-- Step indicator
-- Team Placement naming
-- Visible version footer
-
-Upload index.html and the sample CSV to the GitHub repository root.
+FIXED
+- Coach Quick Form now displays checked-in players by evaluator, grade, and court.
+- Restored the missing evaluation data functions.
+- Paper Packets now explains its purpose and generates a visible preview.
+- Paper Score Entry now displays checked-in players.
+- Director Review now displays the master registration list, including attendance status.
+- Defensive rendering prevents missing optional controls from stopping these pages.
