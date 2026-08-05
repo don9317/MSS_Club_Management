@@ -39,10 +39,17 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 .modal-backdrop.open{display:flex}.modal-card{background:#fff;border-radius:16px;max-width:760px;width:100%;max-height:90vh;overflow:auto;padding:20px}
 .session-court-row{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:10px;margin:8px 0}
 @media(max-width:800px){.session-court-row{grid-template-columns:1fr}}
+
+.save-toast{position:fixed;right:22px;bottom:22px;background:#0a7a47;color:#fff;padding:12px 16px;border-radius:10px;z-index:1200;display:none}
+.save-toast.show{display:block}
+.blank-sheet table{border-collapse:collapse;width:100%}
+.blank-sheet th,.blank-sheet td{border:2px solid #111;padding:6px}
+.blank-sheet .score-circles{font-size:18px;letter-spacing:5px;white-space:nowrap;text-align:center}
+@media print{.blank-sheet th,.blank-sheet td{border:2px solid #000!important}.blank-sheet .score-circles{font-size:19px}}
 </style>
 </head>
 <body>
-<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.33 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, and Roster Activation</div></header>
+<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.34 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, and Roster Activation</div></header>
 <div class="wrap">
 <div class="tabs no-print">
 <button class="tab active" data-tab="workflow">Workflow Dashboard</button><button class="tab" data-tab="setup">Setup</button>
@@ -69,7 +76,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 <div><div style="display:flex;justify-content:space-between"><b>Overall Progress</b><span id="wfPercent"></span></div><div class="workflow-progress"><div id="wfProgressBar"></div></div></div>
 </div>
 <div id="wfMetrics" class="metricrow"></div>
-<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h2>Workflow</h2><button onclick="startGuidedTour()">🚀 Start Guided Tour</button></div><div id="workflowTiles" class="workflow-grid"></div></div>
+<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h2>Workflow</h2><div class="actions"><button class="light" onclick="openHelpFor('workflow')">? Help</button><button onclick="startGuidedTour()">🚀 Start Guided Tour</button></div></div><div id="workflowTiles" class="workflow-grid"></div></div>
 <div class="card"><h2>Attention Required</h2><div id="workflowAlerts"></div></div>
 </section>
 <section id="setup" class="section">
@@ -220,8 +227,8 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 <div id="activationMetrics" class="metricrow"></div>
 <div class="card"><h2>Roster Activation</h2><p class="note">A player becomes active after accepting the offer, selecting a plan, and completing the deposit/first payment.</p><div id="activationTable"></div></div>
 </section>
-<section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div class="version-footer">My Sport Space Club Management Suite · Version 0.33 · Prototype</div><script>
-const KEY='mssClubDemoV033';
+<section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.34 · Prototype</div><script>
+const KEY='mssClubDemoV034';
 let state={
  setup:{orgName:'Oklahoma Swarm',season:'2026-27',eventName:'Oklahoma Swarm Tryouts',evalMethod:'Hybrid',courtCount:4,courts:['HIVE Court 1','HIVE Court 2','HIVE Court 3','HIVE Court 4'],teams:['Elite','Gold','Silver','Development'],notSelected:'Not Selected / Follow-Up',evaluators:['Coach Rob','','Coach Taylor','','Coach David','','Coach Julie',''],gradeTeams:{},offerTemplate:'Congratulations, {Player}! You have been offered a place on {Team}. Please respond by {Deadline}.',notSelectedTemplate:'Thank you for attending tryouts, {Player}. We would like to keep you informed about future opportunities.'},
  players:[],evaluations:{},offers:{},payments:[],directorReviews:{},directorName:'',checkinClosed:false,sessions:[],teamRecords:{},teamHistory:[],paymentPlans:[{id:'monthly',name:'Monthly',total:1800,deposit:300,installments:6},{id:'paidfull',name:'Paid in Full',total:1650,deposit:1650,installments:1}],placementsFinal:false
@@ -233,12 +240,11 @@ const WORKFLOW=[
 let currentSection='workflow';
 function wfIndex(id){return WORKFLOW.findIndex(x=>x[0]===id)}
 function addPageFooter(id){
- let sec=document.getElementById(id); if(!sec||sec.querySelector('.workflow-footer'))return;
- let i=wfIndex(id),prev=WORKFLOW[i-1],next=WORKFLOW[i+1];
- let f=document.createElement('div');f.className='card workflow-footer no-print';
- f.innerHTML=`<div>${prev?`<button class="light" onclick="showTab('${prev[0]}')">◀ ${prev[1]}</button>`:''}</div><div class="actions"><button class="light" onclick="openHelpFor('${id}')">? Help</button>${next?`<button onclick="showTab('${next[0]}')">${next[1]} ▶</button>`:''}</div>`;
+ let sec=document.getElementById(id);if(!sec||sec.querySelector('.workflow-footer'))return;
+ let i=wfIndex(id),prev=WORKFLOW[i-1],next=WORKFLOW[i+1],f=document.createElement('div');
+ f.className='card workflow-footer no-print';
+ f.innerHTML=`<div>${prev?`<button class="light" onclick="showTab('${prev[0]}')">◀ ${prev[1]}</button>`:''}</div><div class="actions"><button class="green" onclick="saveProgress()">Save Progress</button><button class="light" onclick="openHelpFor('${id}')">? Help</button>${next?`<button onclick="showTab('${next[0]}')">${next[1]} ▶</button>`:''}</div>`;
  sec.appendChild(f);
- 
 }
 function renderStepBar(){let i=wfIndex(currentSection);stepBar.innerHTML=WORKFLOW.map((x,n)=>`<span class="stepchip ${n===i?'active':''}">${n+1}. ${x[1]}</span>`).join('')}
 function evaluated(p){return Object.values(state.evaluations[p.id]||{}).some(e=>evaluationHasContent(e)&&e.scores?.every(v=>+v>0))}
@@ -284,7 +290,7 @@ function save(){
 }
 function load(){
  currentSection='workflow';
- let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV032')||localStorage.getItem('mssClubDemoV031')||localStorage.getItem('mssClubDemoV030')||localStorage.getItem('mssClubDemoV029');
+ let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV033')||localStorage.getItem('mssClubDemoV032')||localStorage.getItem('mssClubDemoV031')||localStorage.getItem('mssClubDemoV030')||localStorage.getItem('mssClubDemoV029');
  if(x)try{state=JSON.parse(x)}catch(e){console.error('Could not load saved data',e)}
  state.payments??=[];
  state.paymentPlans??=[];
@@ -453,13 +459,26 @@ function renderSessions(){
 function sessionEvaluatorsForPlayerCourt(p,court){let s=state.sessions.find(x=>x.id===p.sessionId),a=s?.assignments?.[court],ids=[a?.a,a?.b].filter(Boolean),names=ids.map(id=>state.setup.coaches.find(c=>c.id===id)?.name).filter(Boolean);return names.length?names:activeCoachNames()}
 const HELP_CONTENT={workflow:['Workflow Dashboard','See overall progress, alerts, and open any step.'],setup:['Setup','Enter organization, courts, teams, and maintain the master coach list.'],sessions:['Tryout Sessions','Create or edit sessions and assign up to two coaches per court.'],registrations:['Registrations','Import players, generate demo players, or add walk-ins.'],checkin:['Check-In','Mark arrivals and identify no-shows.'],assignments:['Assignments','Balance players among eligible courts and evaluators.'],coach:['Coach Evaluations','Enter 1–5 scores, recommendation, and notes.'],paper:['Paper Packets','Generate named packets by evaluator, grade, or court, or print a completely blank scoresheet for walk-ins and backup use.'],paperentry:['Paper Score Entry','Enter completed paper forms.'],review:['Director Review','Review scores and enter final director decisions.'],board:['Team Placement','Populate teams from completed Director Reviews, then drag players to make final adjustments before placement is finalized.'],offers:['Parent Communication','Create offers and follow-ups.'],parent:['Parent Response','Track accept, decline, or questions.'],plans:['Payment Plans','Create and assign plans.'],payments:['Payments','Record payments and print receipts.'],activation:['Roster Activation','Activate players after requirements are met.'],teamadmin:['Team Administration','Extend teams or transfer players.']}
 let tourMode=false,tourIndex=0;
-function openHelpFor(id,step=''){let h=HELP_CONTENT[id]||['Help',''];helpTitle.textContent=h[0];helpBody.innerHTML=`<p>${esc(h[1])}</p>`;helpStep.textContent=step;helpModal.classList.add('open')}
+
+function saveProgress(){
+ save();
+ let t=document.getElementById('saveToast');
+ if(t){t.textContent='Progress saved at '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+}
+function openHelpFor(id,step=''){
+ let h=HELP_CONTENT[id]||['Help','No help is available for this page yet.'],m=document.getElementById('helpModal');
+ if(!m)return alert(h[0]+'\n\n'+h[1]);
+ helpTitle.textContent=h[0];helpBody.innerHTML=`<p>${esc(h[1])}</p>`;helpStep.textContent=step;
+ helpPrev.style.display=tourMode?'inline-block':'none';helpNext.style.display=tourMode?'inline-block':'none';m.classList.add('open');
+}
 function closeHelpModal(){helpModal.classList.remove('open');tourMode=false}
 function startGuidedTour(){tourMode=true;tourIndex=1;showTourStep()}
-function showTourStep(){let id=WORKFLOW[tourIndex][0];showTab(id);openHelpFor(id,`Step ${tourIndex} of ${WORKFLOW.length-1}`);helpPrev.style.visibility=tourIndex<=1?'hidden':'visible';helpNext.textContent=tourIndex>=WORKFLOW.length-1?'Finish':'Next ▶'}
+function showTourStep(){
+ if(!tourMode)return;let item=WORKFLOW[tourIndex];if(!item){closeHelpModal();showTab('workflow');return}
+ showTab(item[0]);setTimeout(()=>{openHelpFor(item[0],`Step ${tourIndex} of ${WORKFLOW.length-1}`);helpPrev.style.visibility=tourIndex<=1?'hidden':'visible';helpNext.textContent=tourIndex>=WORKFLOW.length-1?'Finish':'Next ▶'},50);
+}
 function tourNext(){if(!tourMode)return closeHelpModal();if(tourIndex>=WORKFLOW.length-1){closeHelpModal();showTab('workflow');return}tourIndex++;showTourStep()}
-function tourPrev(){if(tourIndex>1){tourIndex--;showTourStep()}}
-
+function tourPrev(){if(tourMode&&tourIndex>1){tourIndex--;showTourStep()}}
 function fillSelects(){
  let grades=[...new Set(state.players.map(p=>p.grade).filter(Boolean))].sort(),
      grads=[...new Set(state.players.map(p=>p.grad).filter(Boolean))].sort(),
@@ -685,11 +704,9 @@ function renderPacket(){
 function printPacket(){renderPacket();document.querySelectorAll('.section').forEach(x=>x.classList.remove('print-target'));paper.classList.add('print-target');print()}
 function renderBlankScoreSheet(){
  let out=document.getElementById('packetOutput');if(!out)return;
- let rows=Array.from({length:18},(_,i)=>`<tr><td>${i+1}</td><td style="min-width:170px"></td><td></td><td></td><td></td><td></td><td></td><td style="min-width:130px"></td><td style="min-width:190px"></td></tr>`).join('');
- out.innerHTML=`<h2>${esc(state.setup.orgName||'Club')} Blank Evaluation Scoresheet</h2>
- <div class="grid4" style="margin-bottom:12px"><div><b>Grade:</b> __________</div><div><b>Court:</b> __________</div><div><b>Evaluator:</b> __________</div><div><b>Date:</b> __________</div></div>
- <p class="note">Rate players relative to their grade/year: 5 Excellent · 4 Above Average · 3 Average · 2 Below Average · 1 Poor.</p>
- <table><tr><th>#</th><th>Player Name / Number</th><th>Athleticism</th><th>Skill</th><th>IQ</th><th>Effort</th><th>Coachability</th><th>Recommendation</th><th>Notes</th></tr>${rows}</table>`;
+ let scoreCell='<td class="score-circles">① ② ③ ④ ⑤</td>';
+ let rows=Array.from({length:18},(_,i)=>`<tr><td>${i+1}</td><td style="min-width:180px"></td>${scoreCell.repeat(5)}<td style="min-width:140px"></td><td style="min-width:200px"></td></tr>`).join('');
+ out.innerHTML=`<div class="blank-sheet"><h2>${esc(state.setup.orgName||'Club')} Blank Evaluation Scoresheet</h2><div class="grid4" style="margin-bottom:12px"><div><b>Grade:</b> __________</div><div><b>Court:</b> __________</div><div><b>Evaluator:</b> __________</div><div><b>Date:</b> __________</div></div><p class="note">Darken one circle for each category: 5 Excellent · 4 Above Average · 3 Average · 2 Below Average · 1 Poor.</p><table><tr><th>#</th><th>Player Name / Number</th><th>Athleticism<br>① ② ③ ④ ⑤</th><th>Skill<br>① ② ③ ④ ⑤</th><th>IQ<br>① ② ③ ④ ⑤</th><th>Effort<br>① ② ③ ④ ⑤</th><th>Coachability<br>① ② ③ ④ ⑤</th><th>Recommendation</th><th>Notes</th></tr>${rows}</table></div>`;
 }
 function printBlankScoreSheet(){
  renderBlankScoreSheet();
