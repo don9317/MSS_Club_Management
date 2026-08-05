@@ -1,9 +1,9 @@
-MSS Club Management Suite Demo v0.28
+MSS Club Management Suite Demo v0.29
 
 FIXED
-- Coach Quick Form now displays checked-in players by evaluator, grade, and court.
-- Restored the missing evaluation data functions.
-- Paper Packets now explains its purpose and generates a visible preview.
-- Paper Score Entry now displays checked-in players.
-- Director Review now displays the master registration list, including attendance status.
-- Defensive rendering prevents missing optional controls from stopping these pages.
+- Coach evaluations now save explicitly and display a Saved indicator.
+- A Save Evaluation button is included on every player evaluation card.
+- Director Review ignores empty evaluation records created only by viewing a player.
+- Director Review displays the overall evaluator average and category-level scores.
+- Existing v0.28 browser data is migrated automatically on first use.
+- Recommendations and evaluator notes continue to flow into Director Review.
