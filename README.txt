@@ -1,11 +1,15 @@
-MSS Club Management Suite Demo v0.37 — Team Accounting MVP
+MSS Club Management Suite Demo v0.38 — Team Budget & Financial Health
 
-- Team Accounting workflow tile
-- Team financial dashboard
-- Player payment status and individual ledger
-- Team budget: budget vs actual
-- Charges, season extensions, scholarships and credits
-- Offline payments and printable receipts
-- Simulated Stripe Pay Now posting into the same ledger
-- Team ledger CSV export
-- v0.36 browser data migration
+NEW
+- Downloadable monthly Team Budget backup spreadsheet
+- Spreadsheet supports monthly budget and actual costs
+- Team Financial Health status: BLACK / YELLOW / RED
+- Annual budget, minimum paid players, recommended fee per player
+- Proposed fee, expected players, projected revenue and surplus/deficit
+- Break-even player count at the proposed fee
+- Apply Recommended Fee to Team
+- Team Accounting uses the team-configured season fee as the player base charge
+- Existing v0.37 browser data migrates automatically
+
+EXAMPLE
+$18,000 annual budget / 8 minimum paid players = $2,250 recommended season fee per player.
