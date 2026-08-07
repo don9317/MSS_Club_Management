@@ -1,15 +1,12 @@
-MSS Club Management Suite Demo v0.38 — Team Budget & Financial Health
+MSS Club Management Suite Demo v0.39 — Donations & Player Cost Allocation
 
 NEW
-- Downloadable monthly Team Budget backup spreadsheet
-- Spreadsheet supports monthly budget and actual costs
-- Team Financial Health status: BLACK / YELLOW / RED
-- Annual budget, minimum paid players, recommended fee per player
-- Proposed fee, expected players, projected revenue and surplus/deficit
-- Break-even player count at the proposed fee
-- Apply Recommended Fee to Team
-- Team Accounting uses the team-configured season fee as the player base charge
-- Existing v0.37 browser data migrates automatically
-
-EXAMPLE
-$18,000 annual budget / 8 minimum paid players = $2,250 recommended season fee per player.
+- Updated monthly Team Budget workbook
+- Player Allocation sheet: each player, allocated category costs, donations, payments, credits, balance, status
+- Donations sheet: team or player donations, amount, application, reference and notes
+- Dashboard donation KPIs and adjusted recommended player fee
+- App supports team donations and player-specific donations
+- Team donations reduce the team budget before recommended season fee is calculated
+- Player donations reduce only that player's outstanding balance
+- Donations appear in Team Accounting metrics and donation ledger
+- Existing v0.38 browser data migrates automatically
