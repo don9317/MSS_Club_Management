@@ -1,10 +1,10 @@
-MSS Club Management Suite Demo v0.42 — Payment Plan Team Fix
+MSS Club Management Suite Demo v0.43 — Teams Dashboard
 
-FIXED
-- Payment Plan Team field now prepopulates from Setup team names.
-- Existing roster/team names are also included.
-- Previously saved team-payment-plan names are included.
-- Team field is now editable: choose an existing team or type a new team name.
-- Saving a new typed team adds it to Setup team names for future use.
-- Payment plans can be configured before any players are placed on a team.
-- Existing v0.41 browser data migrates automatically.
+- New Teams Dashboard for season management
+- Grade + Team Name treated separately
+- Supports multiple teams in a grade (4th Elite, 4th Gold, 6th Elite, 6th Gold, etc.)
+- Team cards: roster, season fee, collected, outstanding, past due, accepted offers, documents, financial health
+- Filters by grade, team search, health, roster status
+- Team detail roster with payment/document status
+- Direct links into Accounting, Payment Plans, Documents, Communication
+- Existing player assignments seed the team catalog
