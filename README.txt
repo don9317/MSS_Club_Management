@@ -1,17 +1,10 @@
-MSS Club Management Suite Demo v0.40 — Team-Driven Payment Plans
+MSS Club Management Suite Demo v0.42 — Payment Plan Team Fix
 
-- Team-specific season cost
-- Season start/end dates and editable billing day
-- Parent options: Pay in Full, Fixed Installments, Monthly
-- Configurable installment count
-- Require Auto Pay enrollment
-- Processing fee percentage or fixed amount
-- Automatic reminders before due dates
-- Follow-up reminder cadence
-- Partial payments and minimum amount
-- Combine past-due balance with upcoming installment within configurable days
-- Optional first payment during acceptance
-- Generated installment schedule preview
-- Accepted parents choose only the plans allowed for their team
-- Team season cost feeds Team Accounting
-- Existing v0.39 browser data migrates automatically
+FIXED
+- Payment Plan Team field now prepopulates from Setup team names.
+- Existing roster/team names are also included.
+- Previously saved team-payment-plan names are included.
+- Team field is now editable: choose an existing team or type a new team name.
+- Saving a new typed team adds it to Setup team names for future use.
+- Payment plans can be configured before any players are placed on a team.
+- Existing v0.41 browser data migrates automatically.

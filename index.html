@@ -46,6 +46,9 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 .blank-sheet th,.blank-sheet td{border:2px solid #111;padding:6px}
 .blank-sheet .score-circles{font-size:18px;letter-spacing:5px;white-space:nowrap;text-align:center}
 @media print{.blank-sheet th,.blank-sheet td{border:2px solid #000!important}.blank-sheet .score-circles{font-size:19px}}
+
+.inline-edit{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.bulk-number-card{background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:12px;margin:12px 0}
 </style>
 </head>
 <body>
@@ -106,13 +109,23 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 <div id="registrationMetrics" class="metricrow"></div>
 <div class="card"><h2>Registration Data</h2><div class="actions"><label class="btn">Import CSV<input type="file" id="csvFile" accept=".csv" style="display:none"></label><button class="amber" onclick="generate150()">Generate 150 Demo Players</button><button onclick="exportPlayers()">Export Players</button><button class="red" onclick="clearAll()">Clear All</button></div></div>
 <div class="card"><h2>Add Walk-In / Registration</h2><div class="grid6"><div><label>Tryout Number</label><input id="pId"></div><div><label>First Name</label><input id="pFirst"></div><div><label>Last Name</label><input id="pLast"></div><div><label>Grade</label><select id="pGrade"><option>3rd</option><option>4th</option><option>5th</option><option>6th</option><option>7th</option></select></div><div><label>Graduation Year</label><input id="pGrad"></div><div><label>Parent Email</label><input id="pEmail"></div></div><div class="grid3" style="margin-top:12px"><div><label>Parent Phone</label><input id="pPhone"></div><div><label>Headshot URL</label><input id="pPhoto"></div><div style="align-self:end"><button onclick="addPlayer()">Add Player</button></div></div></div>
-<div class="card"><h2>Master Registration List</h2><div id="registrationTable"></div></div>
+<div class="card"><h2>Master Registration List</h2><p class="note">Player number, grade, and graduation year can be edited. Grade corrections preserve registration, contact information, check-in status, photo, and evaluation history.</p><div id="registrationTable"></div></div>
 </section>
 
 <section id="checkin" class="section">
 <div class="card" id="checkinStatusCard"></div>
 <div id="checkinMetrics" class="metricrow"></div>
-<div class="card"><h2>Tryout Check-In</h2><p class="note">Search players, mark them checked in, assign a court, and confirm evaluator. Players become No-Shows only when check-in is closed.</p><div class="grid4"><div><label>Search</label><input id="checkSearch" oninput="renderCheckin()"></div><div><label>Grade</label><select id="checkGrade" onchange="renderCheckin()"></select></div><div><label>Status</label><select id="checkStatus" onchange="renderCheckin()"><option value="">All</option><option>Registered</option><option>Checked In</option><option>No-Show</option></select></div><div style="align-self:end"><button class="amber" id="checkinToggleButton" onclick="toggleCheckinStatus()">Close Check-In</button></div></div><div id="checkinTable"></div></div>
+<div class="card"><h2>Tryout Check-In</h2>
+<div class="bulk-number-card no-print">
+<h3 style="margin-top:0">Bulk / Sequential Player Numbers</h3>
+<div class="grid4">
+<div><label>Grade</label><select id="bulkNumberGrade"></select></div>
+<div><label>Start Number</label><input id="bulkNumberStart" type="number" min="1" value="101"></div>
+<div><label>Format</label><select id="bulkNumberFormat"><option value="plain">Plain (101, 102...)</option><option value="grade">Grade Prefix (5-001, 5-002...)</option></select></div>
+<div style="align-self:end"><button onclick="bulkAssignPlayerNumbers()">Assign Sequential Numbers</button></div>
+</div>
+<p class="small">Applies to checked-in players in the selected grade. Individual numbers remain editable.</p>
+</div><p class="note">Search players, mark them checked in, assign a court, and confirm evaluator. Players become No-Shows only when check-in is closed.</p><div class="grid4"><div><label>Search</label><input id="checkSearch" oninput="renderCheckin()"></div><div><label>Grade</label><select id="checkGrade" onchange="renderCheckin()"></select></div><div><label>Status</label><select id="checkStatus" onchange="renderCheckin()"><option value="">All</option><option>Registered</option><option>Checked In</option><option>No-Show</option></select></div><div style="align-self:end"><button class="amber" id="checkinToggleButton" onclick="toggleCheckinStatus()">Close Check-In</button></div></div><div id="checkinTable"></div></div>
 </section>
 
 <section id="assignments" class="section">
@@ -187,9 +200,9 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 <section id="plans" class="section">
 <div class="card">
 <h2>Team Season Cost & Payment Plan Setup</h2>
-<p class="note">Set the season cost by team, season dates, billing rules, and the payment plans parents may choose. The team season cost feeds Team Accounting and player billing.</p>
+<p class="note">Set the season cost by team, season dates, billing rules, and the payment plans parents may choose. Team names come from Setup, existing rosters, or can be typed here and saved. The team season cost feeds Team Accounting and player billing.</p>
 <div class="grid5">
-<div><label>Team</label><select id="planTeam" onchange="loadTeamPlanSettings()"></select></div>
+<div><label>Team</label><input id="planTeam" list="planTeamOptions" placeholder="Select or type team name" onchange="loadTeamPlanSettings()"><datalist id="planTeamOptions"></datalist><div class="small">Choose an existing team or type a new team name.</div></div>
 <div><label>Season Cost</label><input id="planSeasonCost" type="number" step="0.01" oninput="previewTeamPlan()"></div>
 <div><label>Season Start</label><input id="planSeasonStart" type="date" onchange="previewTeamPlan()"></div>
 <div><label>Season End</label><input id="planSeasonEnd" type="date" onchange="previewTeamPlan()"></div>
@@ -304,8 +317,8 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </div>
 <div id="budgetTable" style="margin-top:12px"></div>
 </div>
-<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.40 · Prototype</div><script>
-const KEY='mssClubDemoV040';
+<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.42 · Prototype</div><script>
+const KEY='mssClubDemoV042';
 let state={
  setup:{orgName:'Oklahoma Swarm',season:'2026-27',eventName:'Oklahoma Swarm Tryouts',evalMethod:'Hybrid',courtCount:4,courts:['HIVE Court 1','HIVE Court 2','HIVE Court 3','HIVE Court 4'],teams:['Elite','Gold','Silver','Development'],notSelected:'Not Selected / Follow-Up',evaluators:['Coach Rob','','Coach Taylor','','Coach David','','Coach Julie',''],gradeTeams:{},offerTemplate:'Congratulations, {Player}! You have been offered a place on {Team}. Please respond by {Deadline}.',notSelectedTemplate:'Thank you for attending tryouts, {Player}. We would like to keep you informed about future opportunities.'},
  players:[],evaluations:{},offers:{},payments:[],directorReviews:{},directorName:'',checkinClosed:false,sessions:[],teamRecords:{},teamHistory:[],communication:{provider:'',connected:false,account:'',fromName:'',replyTo:'',drafts:{},sentLog:[]},requiredDocuments:[{id:'waiver',name:'Participation Waiver',type:'Waiver',version:'1.0',required:true},{id:'conduct',name:'Code of Conduct Acknowledgment',type:'Code of Conduct',version:'1.0',required:true},{id:'emergency',name:'Emergency Contact & Medical Information',type:'Emergency Contact',version:'1.0',required:true},{id:'uniform',name:'Uniform Information',type:'Uniform Information',version:'1.0',required:true}],documentCompletions:{},paymentPlans:[{id:'monthly',name:'Monthly',total:1800,deposit:300,installments:6},{id:'paidfull',name:'Paid in Full',total:1650,deposit:1650,installments:1}],placementsFinal:false
@@ -370,7 +383,7 @@ function save(){
 }
 function load(){
  currentSection='workflow';
- let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV039')||localStorage.getItem('mssClubDemoV038')||localStorage.getItem('mssClubDemoV037')||localStorage.getItem('mssClubDemoV036')||localStorage.getItem('mssClubDemoV035')||localStorage.getItem('mssClubDemoV034')||localStorage.getItem('mssClubDemoV033')||localStorage.getItem('mssClubDemoV032')||localStorage.getItem('mssClubDemoV031')||localStorage.getItem('mssClubDemoV030')||localStorage.getItem('mssClubDemoV029');
+ let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV041')||localStorage.getItem('mssClubDemoV040')||localStorage.getItem('mssClubDemoV039')||localStorage.getItem('mssClubDemoV038')||localStorage.getItem('mssClubDemoV037')||localStorage.getItem('mssClubDemoV036')||localStorage.getItem('mssClubDemoV035')||localStorage.getItem('mssClubDemoV034')||localStorage.getItem('mssClubDemoV033')||localStorage.getItem('mssClubDemoV032')||localStorage.getItem('mssClubDemoV031')||localStorage.getItem('mssClubDemoV030')||localStorage.getItem('mssClubDemoV029');
  if(x)try{state=JSON.parse(x)}catch(e){console.error('Could not load saved data',e)}
  state.payments??=[];
  state.paymentPlans??=[];
@@ -678,6 +691,14 @@ function simulateStripePay(id){let p=state.players.find(x=>x.id===id),t=acctTota
 function exportTeamAccounting(){let t=acctTeam.value,r=[['Player','Team','Plan','Total Due','Paid','Credits','Balance','Status']];state.players.filter(p=>p.team===t).forEach(p=>{let x=acctTotals(p);r.push([`${p.first} ${p.last}`,p.team,x.plan?.name||'',x.due,x.paid,x.credits,x.balance,acctStatus(p)])});downloadCSV(`${t||'Team'}_Accounting.csv`,r)}
 
 
+
+function configuredTeamNames(){
+ let setupTeams=(state.setup?.teams||[]).filter(Boolean);
+ let rosterTeams=state.players.map(p=>p.team).filter(t=>t&&t!==state.setup.notSelected);
+ let planTeams=Object.keys(state.teamAccounting?.teamPlanSettings||{});
+ return [...new Set([...setupTeams,...rosterTeams,...planTeams])];
+}
+
 function teamPlanDefaults(team){
  let fee=+(state.teamAccounting.feeConfig?.[team]?.appliedFee||0);
  return {team,seasonCost:fee||0,seasonStart:'',seasonEnd:'',billingDay:1,allowPayInFull:true,allowInstallments:true,installmentCount:4,allowMonthly:true,requireAutoPay:true,processingFee:5,processingFeeType:'percent',requireFirstPayment:false,sendAutoReminders:true,reminderDaysBefore:5,sendFollowups:true,followupEveryDays:3,allowPartialPayments:true,minimumPartialPayment:100,combinePastDue:true,combinePastDueWindow:7,plans:[]};
@@ -708,22 +729,92 @@ function renderPlanTables(plans){
 }
 function previewTeamPlan(){if(!document.getElementById('planPreview'))return;let plans=buildTeamPlansFromInputs();planPreview.innerHTML=renderPlanTables(plans);generatedTeamPlans.innerHTML=renderPlanTables(plans)}
 function loadTeamPlanSettings(){
- if(!document.getElementById('planTeam'))return;let teams=accountingTeams(),old=planTeam.value;planTeam.innerHTML=teams.map(t=>`<option ${t===old?'selected':''}>${esc(t)}</option>`).join('');
- let team=planTeam.value||teams[0]||'';if(team&&!planTeam.value)planTeam.value=team;let s=teamPlanSettings(team);
- planSeasonCost.value=s.seasonCost||state.teamAccounting.feeConfig?.[team]?.appliedFee||0;planSeasonStart.value=s.seasonStart||'';planSeasonEnd.value=s.seasonEnd||'';planBillingDay.value=s.billingDay||1;
- allowPayInFull.checked=s.allowPayInFull!==false;allowInstallments.checked=s.allowInstallments!==false;installmentCount.value=s.installmentCount||4;allowMonthly.checked=s.allowMonthly!==false;
- requireAutoPay.checked=s.requireAutoPay!==false;planProcessingFee.value=s.processingFee??5;planProcessingFeeType.value=s.processingFeeType||'percent';requireFirstPayment.checked=!!s.requireFirstPayment;
- sendAutoReminders.checked=s.sendAutoReminders!==false;reminderDaysBefore.value=s.reminderDaysBefore??5;sendFollowups.checked=s.sendFollowups!==false;followupEveryDays.value=s.followupEveryDays??3;
- allowPartialPayments.checked=s.allowPartialPayments!==false;minimumPartialPayment.value=s.minimumPartialPayment??100;combinePastDue.checked=s.combinePastDue!==false;combinePastDueWindow.value=s.combinePastDueWindow??7;previewTeamPlan();
+ if(!document.getElementById('planTeam'))return;
+ let teams=configuredTeamNames(),list=document.getElementById('planTeamOptions');
+ if(list)list.innerHTML=teams.map(t=>`<option value="${esc(t)}"></option>`).join('');
+ let team=(planTeam.value||teams[0]||'').trim();
+ if(!planTeam.value&&team)planTeam.value=team;
+ if(!team){planSeasonCost.value='';planSeasonStart.value='';planSeasonEnd.value='';generatedTeamPlans.innerHTML='<p class="note">Enter or select a team to configure payment plans.</p>';planPreview.innerHTML='';return}
+ let s=teamPlanSettings(team);
+ planSeasonCost.value=s.seasonCost||state.teamAccounting.feeConfig?.[team]?.appliedFee||0;
+ planSeasonStart.value=s.seasonStart||'';
+ planSeasonEnd.value=s.seasonEnd||'';
+ planBillingDay.value=s.billingDay||1;
+ allowPayInFull.checked=s.allowPayInFull!==false;
+ allowInstallments.checked=s.allowInstallments!==false;
+ installmentCount.value=s.installmentCount||4;
+ allowMonthly.checked=s.allowMonthly!==false;
+ requireAutoPay.checked=s.requireAutoPay!==false;
+ planProcessingFee.value=s.processingFee??5;
+ planProcessingFeeType.value=s.processingFeeType||'percent';
+ requireFirstPayment.checked=!!s.requireFirstPayment;
+ sendAutoReminders.checked=s.sendAutoReminders!==false;
+ reminderDaysBefore.value=s.reminderDaysBefore??5;
+ sendFollowups.checked=s.sendFollowups!==false;
+ followupEveryDays.value=s.followupEveryDays??3;
+ allowPartialPayments.checked=s.allowPartialPayments!==false;
+ minimumPartialPayment.value=s.minimumPartialPayment??100;
+ combinePastDue.checked=s.combinePastDue!==false;
+ combinePastDueWindow.value=s.combinePastDueWindow??7;
+ previewTeamPlan();
 }
 function saveTeamPlanSettings(){
- let team=planTeam.value;if(!team)return alert('Select a team.');let s=teamPlanSettings(team);
+ let team=planTeam.value.trim();if(!team)return alert('Select or enter a team name.');let s=teamPlanSettings(team);if(!(state.setup.teams||[]).includes(team)){state.setup.teams??=[];state.setup.teams.push(team)}
  Object.assign(s,{seasonCost:+planSeasonCost.value||0,seasonStart:planSeasonStart.value,seasonEnd:planSeasonEnd.value,billingDay:+planBillingDay.value||1,allowPayInFull:allowPayInFull.checked,allowInstallments:allowInstallments.checked,installmentCount:+installmentCount.value||4,allowMonthly:allowMonthly.checked,requireAutoPay:requireAutoPay.checked,processingFee:+planProcessingFee.value||0,processingFeeType:planProcessingFeeType.value,requireFirstPayment:requireFirstPayment.checked,sendAutoReminders:sendAutoReminders.checked,reminderDaysBefore:+reminderDaysBefore.value||0,sendFollowups:sendFollowups.checked,followupEveryDays:+followupEveryDays.value||3,allowPartialPayments:allowPartialPayments.checked,minimumPartialPayment:+minimumPartialPayment.value||0,combinePastDue:combinePastDue.checked,combinePastDueWindow:+combinePastDueWindow.value||0,plans:buildTeamPlansFromInputs()});
  save();previewTeamPlan();alert('Team payment plan settings saved.');
 }
-function applyTeamSeasonCost(){let team=planTeam.value,cost=+planSeasonCost.value||0;if(!team||cost<=0)return alert('Select a team and enter a season cost.');if(!confirm(`Apply ${money(cost)} as the season cost for all current players on ${team}?`))return;state.players.filter(p=>p.team===team).forEach(p=>p.seasonCost=cost);feeConfigFor(team).appliedFee=cost;teamPlanSettings(team).seasonCost=cost;save();renderTeamAccounting();alert(`Season cost set to ${money(cost)} for ${team}.`)}
+function applyTeamSeasonCost(){let team=planTeam.value.trim(),cost=+planSeasonCost.value||0;if(!team||cost<=0)return alert('Select or enter a team and enter a season cost.');if(!confirm(`Apply ${money(cost)} as the season cost for all current players on ${team}?`))return;state.players.filter(p=>p.team===team).forEach(p=>p.seasonCost=cost);feeConfigFor(team).appliedFee=cost;teamPlanSettings(team).seasonCost=cost;save();renderTeamAccounting();alert(`Season cost set to ${money(cost)} for ${team}.`)}
 function buildPlansFromSettings(s){if(!s)return [];return s.plans?.length?s.plans:buildPlansFromValues(+s.seasonCost||0,s.seasonStart,s.seasonEnd,+s.billingDay||1,s.allowPayInFull!==false,s.allowInstallments!==false,+s.installmentCount||4,s.allowMonthly!==false)}
 function assignParentPlan(playerId,planId){let p=state.players.find(x=>x.id===playerId);if(!p)return;let s=teamPlanSettings(p.team),plan=buildPlansFromSettings(s).find(x=>x.id===planId);if(!plan)return;p.paymentPlanId=`team:${p.team}:${plan.id}`;p.selectedPaymentPlan={...plan,team:p.team};save();renderParentPortal();renderTeamAccounting()}
+
+
+function gradeNumberPrefix(grade){let n=parseInt(String(grade||'').replace(/\D/g,''),10);return Number.isFinite(n)?n:''}
+function migratePlayerId(oldId,newId){
+ if(oldId===newId)return;let p=state.players.find(x=>x.id===oldId);if(!p)return;p.id=newId;
+ if(state.evaluations?.[oldId]){state.evaluations[newId]=state.evaluations[oldId];delete state.evaluations[oldId]}
+ if(state.directorReviews?.[oldId]){state.directorReviews[newId]=state.directorReviews[oldId];delete state.directorReviews[oldId]}
+ if(state.offers?.[oldId]){state.offers[newId]=state.offers[oldId];delete state.offers[oldId]}
+ Object.values(state.documentCompletions||{}).forEach(c=>{if(c.playerId===oldId)c.playerId=newId});
+ (state.teamAccounting?.ledger||[]).forEach(x=>{if(x.playerId===oldId)x.playerId=newId});
+ (state.teamAccounting?.donations||[]).forEach(x=>{if(x.playerId===oldId)x.playerId=newId});
+}
+function setPlayerNumber(id,value){
+ let newId=String(value||'').trim();if(!newId)return renderAll();
+ if(state.players.some(x=>x.id!==id&&String(x.id)===newId)){alert('That player number is already in use.');return renderAll()}
+ migratePlayerId(id,newId);save();renderAll();
+}
+function playerSessionCompatible(p,newGrade){let s=state.sessions.find(x=>x.id===p.sessionId);return !s||s.grade===newGrade}
+function updatePlayerGrade(id,newGrade,newGrad){
+ let p=state.players.find(x=>x.id===id);if(!p)return;newGrade=String(newGrade||p.grade).trim();newGrad=String(newGrad??p.grad??'').trim();
+ if(newGrade===p.grade&&newGrad===(p.grad||''))return;
+ let incompatible=!playerSessionCompatible(p,newGrade);
+ if(incompatible&&!confirm(`Move ${p.first} ${p.last} to ${newGrade}? Their current session/court/evaluator assignment will be cleared so they can be reassigned correctly.`))return renderAll();
+ p.grade=newGrade;p.grad=newGrad;if(incompatible){p.sessionId='';p.court='';p.evaluator=''}save();renderAll();
+}
+function editPlayerPrompt(id){
+ let p=state.players.find(x=>x.id===id);if(!p)return;
+ let num=prompt('Player / Tryout Number:',p.id);if(num===null)return;
+ let grade=prompt('Grade (example: 5th):',p.grade);if(grade===null)return;
+ let grad=prompt('Graduation Year:',p.grad||'');if(grad===null)return;
+ let newId=String(num).trim()||p.id;if(state.players.some(x=>x.id!==id&&x.id===newId))return alert('That player number is already in use.');
+ let incompatible=!playerSessionCompatible(p,grade.trim());
+ if(incompatible&&!confirm('This grade change will clear the current session/court/evaluator assignment. Continue?'))return;
+ if(newId!==id){migratePlayerId(id,newId);p=state.players.find(x=>x.id===newId)||p}
+ p.grade=grade.trim();p.grad=grad.trim();if(incompatible){p.sessionId='';p.court='';p.evaluator=''}save();renderAll();
+}
+function bulkAssignPlayerNumbers(){
+ let grade=bulkNumberGrade.value,start=+bulkNumberStart.value||1,format=bulkNumberFormat.value,players=state.players.filter(p=>p.checkedIn&&p.grade===grade);
+ if(!players.length)return alert('No checked-in players found for that grade.');
+ let proposed=players.map((p,i)=>format==='grade'?`${gradeNumberPrefix(grade)}-${String(start+i).padStart(3,'0')}`:String(start+i));
+ let outsiders=state.players.filter(p=>!players.includes(p)),conflicts=proposed.filter(v=>outsiders.some(p=>p.id===v));
+ if(conflicts.length)return alert('These player numbers are already in use: '+conflicts.join(', '));
+ if(!confirm(`Assign ${players.length} sequential numbers to checked-in ${grade} players starting at ${proposed[0]}?`))return;
+ let mappings=players.map((p,i)=>[p.id,proposed[i]]);
+ // Temporary IDs avoid collisions inside the selected group.
+ mappings.forEach(([old],i)=>migratePlayerId(old,`__tmp_${Date.now()}_${i}`));
+ state.players.filter(p=>String(p.id).startsWith('__tmp_')).forEach((p,i)=>migratePlayerId(p.id,proposed[i]));
+ save();renderAll();
+}
 
 function fillSelects(){
  let grades=[...new Set(state.players.map(p=>p.grade).filter(Boolean))].sort(),
@@ -736,7 +827,7 @@ function fillSelects(){
   if([...e.options].some(o=>o.value===v))e.value=v;
  }
 
- [['checkGrade',grades],['coachGrade',grades],['paperGrade',grades],['boardGrade',grades],
+ [['bulkNumberGrade',grades],['checkGrade',grades],['coachGrade',grades],['paperGrade',grades],['boardGrade',grades],
   ['reviewGrade',grades],['paperEntryGrade',grades],['boardGrad',grads],['reviewGrad',grads],
   ['coachCourt',courts],['paperCourt',courts],['coachEvaluator',evals],
   ['paperEvaluator',evals],['paperEntryEvaluator',evals]].forEach(([id,a])=>pop(id,a));
@@ -756,16 +847,18 @@ function avatar(p){return p.photo?`<img src="${esc(p.photo)}">`:esc((p.first?.[0
 function addPlayer(){let id=pId.value||uid();state.players.push({id,first:pFirst.value,last:pLast.value,grade:pGrade.value,grad:pGrad.value,email:pEmail.value,phone:pPhone.value,photo:pPhoto.value,status:'Registered',checkedIn:false,court:'',evaluator:'',team:'',offerStatus:'Not Created',paymentPlanId:'',depositPaid:false,rosterStatus:'Not Active',sessionId:''});['pId','pFirst','pLast','pGrad','pEmail','pPhone','pPhoto'].forEach(x=>$(x).value='');save();renderAll()}
 function generate150(){let f=['Ava','Emma','Olivia','Sophia','Mia','Harper','Ella','Grace','Lily','Riley','Kennedy','Avery','Brooklyn','Addison','Claire'],l=['Smith','Johnson','Brown','Davis','Wilson','Moore','Taylor','Anderson','Thomas','Jackson','Harris','Martin','Clark','Lewis','Walker'];state.players=[];for(let i=0;i<150;i++){let x=Math.floor(i/30),g=['3rd','4th','5th','6th','7th'][x],y=['2036','2035','2034','2033','2032'][x];state.players.push({id:`${y}-${String(i+1).padStart(3,'0')}`,first:f[i%f.length],last:l[(i*7)%l.length],grade:g,grad:y,email:`parent${i+1}@example.com`,phone:`405-555-${1000+i}`,photo:'',status:'Registered',checkedIn:false,court:'',evaluator:'',team:'',offerStatus:'Not Created',paymentPlanId:'',depositPaid:false,rosterStatus:'Not Active',sessionId:''})}save();renderAll()}
 function clearAll(){if(confirm('Clear all data?')){state.players=[];state.evaluations={};state.offers={};save();renderAll()}}
-function renderRegistrations(){let counts={};state.players.forEach(p=>counts[p.grade]=(counts[p.grade]||0)+1);registrationMetrics.innerHTML=`<div class="metric">Registered<b>${state.players.length}</b></div>`+Object.entries(counts).map(([g,n])=>`<div class="metric">${g}<b>${n}</b></div>`).join('');registrationTable.innerHTML='<table><tr><th>Photo</th><th>ID</th><th>Player</th><th>Grade/Year</th><th>Parent</th><th>Status</th></tr>'+state.players.map(p=>`<tr><td><div class="avatar">${avatar(p)}</div></td><td>${esc(p.id)}</td><td><b>${esc(p.first)} ${esc(p.last)}</b></td><td>${esc(p.grade)} / ${esc(p.grad)}</td><td>${esc(p.email)}<br>${esc(p.phone)}</td><td><span class="badge ${p.status==='Checked In'?'success':p.status==='No-Show'?'danger':''}">${esc(p.status)}</span></td></tr>`).join('')+'</table>'}
+function renderRegistrations(){
+ let box=document.getElementById('registrationList');if(!box)return;
+ if(!state.players.length){box.innerHTML='<p class="note">No players loaded.</p>';return}
+ box.innerHTML='<table><tr><th>Player Number</th><th>Player</th><th>Grade</th><th>Grad Year</th><th>Parent Email</th><th>Phone</th><th>Action</th></tr>'+state.players.map(p=>`<tr><td><input value="${esc(p.id)}" style="max-width:110px" onchange="setPlayerNumber('${p.id}',this.value)"></td><td><b>${esc(p.first)} ${esc(p.last)}</b></td><td><select onchange="updatePlayerGrade('${p.id}',this.value,'${esc(p.grad||'')}')">${['3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th'].map(g=>`<option ${p.grade===g?'selected':''}>${g}</option>`).join('')}</select></td><td><input value="${esc(p.grad||'')}" style="max-width:95px" onchange="updatePlayerGrade('${p.id}','${esc(p.grade)}',this.value)"></td><td>${esc(p.email||'')}</td><td>${esc(p.phone||'')}</td><td><button class="light" onclick="editPlayerPrompt('${p.id}')">Edit Player</button></td></tr>`).join('')+'</table>';
+}
 function renderCheckin(){
- let q=checkSearch.value.toLowerCase(),g=checkGrade.value,s=checkStatus.value;
- let a=state.players.filter(p=>(!q||(`${p.first} ${p.last} ${p.id}`).toLowerCase().includes(q))&&(!g||p.grade===g)&&(!s||p.status===s));
- let awaiting=state.players.filter(p=>p.status==='Registered').length,ci=state.players.filter(p=>p.status==='Checked In').length,ns=state.players.filter(p=>p.status==='No-Show').length;
- checkinStatusCard.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><h2 style="margin:0">Tryout Status</h2><p class="note" style="margin:5px 0 0">Check-In is <b>${state.checkinClosed?'CLOSED':'OPEN'}</b>. ${state.checkinClosed?'Remaining unreturned players are recorded as No-Shows.':'Players who have not arrived remain Awaiting Check-In.'}</p></div><span class="badge ${state.checkinClosed?'danger':'success'}">${state.checkinClosed?'CHECK-IN CLOSED':'CHECK-IN OPEN'}</span></div>`;
- checkinToggleButton.textContent=state.checkinClosed?'Reopen Check-In':'Close Check-In';
- checkinToggleButton.className=state.checkinClosed?'green':'amber';
- checkinMetrics.innerHTML=`<div class="metric">Registered<b>${state.players.length}</b></div><div class="metric">Checked In<b>${ci}</b></div><div class="metric">${state.checkinClosed?'Awaiting Check-In':'Awaiting Check-In'}<b>${awaiting}</b></div><div class="metric">No-Shows<b>${ns}</b></div>`;
- checkinTable.innerHTML='<table><tr><th>Player</th><th>Grade</th><th>Status</th><th>Court</th><th>Evaluator</th><th>Action</th></tr>'+a.map(p=>`<tr><td><b>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</b></td><td>${esc(p.grade)}</td><td><span class="badge ${p.status==='Checked In'?'success':p.status==='No-Show'?'danger':''}">${esc(p.status)}</span></td><td><select onchange="setPlayer('${p.id}','court',this.value)">${opts(activeCourts(),p.court,'Unassigned')}</select></td><td><select onchange="setPlayer('${p.id}','evaluator',this.value)">${opts(allEvaluators(),p.evaluator,'Unassigned')}</select></td><td>${p.checkedIn?`<button class="green" disabled>Checked In ✓</button> <button class="light" onclick="undoCheckin('${p.id}')">Edit</button>`:`<button class="green" onclick="checkIn('${p.id}')">Check In</button>`}</td></tr>`).join('')+'</table>';
+ let search=(document.getElementById('checkSearch')?.value||'').toLowerCase(),grade=document.getElementById('checkGrade')?.value||'',status=document.getElementById('checkStatus')?.value||'';
+ let players=state.players.filter(p=>(!search||`${p.first} ${p.last} ${p.id}`.toLowerCase().includes(search))&&(!grade||p.grade===grade)&&(!status||p.status===status));
+ let checked=state.players.filter(p=>p.checkedIn).length,noShows=state.players.filter(p=>p.status==='No-Show').length;
+ if(document.getElementById('checkMetrics'))checkMetrics.innerHTML=`<div class="metric">Registered<b>${state.players.length}</b></div><div class="metric">Checked In<b>${checked}</b></div><div class="metric">Not Yet Checked In<b>${state.players.filter(p=>!p.checkedIn&&p.status!=='No-Show').length}</b></div><div class="metric">No-Shows<b>${noShows}</b></div>`;
+ let box=document.getElementById('checkTable');if(!box)return;
+ box.innerHTML='<table><tr><th>Player Number</th><th>Player</th><th>Grade / Year</th><th>Status</th><th>Court</th><th>Evaluator</th><th>Action</th></tr>'+players.map(p=>`<tr><td><input value="${esc(p.id)}" style="max-width:110px" onchange="setPlayerNumber('${p.id}',this.value)"></td><td><b>${esc(p.first)} ${esc(p.last)}</b></td><td><div class="inline-edit"><select onchange="updatePlayerGrade('${p.id}',this.value,'${esc(p.grad||'')}')">${['3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th'].map(g=>`<option ${p.grade===g?'selected':''}>${g}</option>`).join('')}</select><input value="${esc(p.grad||'')}" style="max-width:80px" onchange="updatePlayerGrade('${p.id}','${esc(p.grade)}',this.value)"></div></td><td><span class="badge ${p.status==='Checked In'?'success':p.status==='No-Show'?'danger':''}">${esc(p.status)}</span></td><td>${esc(p.court||'-')}</td><td>${esc(p.evaluator||'-')}</td><td>${p.checkedIn?`<button class="green" disabled>Checked In ✓</button> <button class="light" onclick="undoCheckin('${p.id}')">Edit Check-In</button>`:`<button class="green" onclick="checkIn('${p.id}')">Check In</button>`} <button class="light" onclick="editPlayerPrompt('${p.id}')">Edit Player</button></td></tr>`).join('')+'</table>';
 }
 function toggleCheckinStatus(){
  if(!state.checkinClosed){
