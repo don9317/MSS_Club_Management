@@ -1,22 +1,12 @@
-MSS Club Management Suite Demo v0.44 — Parent Portal Workflow
+MSS Club Management Suite Demo v0.45 — Team Setup
 
-FIXED
-- Submit Response now works.
-- Accept updates both the offer and the player's offer status.
-- Decline and Request More Information also update status correctly.
-
-NEW
-- Consolidated Parent Portal Preview
-- Team, season cost, season dates and billing day
-- Payment-plan choices allowed for the player's team
-- Selected payment-plan schedule
-- Amount paid, balance, next payment and Auto Pay requirement
-- Required document status with shortcut to forms
-- Prototype parent payment and receipt history
-- Roster readiness / pending requirements
-- Offers & Parent Communication admin table now shows:
-  Offer Status, Payment Plan, Payment Status, Documents and Roster Readiness
-- Existing v0.43 browser data migrates automatically.
-
-PRODUCTION
-The real MSS version should expose this through authenticated parent MSS accounts rather than the administrative prototype tabs.
+- New Team Setup tile between Team Placement and communications/offers workflow
+- Team summary: grade, team name, coach, season cost, min/target/max players, status
+- Auto-fed offer counts: sent, committed/accepted, pending, declined
+- Team detail lists player names and statuses
+- Player detail shows offer, payment plan, payment status, amount paid, documents
+- Reusable Team Templates
+- Templates copy coach, roster targets, season cost and payment-plan settings but not players
+- Create/duplicate teams from templates
+- Top header version display fixed so it now updates correctly to v0.45
+- Existing v0.44 browser data migrates automatically
