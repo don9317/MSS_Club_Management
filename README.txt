@@ -1,10 +1,22 @@
-MSS Club Management Suite Demo v0.43 — Teams Dashboard
+MSS Club Management Suite Demo v0.44 — Parent Portal Workflow
 
-- New Teams Dashboard for season management
-- Grade + Team Name treated separately
-- Supports multiple teams in a grade (4th Elite, 4th Gold, 6th Elite, 6th Gold, etc.)
-- Team cards: roster, season fee, collected, outstanding, past due, accepted offers, documents, financial health
-- Filters by grade, team search, health, roster status
-- Team detail roster with payment/document status
-- Direct links into Accounting, Payment Plans, Documents, Communication
-- Existing player assignments seed the team catalog
+FIXED
+- Submit Response now works.
+- Accept updates both the offer and the player's offer status.
+- Decline and Request More Information also update status correctly.
+
+NEW
+- Consolidated Parent Portal Preview
+- Team, season cost, season dates and billing day
+- Payment-plan choices allowed for the player's team
+- Selected payment-plan schedule
+- Amount paid, balance, next payment and Auto Pay requirement
+- Required document status with shortcut to forms
+- Prototype parent payment and receipt history
+- Roster readiness / pending requirements
+- Offers & Parent Communication admin table now shows:
+  Offer Status, Payment Plan, Payment Status, Documents and Roster Readiness
+- Existing v0.43 browser data migrates automatically.
+
+PRODUCTION
+The real MSS version should expose this through authenticated parent MSS accounts rather than the administrative prototype tabs.
