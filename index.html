@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MSS Club Management Demo v0.48</title>
+<title>MSS Club Management Demo v0.49</title>
 <style>
 :root{--navy:#0b2545;--blue:#1d4ed8;--bg:#f4f7fb;--border:#d9e2ec;--muted:#667085;--green:#067647;--amber:#b54708;--red:#b42318}
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#172033}
@@ -73,7 +73,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </style>
 </head>
 <body>
-<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.48 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, and Roster Activation</div></header>
+<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.49 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, and Roster Activation</div></header>
 <div class="wrap">
 <div class="tabs no-print">
 <button class="tab active" data-tab="workflow">Workflow Dashboard</button><button class="tab" data-tab="setup">Setup</button>
@@ -150,7 +150,16 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </section>
 
 <section id="assignments" class="section">
-<div class="card"><h2>Assignment Manager</h2><p class="note">Only checked-in players appear here.</p><div class="actions"><button onclick="autoBalance()">Auto-Balance Checked-In Players</button></div><div id="assignmentTable"></div></div>
+<div class="card"><h2>Assignment Manager</h2><p class="note">Checked-in players appear in the assignment table below. You can also quickly check in a registered player here.</p>
+<div class="card" style="padding:12px;margin:10px 0 14px">
+<h3 style="margin-top:0">Quick Check-In</h3>
+<div class="grid3">
+<div><label>Registered Player</label><select id="assignmentQuickCheckPlayer"></select></div>
+<div><label>Grade Filter</label><select id="assignmentQuickGrade" onchange="renderAssignmentQuickCheck()"></select></div>
+<div style="align-self:end"><button class="green" onclick="assignmentQuickCheckIn()">Check In Player</button></div>
+</div>
+<div id="assignmentQuickStatus" class="small" style="margin-top:8px"></div>
+</div><div class="actions"><button onclick="autoBalance()">Auto-Balance Checked-In Players</button></div><div id="assignmentTable"></div></div>
 </section>
 
 <section id="coach" class="section">
@@ -411,8 +420,8 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </div>
 <div id="budgetTable" style="margin-top:12px"></div>
 </div>
-<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.48 · Prototype</div><script>
-const KEY='mssClubDemoV048';
+<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.49 · Prototype</div><script>
+const KEY='mssClubDemoV049';
 let state={
  setup:{orgName:'Oklahoma Swarm',season:'2026-27',eventName:'Oklahoma Swarm Tryouts',evalMethod:'Hybrid',courtCount:4,courts:['HIVE Court 1','HIVE Court 2','HIVE Court 3','HIVE Court 4'],teams:['Elite','Gold','Silver','Development'],notSelected:'Not Selected / Follow-Up',evaluators:['Coach Rob','','Coach Taylor','','Coach David','','Coach Julie',''],gradeTeams:{},offerTemplate:'Congratulations, {Player}! You have been offered a place on {Team}. Please respond by {Deadline}.',notSelectedTemplate:'Thank you for attending tryouts, {Player}. We would like to keep you informed about future opportunities.'},
  players:[],evaluations:{},offers:{},payments:[],directorReviews:{},directorName:'',checkinClosed:false,sessions:[],teamRecords:{},teamHistory:[],communication:{provider:'',connected:false,account:'',fromName:'',replyTo:'',drafts:{},sentLog:[]},requiredDocuments:[{id:'waiver',name:'Participation Waiver',type:'Waiver',version:'1.0',required:true},{id:'conduct',name:'Code of Conduct Acknowledgment',type:'Code of Conduct',version:'1.0',required:true},{id:'emergency',name:'Emergency Contact & Medical Information',type:'Emergency Contact',version:'1.0',required:true},{id:'uniform',name:'Uniform Information',type:'Uniform Information',version:'1.0',required:true}],documentCompletions:{},paymentPlans:[{id:'monthly',name:'Monthly',total:1800,deposit:300,installments:6},{id:'paidfull',name:'Paid in Full',total:1650,deposit:1650,installments:1}],placementsFinal:false
@@ -477,7 +486,7 @@ function save(){
 }
 function load(){
  currentSection='workflow';
- let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV047')||localStorage.getItem('mssClubDemoV046')||localStorage.getItem('mssClubDemoV045')||localStorage.getItem('mssClubDemoV044')||localStorage.getItem('mssClubDemoV043')||localStorage.getItem('mssClubDemoV042')||localStorage.getItem('mssClubDemoV041')||localStorage.getItem('mssClubDemoV040')||localStorage.getItem('mssClubDemoV039')||localStorage.getItem('mssClubDemoV038')||localStorage.getItem('mssClubDemoV037')||localStorage.getItem('mssClubDemoV036')||localStorage.getItem('mssClubDemoV035')||localStorage.getItem('mssClubDemoV034')||localStorage.getItem('mssClubDemoV033')||localStorage.getItem('mssClubDemoV032')||localStorage.getItem('mssClubDemoV031')||localStorage.getItem('mssClubDemoV030')||localStorage.getItem('mssClubDemoV029');
+ let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV048')||localStorage.getItem('mssClubDemoV047')||localStorage.getItem('mssClubDemoV046')||localStorage.getItem('mssClubDemoV045')||localStorage.getItem('mssClubDemoV044')||localStorage.getItem('mssClubDemoV043')||localStorage.getItem('mssClubDemoV042')||localStorage.getItem('mssClubDemoV041')||localStorage.getItem('mssClubDemoV040')||localStorage.getItem('mssClubDemoV039')||localStorage.getItem('mssClubDemoV038')||localStorage.getItem('mssClubDemoV037')||localStorage.getItem('mssClubDemoV036')||localStorage.getItem('mssClubDemoV035')||localStorage.getItem('mssClubDemoV034')||localStorage.getItem('mssClubDemoV033')||localStorage.getItem('mssClubDemoV032')||localStorage.getItem('mssClubDemoV031')||localStorage.getItem('mssClubDemoV030')||localStorage.getItem('mssClubDemoV029');
  if(x)try{state=JSON.parse(x)}catch(e){console.error('Could not load saved data',e)}
  state.payments??=[];
  state.paymentPlans??=[];
@@ -1077,10 +1086,9 @@ function renderRegistrations(){
  }
  if(!box)return;
  if(!state.players.length){box.innerHTML='<p class="note">No players loaded.</p>';return}
- box.innerHTML='<table><tr><th>Player Number</th><th>Player</th><th>Grade</th><th>Grad Year</th><th>Parent Email</th><th>Phone</th><th>Status</th><th>Action</th></tr>'+
- state.players.map(p=>`<tr><td><input value="${esc(p.id)}" style="max-width:110px" onchange="setPlayerNumber('${p.id}',this.value)"></td><td><b>${esc(p.first)} ${esc(p.last)}</b></td><td><select onchange="updatePlayerGrade('${p.id}',this.value,'${esc(p.grad||'')}')">${['3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th'].map(g=>`<option ${p.grade===g?'selected':''}>${g}</option>`).join('')}</select></td><td><input value="${esc(p.grad||'')}" style="max-width:95px" onchange="updatePlayerGrade('${p.id}','${esc(p.grade)}',this.value)"></td><td>${esc(p.email||'')}</td><td>${esc(p.phone||'')}</td><td>${esc(p.status||'Registered')}</td><td><button class="light" onclick="editPlayerPrompt('${p.id}')">Edit Player</button></td></tr>`).join('')+'</table>';
-}
-function clearAll(){
+ box.innerHTML='<table><tr><th>Player Number</th><th>Player</th><th>Grade</th><th>Grad Year</th><th>Parent Email</th><th>Phone</th><th>Status</th><th>Check-In</th><th>Action</th></tr>'+
+ state.players.map(p=>`<tr><td><input value="${esc(p.id)}" style="max-width:110px" onchange="setPlayerNumber('${p.id}',this.value)"></td><td><b>${esc(p.first)} ${esc(p.last)}</b></td><td><select onchange="updatePlayerGrade('${p.id}',this.value,'${esc(p.grad||'')}')">${['3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th'].map(g=>`<option ${p.grade===g?'selected':''}>${g}</option>`).join('')}</select></td><td><input value="${esc(p.grad||'')}" style="max-width:95px" onchange="updatePlayerGrade('${p.id}','${esc(p.grade)}',this.value)"></td><td>${esc(p.email||'')}</td><td>${esc(p.phone||'')}</td><td><span class="badge ${p.checkedIn?'success':p.status==='No-Show'?'danger':''}">${esc(p.status||'Registered')}</span></td><td>${p.checkedIn?`<button class="green" disabled>Checked In ✓</button><br><button class="light" style="margin-top:5px" onclick="undoCheckin('${p.id}')">Undo</button>`:`<button class="green" onclick="checkIn('${p.id}')">Check In</button>`}</td><td><button class="light" onclick="editPlayerPrompt('${p.id}')">Edit Player</button></td></tr>`).join('')+'</table>';
+}function clearAll(){
  if(!confirm('Clear all player registration and workflow data?'))return;
  state.players=[];state.evaluations={};state.directorReviews={};state.offers={};state.payments=[];state.documentCompletions={};
  save();renderAll();
@@ -1172,16 +1180,40 @@ function autoBalance(){
  });
  save();renderAll();
 }
+
+function renderAssignmentQuickCheck(){
+ let playerSel=document.getElementById('assignmentQuickCheckPlayer'),gradeSel=document.getElementById('assignmentQuickGrade');
+ if(!playerSel||!gradeSel)return;
+ let grades=[...new Set(state.players.map(p=>p.grade).filter(Boolean))].sort();
+ let oldGrade=gradeSel.value;
+ gradeSel.innerHTML='<option value="">All Grades</option>'+grades.map(g=>`<option ${g===oldGrade?'selected':''}>${esc(g)}</option>`).join('');
+ let waiting=state.players.filter(p=>!p.checkedIn&&p.status!=='No-Show'&&(!gradeSel.value||p.grade===gradeSel.value));
+ playerSel.innerHTML=waiting.map(p=>`<option value="${p.id}">${esc(p.id)} — ${esc(p.first)} ${esc(p.last)} (${esc(p.grade)})</option>`).join('');
+ let status=document.getElementById('assignmentQuickStatus');
+ if(status)status.textContent=waiting.length?`${waiting.length} registered player(s) available to check in.`:'No registered players are waiting to check in for this filter.';
+}
+function assignmentQuickCheckIn(){
+ let id=document.getElementById('assignmentQuickCheckPlayer')?.value;
+ if(!id)return alert('Select a registered player.');
+ checkIn(id);
+ let p=state.players.find(x=>x.id===id),s=document.getElementById('assignmentQuickStatus');
+ if(s&&p)s.textContent=`Checked in: ${p.first} ${p.last}. They now appear in the Assignment Manager.`;
+}
+
 function renderAssignments(){
+ renderAssignmentQuickCheck();
  let a=state.players.filter(p=>p.checkedIn);
- assignmentTable.innerHTML='<table><tr><th>Player</th><th>Grade</th><th>Session</th><th>Court</th><th>Evaluator</th></tr>'+a.map(p=>{
+ if(!a.length){
+   assignmentTable.innerHTML='<p class="note">No players have been checked in yet. Use Quick Check-In above, the Check-In tile, or the Check In button on the Master Registration List.</p><table><tr><th>Player</th><th>Grade</th><th>Session</th><th>Court</th><th>Evaluator</th></tr></table>';
+   return;
+ }
+ assignmentTable.innerHTML='<table><tr><th>Player</th><th>Grade</th><th>Session</th><th>Court</th><th>Evaluator</th><th>Check-In Status</th></tr>'+a.map(p=>{
    let courts=allowedCourtsForPlayer(p),session=state.sessions.find(x=>x.id===p.sessionId);
    if(p.court&&!courts.includes(p.court)){p.court='';p.evaluator=''}
    let evals=p.court?sessionEvaluatorsForPlayerCourt(p,p.court):allEvaluators();
-   return `<tr><td>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</td><td>${esc(p.grade)}</td><td>${esc(session?.name||'Not Assigned')}</td><td><select onchange="setPlayer('${p.id}','court',this.value)">${opts(courts,p.court,'Unassigned')}</select></td><td><select onchange="setPlayer('${p.id}','evaluator',this.value)">${opts(evals,p.evaluator,'Unassigned')}</select></td></tr>`;
+   return `<tr><td>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</td><td>${esc(p.grade)}</td><td>${esc(session?.name||'Not Assigned')}</td><td><select onchange="setPlayer('${p.id}','court',this.value)">${opts(courts,p.court,'Unassigned')}</select></td><td><select onchange="setPlayer('${p.id}','evaluator',this.value)">${opts(evals,p.evaluator,'Unassigned')}</select></td><td><span class="badge success">Checked In ✓</span></td></tr>`;
  }).join('')+'</table>';
 }
-
 
 function evaluationHasContent(e){
  return !!e&&(e.scores||[]).some(v=>+v>0)||!!e?.recommendation||!!e?.notes;
