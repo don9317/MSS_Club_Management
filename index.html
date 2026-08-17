@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MSS Club Management Demo v0.47</title>
+<title>MSS Club Management Demo v0.48</title>
 <style>
 :root{--navy:#0b2545;--blue:#1d4ed8;--bg:#f4f7fb;--border:#d9e2ec;--muted:#667085;--green:#067647;--amber:#b54708;--red:#b42318}
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#172033}
@@ -73,7 +73,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </style>
 </head>
 <body>
-<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.47 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, and Roster Activation</div></header>
+<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.48 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, and Roster Activation</div></header>
 <div class="wrap">
 <div class="tabs no-print">
 <button class="tab active" data-tab="workflow">Workflow Dashboard</button><button class="tab" data-tab="setup">Setup</button>
@@ -128,7 +128,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </div><div class="card"><h2>Configured Sessions</h2><div id="sessionTable"></div></div>
 </section><section id="registrations" class="section">
 <div id="registrationMetrics" class="metricrow"></div>
-<div class="card"><h2>Registration Data</h2><div class="actions"><label class="btn">Import CSV<input type="file" id="csvFile" accept=".csv" style="display:none"></label><button class="amber" onclick="generate150()">Generate 150 Demo Players</button><a class="btn light" href="MSS_Tryout_Demo_150_Players.csv" download>Download Demo CSV</a><button onclick="exportPlayers()">Export Players</button><button class="red" onclick="clearAll()">Clear All</button></div></div>
+<div class="card"><h2>Registration Data</h2><div id="registrationLoadStatus" class="note" style="margin-bottom:10px">No registration data loaded yet.</div><div class="actions"><label class="btn">Import CSV<input type="file" id="csvFile" accept=".csv" style="display:none"></label><button class="amber" onclick="generate150()">Generate 150 Demo Players</button><a class="btn light" href="MSS_Tryout_Demo_150_Players.csv" download>Download Demo CSV</a><button onclick="exportPlayers()">Export Players</button><button class="red" onclick="clearAll()">Clear All</button></div></div>
 <div class="card"><h2>Add Walk-In / Registration</h2><div class="grid6"><div><label>Tryout Number</label><input id="pId"></div><div><label>First Name</label><input id="pFirst"></div><div><label>Last Name</label><input id="pLast"></div><div><label>Grade</label><select id="pGrade"><option>3rd</option><option>4th</option><option>5th</option><option>6th</option><option>7th</option></select></div><div><label>Graduation Year</label><input id="pGrad"></div><div><label>Parent Email</label><input id="pEmail"></div></div><div class="grid3" style="margin-top:12px"><div><label>Parent Phone</label><input id="pPhone"></div><div><label>Headshot URL</label><input id="pPhoto"></div><div style="align-self:end"><button onclick="addPlayer()">Add Player</button></div></div></div>
 <div class="card"><h2>Master Registration List</h2><p class="note">Player number, grade, and graduation year can be edited. Grade corrections preserve registration, contact information, check-in status, photo, and evaluation history.</p><div id="registrationTable"></div></div>
 </section>
@@ -411,8 +411,8 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </div>
 <div id="budgetTable" style="margin-top:12px"></div>
 </div>
-<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.47 · Prototype</div><script>
-const KEY='mssClubDemoV047';
+<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.48 · Prototype</div><script>
+const KEY='mssClubDemoV048';
 let state={
  setup:{orgName:'Oklahoma Swarm',season:'2026-27',eventName:'Oklahoma Swarm Tryouts',evalMethod:'Hybrid',courtCount:4,courts:['HIVE Court 1','HIVE Court 2','HIVE Court 3','HIVE Court 4'],teams:['Elite','Gold','Silver','Development'],notSelected:'Not Selected / Follow-Up',evaluators:['Coach Rob','','Coach Taylor','','Coach David','','Coach Julie',''],gradeTeams:{},offerTemplate:'Congratulations, {Player}! You have been offered a place on {Team}. Please respond by {Deadline}.',notSelectedTemplate:'Thank you for attending tryouts, {Player}. We would like to keep you informed about future opportunities.'},
  players:[],evaluations:{},offers:{},payments:[],directorReviews:{},directorName:'',checkinClosed:false,sessions:[],teamRecords:{},teamHistory:[],communication:{provider:'',connected:false,account:'',fromName:'',replyTo:'',drafts:{},sentLog:[]},requiredDocuments:[{id:'waiver',name:'Participation Waiver',type:'Waiver',version:'1.0',required:true},{id:'conduct',name:'Code of Conduct Acknowledgment',type:'Code of Conduct',version:'1.0',required:true},{id:'emergency',name:'Emergency Contact & Medical Information',type:'Emergency Contact',version:'1.0',required:true},{id:'uniform',name:'Uniform Information',type:'Uniform Information',version:'1.0',required:true}],documentCompletions:{},paymentPlans:[{id:'monthly',name:'Monthly',total:1800,deposit:300,installments:6},{id:'paidfull',name:'Paid in Full',total:1650,deposit:1650,installments:1}],placementsFinal:false
@@ -477,7 +477,7 @@ function save(){
 }
 function load(){
  currentSection='workflow';
- let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV046')||localStorage.getItem('mssClubDemoV045')||localStorage.getItem('mssClubDemoV044')||localStorage.getItem('mssClubDemoV043')||localStorage.getItem('mssClubDemoV042')||localStorage.getItem('mssClubDemoV041')||localStorage.getItem('mssClubDemoV040')||localStorage.getItem('mssClubDemoV039')||localStorage.getItem('mssClubDemoV038')||localStorage.getItem('mssClubDemoV037')||localStorage.getItem('mssClubDemoV036')||localStorage.getItem('mssClubDemoV035')||localStorage.getItem('mssClubDemoV034')||localStorage.getItem('mssClubDemoV033')||localStorage.getItem('mssClubDemoV032')||localStorage.getItem('mssClubDemoV031')||localStorage.getItem('mssClubDemoV030')||localStorage.getItem('mssClubDemoV029');
+ let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV047')||localStorage.getItem('mssClubDemoV046')||localStorage.getItem('mssClubDemoV045')||localStorage.getItem('mssClubDemoV044')||localStorage.getItem('mssClubDemoV043')||localStorage.getItem('mssClubDemoV042')||localStorage.getItem('mssClubDemoV041')||localStorage.getItem('mssClubDemoV040')||localStorage.getItem('mssClubDemoV039')||localStorage.getItem('mssClubDemoV038')||localStorage.getItem('mssClubDemoV037')||localStorage.getItem('mssClubDemoV036')||localStorage.getItem('mssClubDemoV035')||localStorage.getItem('mssClubDemoV034')||localStorage.getItem('mssClubDemoV033')||localStorage.getItem('mssClubDemoV032')||localStorage.getItem('mssClubDemoV031')||localStorage.getItem('mssClubDemoV030')||localStorage.getItem('mssClubDemoV029');
  if(x)try{state=JSON.parse(x)}catch(e){console.error('Could not load saved data',e)}
  state.payments??=[];
  state.paymentPlans??=[];
@@ -1068,17 +1068,44 @@ function fillSelects(){
 }
 function avatar(p){return p.photo?`<img src="${esc(p.photo)}">`:esc((p.first?.[0]||'')+(p.last?.[0]||''))}
 function addPlayer(){let id=pId.value||uid();state.players.push({id,first:pFirst.value,last:pLast.value,grade:pGrade.value,grad:pGrad.value,email:pEmail.value,phone:pPhone.value,photo:pPhoto.value,status:'Registered',checkedIn:false,court:'',evaluator:'',team:'',offerStatus:'Not Created',paymentPlanId:'',depositPaid:false,rosterStatus:'Not Active',sessionId:''});['pId','pFirst','pLast','pGrad','pEmail','pPhone','pPhoto'].forEach(x=>$(x).value='');save();renderAll()}
-function generate150(){
- let f=['Ava','Emma','Olivia','Sophia','Mia','Harper','Ella','Grace','Lily','Riley','Kennedy','Avery','Brooklyn','Addison','Claire'],
-     l=['Smith','Johnson','Brown','Davis','Wilson','Moore','Taylor','Anderson','Thomas','Jackson','Harris','Martin','Clark','Lewis','Walker'];
- state.players=[];
- for(let i=0;i<150;i++){
-   let x=Math.floor(i/30),g=['3rd','4th','5th','6th','7th'][x],y=['2036','2035','2034','2033','2032'][x];
-   state.players.push({id:`${y}-${String(i+1).padStart(3,'0')}`,first:f[i%f.length],last:l[(i*7)%l.length],grade:g,grad:y,email:`parent${i+1}@example.com`,phone:`405-555-${1000+i}`,photo:'',status:'Registered',checkedIn:false,court:'',evaluator:'',team:'',offerStatus:'Not Created',paymentPlanId:'',depositPaid:false,rosterStatus:'Not Active',sessionId:''});
+
+function renderRegistrations(){
+ let metrics=document.getElementById('registrationMetrics'),box=document.getElementById('registrationTable');
+ if(metrics){
+   let grades=[...new Set(state.players.map(p=>p.grade).filter(Boolean))];
+   metrics.innerHTML=`<div class="metric">Registered<b>${state.players.length}</b></div><div class="metric">Grades<b>${grades.length}</b></div><div class="metric">Checked In<b>${state.players.filter(p=>p.checkedIn).length}</b></div><div class="metric">Offers Accepted<b>${state.players.filter(p=>state.offers?.[p.id]?.status==='Accepted').length}</b></div>`;
  }
- save();
- renderAll();
- alert('150 demo players loaded successfully: 30 players each in 3rd, 4th, 5th, 6th, and 7th grade.');
+ if(!box)return;
+ if(!state.players.length){box.innerHTML='<p class="note">No players loaded.</p>';return}
+ box.innerHTML='<table><tr><th>Player Number</th><th>Player</th><th>Grade</th><th>Grad Year</th><th>Parent Email</th><th>Phone</th><th>Status</th><th>Action</th></tr>'+
+ state.players.map(p=>`<tr><td><input value="${esc(p.id)}" style="max-width:110px" onchange="setPlayerNumber('${p.id}',this.value)"></td><td><b>${esc(p.first)} ${esc(p.last)}</b></td><td><select onchange="updatePlayerGrade('${p.id}',this.value,'${esc(p.grad||'')}')">${['3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th'].map(g=>`<option ${p.grade===g?'selected':''}>${g}</option>`).join('')}</select></td><td><input value="${esc(p.grad||'')}" style="max-width:95px" onchange="updatePlayerGrade('${p.id}','${esc(p.grade)}',this.value)"></td><td>${esc(p.email||'')}</td><td>${esc(p.phone||'')}</td><td>${esc(p.status||'Registered')}</td><td><button class="light" onclick="editPlayerPrompt('${p.id}')">Edit Player</button></td></tr>`).join('')+'</table>';
+}
+function clearAll(){
+ if(!confirm('Clear all player registration and workflow data?'))return;
+ state.players=[];state.evaluations={};state.directorReviews={};state.offers={};state.payments=[];state.documentCompletions={};
+ save();renderAll();
+ let s=document.getElementById('registrationLoadStatus');if(s)s.textContent='All player registration data cleared.';
+}
+function setRegistrationLoadStatus(message,ok=true){
+ let s=document.getElementById('registrationLoadStatus');if(!s)return;
+ s.textContent=message;s.style.color=ok?'#067647':'#b42318';s.style.fontWeight='700';
+}
+
+function generate150(){
+ try{
+   let f=['Ava','Emma','Olivia','Sophia','Mia','Harper','Ella','Grace','Lily','Riley','Kennedy','Avery','Brooklyn','Addison','Claire'],
+       l=['Smith','Johnson','Brown','Davis','Wilson','Moore','Taylor','Anderson','Thomas','Jackson','Harris','Martin','Clark','Lewis','Walker'];
+   state.players=[];
+   for(let i=0;i<150;i++){
+     let x=Math.floor(i/30),g=['3rd','4th','5th','6th','7th'][x],y=['2036','2035','2034','2033','2032'][x];
+     state.players.push({id:`${y}-${String(i+1).padStart(3,'0')}`,first:f[i%f.length],last:l[(i*7)%l.length],grade:g,grad:y,email:`parent${i+1}@example.com`,phone:`405-555-${1000+i}`,photo:'',status:'Registered',checkedIn:false,court:'',evaluator:'',team:'',offerStatus:'Not Created',paymentPlanId:'',depositPaid:false,rosterStatus:'Not Active',sessionId:''});
+   }
+   save();renderAll();
+   setRegistrationLoadStatus('SUCCESS: 150 demo players loaded — 30 each in 3rd, 4th, 5th, 6th and 7th grade.');
+   alert('150 demo players loaded successfully.');
+ }catch(e){
+   console.error(e);setRegistrationLoadStatus('ERROR loading demo players: '+e.message,false);alert('Demo player load failed: '+e.message);
+ }
 }
 function renderCheckin(){
  let search=(document.getElementById('checkSearch')?.value||'').toLowerCase(),grade=document.getElementById('checkGrade')?.value||'',status=document.getElementById('checkStatus')?.value||'';
@@ -1527,15 +1554,23 @@ function downloadCSV(name,rows){
  let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'text/csv'}));a.download=name;a.click();
  setTimeout(()=>URL.revokeObjectURL(a.href),500);
 }
+function parseCSVLine(line){
+ let out=[],cur='',q=false;
+ for(let i=0;i<line.length;i++){let ch=line[i];if(ch==='"'){if(q&&line[i+1]==='"'){cur+='"';i++}else q=!q}else if(ch===','&&!q){out.push(cur);cur=''}else cur+=ch}
+ out.push(cur);return out;
+}
 function importRegistrationCSVText(text){
- let lines=String(text||'').split(/\r?\n/).filter(Boolean);
- if(!lines.length)return 0;
- let h=lines.shift().split(',').map(x=>x.trim().toLowerCase()),added=0;
+ let lines=String(text||'').replace(/^\uFEFF/,'').split(/\r?\n/).filter(x=>x.trim()!=='');
+ if(lines.length<2)return 0;
+ let h=parseCSVLine(lines.shift()).map(x=>x.trim().toLowerCase()),added=0;
+ let ix=(...names)=>{for(let n of names){let i=h.indexOf(n);if(i>=0)return i}return -1};
+ let cols={id:ix('player id','tryout number','player number'),first:ix('first name','first'),last:ix('last name','last'),grade:ix('grade'),grad:ix('graduation year','grad year'),email:ix('parent email','email'),phone:ix('parent phone','phone'),photo:ix('headshot url','photo')};
  for(let line of lines){
-   let a=line.split(','),get=n=>{let idx=h.indexOf(n);return idx>=0?(a[idx]||'').trim():''};
-   let id=get('player id')||get('tryout number')||uid();
+   let a=parseCSVLine(line),get=k=>cols[k]>=0?(a[cols[k]]||'').trim():'';
+   let id=get('id')||uid(),first=get('first'),last=get('last');
+   if(!first&&!last)continue;
    if(state.players.some(p=>p.id===id))continue;
-   state.players.push({id,first:get('first name'),last:get('last name'),grade:get('grade'),grad:get('graduation year'),email:get('parent email'),phone:get('parent phone'),photo:get('headshot url'),status:'Registered',checkedIn:false,court:'',evaluator:'',team:'',offerStatus:'Not Created',paymentPlanId:'',depositPaid:false,rosterStatus:'Not Active',sessionId:''});
+   state.players.push({id,first,last,grade:get('grade'),grad:get('grad'),email:get('email'),phone:get('phone'),photo:get('photo'),status:'Registered',checkedIn:false,court:'',evaluator:'',team:'',offerStatus:'Not Created',paymentPlanId:'',depositPaid:false,rosterStatus:'Not Active',sessionId:''});
    added++;
  }
  return added;
@@ -1543,42 +1578,31 @@ function importRegistrationCSVText(text){
 function bindRegistrationCsv(){
  let el=document.getElementById('csvFile');if(!el||el.dataset.bound==='1')return;
  el.dataset.bound='1';
- el.onchange=()=>{
+ el.addEventListener('change',()=>{
    let f=el.files?.[0];if(!f)return;
+   setRegistrationLoadStatus(`Reading ${f.name}...`);
    let r=new FileReader();
    r.onload=()=>{
-     let added=importRegistrationCSVText(r.result);
-     save();renderAll();el.value='';
-     alert(`${added} player registration(s) imported.`);
+     try{
+       let added=importRegistrationCSVText(r.result);
+       save();renderAll();
+       setRegistrationLoadStatus(`SUCCESS: ${added} player registration(s) imported from ${f.name}.`);
+       alert(`${added} player registration(s) imported successfully.`);
+     }catch(e){
+       console.error(e);setRegistrationLoadStatus(`ERROR importing ${f.name}: ${e.message}`,false);alert('CSV import failed: '+e.message);
+     }finally{el.value=''}
    };
+   r.onerror=()=>setRegistrationLoadStatus(`ERROR reading ${f.name}.`,false);
    r.readAsText(f);
- };
+ });
 }
 function safeRender(name,fn){
  try{if(typeof fn==='function')fn()}catch(e){console.error(name,e)}
 }
 
 function renderAll(){
- safeRender('renderCoachMasterList',renderCoachMasterList);
- safeRender('renderSessions',renderSessions);
- safeRender('fillSelects',fillSelects);
- safeRender('renderSetupSummary',renderSetupSummary);
- safeRender('bindRegistrationCsv',bindRegistrationCsv);safeRender('renderRegistrations',renderRegistrations);
- safeRender('renderCheckin',renderCheckin);
- safeRender('renderAssignments',renderAssignments);
- safeRender('renderCoach',renderCoach);
- safeRender('renderPaperEntryPlayers',renderPaperEntryPlayers);
- safeRender('renderPacket',renderPacket);
- safeRender('renderReview',renderReview);
- safeRender('renderBoard',renderBoard);
- safeRender('renderTeamSetup',renderTeamSetup);safeRender('renderCommunicationCenter',renderCommunicationCenter);safeRender('renderOffers',renderOffers);
- safeRender('renderParentPortal',renderParentPortal);
- safeRender('renderDocuments',renderDocuments);safeRender('renderTeamsDashboard',renderTeamsDashboard);safeRender('loadTeamPlanSettings',loadTeamPlanSettings);
- safeRender('renderPayments',renderPayments);
- safeRender('renderActivation',renderActivation);
- safeRender('renderTeamAccounting',renderTeamAccounting);safeRender('renderTeamAdmin',renderTeamAdmin);
- safeRender('renderWorkflow',renderWorkflow);
- safeRender('renderStepBar',renderStepBar);
+ let names=['renderCoachMasterList','renderSessions','fillSelects','renderSetupSummary','bindRegistrationCsv','renderRegistrations','renderCheckin','renderAssignments','renderCoach','renderPaperEntryPlayers','renderPacket','renderReview','renderBoard','renderTeamSetup','renderCommunicationCenter','renderOffers','renderParentPortal','renderDocuments','renderTeamsDashboard','loadTeamPlanSettings','renderPayments','renderActivation','renderTeamAccounting','renderTeamAdmin','renderWorkflow','renderStepBar'];
+ names.forEach(name=>{try{let fn=window[name];if(typeof fn==='function')fn();else console.warn('Missing render function:',name)}catch(e){console.error(name,e)}});
 }
 load();
 </script>
