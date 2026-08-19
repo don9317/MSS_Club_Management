@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MSS Club Management Demo v0.52</title>
+<title>MSS Club Management Demo v0.53</title>
 <style>
 :root{--navy:#0b2545;--blue:#1d4ed8;--bg:#f4f7fb;--border:#d9e2ec;--muted:#667085;--green:#067647;--amber:#b54708;--red:#b42318}
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#172033}
@@ -77,7 +77,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </style>
 </head>
 <body>
-<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.52 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, and Roster Activation</div></header>
+<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.53 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, and Roster Activation</div></header>
 <div class="wrap">
 <div class="tabs no-print">
 <button class="tab active" data-tab="workflow">Workflow Dashboard</button><button class="tab" data-tab="setup">Setup</button>
@@ -457,8 +457,8 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </div>
 <div id="budgetTable" style="margin-top:12px"></div>
 </div>
-<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.52 · Prototype</div><script>
-const KEY='mssClubDemoV052';
+<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.53 · Prototype</div><script>
+const KEY='mssClubDemoV053';
 let state={
  setup:{orgName:'Oklahoma Swarm',season:'2026-27',eventName:'Oklahoma Swarm Tryouts',evalMethod:'Hybrid',courtCount:4,courts:['HIVE Court 1','HIVE Court 2','HIVE Court 3','HIVE Court 4'],teams:['Elite','Gold','Silver','Development'],notSelected:'Not Selected / Follow-Up',evaluators:['Coach Rob','','Coach Taylor','','Coach David','','Coach Julie',''],gradeTeams:{},offerTemplate:'Congratulations, {Player}! You have been offered a place on {Team}. Please respond by {Deadline}.',notSelectedTemplate:'Thank you for attending tryouts, {Player}. We would like to keep you informed about future opportunities.'},
  players:[],evaluations:{},offers:{},payments:[],directorReviews:{},directorName:'',checkinClosed:false,sessions:[],teamRecords:{},teamHistory:[],communication:{provider:'',connected:false,account:'',fromName:'',replyTo:'',drafts:{},sentLog:[]},requiredDocuments:[{id:'waiver',name:'Participation Waiver',type:'Waiver',version:'1.0',required:true},{id:'conduct',name:'Code of Conduct Acknowledgment',type:'Code of Conduct',version:'1.0',required:true},{id:'emergency',name:'Emergency Contact & Medical Information',type:'Emergency Contact',version:'1.0',required:true},{id:'uniform',name:'Uniform Information',type:'Uniform Information',version:'1.0',required:true}],documentCompletions:{},paymentPlans:[{id:'monthly',name:'Monthly',total:1800,deposit:300,installments:6},{id:'paidfull',name:'Paid in Full',total:1650,deposit:1650,installments:1}],placementsFinal:false
@@ -523,7 +523,7 @@ function save(){
 }
 function load(){
  currentSection='workflow';
- let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV051')||localStorage.getItem('mssClubDemoV050')||localStorage.getItem('mssClubDemoV049')||localStorage.getItem('mssClubDemoV048')||localStorage.getItem('mssClubDemoV047')||localStorage.getItem('mssClubDemoV046')||localStorage.getItem('mssClubDemoV045')||localStorage.getItem('mssClubDemoV044')||localStorage.getItem('mssClubDemoV043')||localStorage.getItem('mssClubDemoV042')||localStorage.getItem('mssClubDemoV041')||localStorage.getItem('mssClubDemoV040')||localStorage.getItem('mssClubDemoV039')||localStorage.getItem('mssClubDemoV038')||localStorage.getItem('mssClubDemoV037')||localStorage.getItem('mssClubDemoV036')||localStorage.getItem('mssClubDemoV035')||localStorage.getItem('mssClubDemoV034')||localStorage.getItem('mssClubDemoV033')||localStorage.getItem('mssClubDemoV032')||localStorage.getItem('mssClubDemoV031')||localStorage.getItem('mssClubDemoV030')||localStorage.getItem('mssClubDemoV029');
+ let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV052')||localStorage.getItem('mssClubDemoV051')||localStorage.getItem('mssClubDemoV050')||localStorage.getItem('mssClubDemoV049')||localStorage.getItem('mssClubDemoV048')||localStorage.getItem('mssClubDemoV047')||localStorage.getItem('mssClubDemoV046')||localStorage.getItem('mssClubDemoV045')||localStorage.getItem('mssClubDemoV044')||localStorage.getItem('mssClubDemoV043')||localStorage.getItem('mssClubDemoV042')||localStorage.getItem('mssClubDemoV041')||localStorage.getItem('mssClubDemoV040')||localStorage.getItem('mssClubDemoV039')||localStorage.getItem('mssClubDemoV038')||localStorage.getItem('mssClubDemoV037')||localStorage.getItem('mssClubDemoV036')||localStorage.getItem('mssClubDemoV035')||localStorage.getItem('mssClubDemoV034')||localStorage.getItem('mssClubDemoV033')||localStorage.getItem('mssClubDemoV032')||localStorage.getItem('mssClubDemoV031')||localStorage.getItem('mssClubDemoV030')||localStorage.getItem('mssClubDemoV029');
  if(x)try{state=JSON.parse(x)}catch(e){console.error('Could not load saved data',e)}
  state.payments??=[];
  state.paymentPlans??=[];
@@ -1397,38 +1397,53 @@ function paperEvaluationForPlayer(p){
 }
 
 
+
 function getEvaluationRecord(p){
- let ev=state.evaluations?.[p.id];
- if(!ev)return null;
+ let o=originalEvalSummary(p);
+ if(!o.average && !o.recommendation && !o.notes && !o.evaluators)return null;
+ let entries=Object.entries(state.evaluations[p.id]||{}).filter(([_,e])=>evaluationHasContent(e));
+ let category=(i)=>{
+   let vals=entries.map(([_,e])=>+(e.scores?.[i]||0)).filter(v=>v>0);
+   return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:0;
+ };
  return {
-   source:ev.source||'',
-   evaluator:ev.evaluator||p.evaluator||'',
-   rating:+ev.avg||+ev.rating||0,
-   recommendation:ev.rec||ev.recommendation||'',
-   notes:ev.notes||'',
-   athleticism:+ev.ath||+ev.athleticism||0,
-   skill:+ev.skill||0,
-   iq:+ev.iq||0,
-   effort:+ev.effort||0,
-   coachability:+ev.coach||+ev.coachability||0,
-   enteredBy:ev.enteredBy||''
+   source:o.source||'',
+   evaluator:o.evaluators||p.evaluator||'',
+   rating:+o.average||0,
+   recommendation:o.recommendation||'',
+   notes:o.notes||'',
+   athleticism:category(0),skill:category(1),iq:category(2),effort:category(3),coachability:category(4),
+   enteredBy:entries.map(([_,e])=>e.enteredBy).filter(Boolean).join(', ')
  };
 }
+
 function saveEvaluationRecord(playerId,data){
  state.evaluations??={};
  let cur=state.evaluations[playerId]||{};
  state.evaluations[playerId]={...cur,...data};
 }
 
+
 function renderPaperEntryPlayers(){
- let table=document.getElementById('paperEntryTable');if(!table)return;
- let grade=document.getElementById('paperGrade')?.value||'',status=document.getElementById('paperStatus')?.value||'',evalFilter=document.getElementById('paperEvaluatorFilter')?.value||'';
- let players=state.players.filter(p=>p.checkedIn&&(!grade||p.grade===grade));
- if(status==='Not Entered')players=players.filter(p=>!getEvaluationRecord(p));
- if(status==='Entered')players=players.filter(p=>!!getEvaluationRecord(p));
- if(evalFilter)players=players.filter(p=>(getEvaluationRecord(p)?.evaluator||p.evaluator)===evalFilter);
- table.innerHTML='<table><tr><th>Player</th><th>Grade / Year</th><th>Court</th><th>Evaluator</th><th>Status</th><th>Rating</th><th>Recommendation</th><th>Entered By</th><th>Action</th></tr>'+players.map(p=>{let ev=getEvaluationRecord(p);return`<tr><td><b>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</b></td><td>${esc(p.grade)} / ${esc(p.grad||'')}</td><td>${esc(p.court||'-')}</td><td>${esc(ev?.evaluator||p.evaluator||'-')}</td><td><span class="badge ${ev?'success':'warn'}">${ev?'Entered':'Not Entered'}</span></td><td>${ev?.rating?ev.rating.toFixed(2):'-'}</td><td>${esc(ev?.recommendation||'-')}</td><td>${esc(ev?.enteredBy||'-')}</td><td><button onclick="selectPaperEntryPlayer('${p.id}')">${ev?'Edit Scores':'Enter Scores'}</button></td></tr>`}).join('')+'</table>';
+ let g=document.getElementById('paperEntryGrade')?.value||'',
+     status=document.getElementById('paperEntryStatus')?.value||'',
+     evaluator=document.getElementById('paperEntryEvaluator')?.value||'';
+
+ let players=state.players.filter(p=>p.checkedIn&&(!g||p.grade===g));
+ if(status)players=players.filter(p=>status==='Entered'?!!paperEvaluationForPlayer(p):!paperEvaluationForPlayer(p));
+ if(evaluator)players=players.filter(p=>p.evaluator===evaluator||paperEvaluationForPlayer(p)?.[0]===evaluator);
+
+ let list=document.getElementById('paperEntryList');if(!list)return;
+ if(!players.length){
+   list.innerHTML='<div class="card"><b>No checked-in players match these filters.</b><p class="note">Try clearing the evaluator or status filter. If no players appear, confirm they were marked Checked In.</p></div>';
+   return;
+ }
+ list.innerHTML='<table><tr><th>Player</th><th>Grade / Year</th><th>Court</th><th>Evaluator</th><th>Status</th><th>Rating</th><th>Recommendation</th><th>Entered By</th><th>Action</th></tr>'+players.map(p=>{
+   let pe=paperEvaluationForPlayer(p),name=pe?.[0]||p.evaluator||'',e=pe?.[1],vals=(e?.scores||[]).map(Number).filter(v=>v>0),rating=vals.length?(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2):'-';
+   return `<tr><td><b>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</b></td><td>${esc(p.grade)} / ${esc(p.grad)}</td><td>${esc(p.court||'-')}</td><td>${esc(name||'-')}</td><td><span class="badge ${e?'success':'warn'}">${e?'Entered':'Not Entered'}</span></td><td>${esc(rating)}</td><td>${esc(e?.recommendation||'-')}</td><td>${esc(e?.enteredBy||'-')}</td><td><button onclick="selectPaperEntryPlayer('${p.id}')">${e?'Edit Scores Below ↓':'Enter Scores Below ↓'}</button></td></tr>`;
+ }).join('')+'</table>';
 }
+
 function selectPaperEntryPlayer(id){selectedPaperEntryPlayerId=id;paperEntryNotice.innerHTML='<b>Selected:</b> complete the evaluation in the box directly below the list.';renderPaperEntryForm();setTimeout(()=>paperEntryForm.scrollIntoView({behavior:'smooth',block:'center'}),50)}
 function renderPaperEntryForm(){
  let p=state.players.find(x=>x.id===selectedPaperEntryPlayerId);
@@ -1521,6 +1536,7 @@ function finalizeDirectorReview(id){
  save();
  renderReview();
 }
+
 function reopenDirectorReview(id){
  let r=directorReviewFor(id);
  r.status='Draft';
@@ -1528,28 +1544,84 @@ function reopenDirectorReview(id){
  renderReview();
 }
 
+
+function normalizeDirectorReviews(){
+ state.directorReviews??={};
+ Object.values(state.directorReviews).forEach(r=>{
+   if(!r)return;
+   if(!('directorRating' in r) && 'rating' in r)r.directorRating=r.rating||'';
+   if(!('directorRecommendation' in r) && 'recommendation' in r)r.directorRecommendation=r.recommendation||'';
+   if(!('directorNotes' in r) && 'notes' in r)r.directorNotes=r.notes||'';
+   if(!r.status){
+     r.status=(r.reviewedBy&&(r.directorRating||r.directorRecommendation||r.directorNotes))?'Reviewed':'Not Reviewed';
+   }
+   if(r.status==='Reviewed' && !r.reviewedBy){
+     r.status=(r.directorRating||r.directorRecommendation||r.directorNotes)?'Draft':'Not Reviewed';
+   }
+ });
+}
+
 function renderReview(){
- let grade=document.getElementById('reviewGrade')?.value||'',year=document.getElementById('reviewGrad')?.value||'',status=document.getElementById('reviewStatus')?.value||'';
- let players=state.players.filter(p=>(!grade||p.grade===grade)&&(!year||p.grad===year));
- if(status==='Reviewed')players=players.filter(p=>state.directorReviews?.[p.id]);
- if(status==='Not Reviewed')players=players.filter(p=>!state.directorReviews?.[p.id]);
- let box=document.getElementById('reviewTable');if(!box)return;
- box.innerHTML='<table><tr><th>Player</th><th>Attendance</th><th>Court</th><th>Evaluator / Source</th><th>Evaluator Rating</th><th>Evaluator Recommendation</th><th>Evaluator Notes</th><th>Director Rating</th><th>Director Recommendation</th><th>Director Notes / Rationale</th><th>Reviewed By</th><th>Status</th><th>Action</th></tr>'+players.map(p=>{
-   let ev=getEvaluationRecord(p),dr=state.directorReviews?.[p.id],att=p.checkedIn?'Attended':(p.status==='No-Show'?'Did Not Attend':'Not Checked In');
-   let attClass=p.checkedIn?'attendance-yes':'attendance-no';
-   return `<tr><td><b>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</b><br><span class="small">${esc(p.grade)} / ${esc(p.grad||'')}</span></td><td><span class="badge ${attClass}">${esc(att)}</span>${!p.checkedIn?`<br><button class="light" style="margin-top:5px" onclick="directorCorrectAttendance('${p.id}')">Correct Attendance</button>`:''}</td><td>${esc(p.court||'-')}</td><td>${ev?`${esc(ev.evaluator||'-')}<br><span class="small">${esc(ev.source||'-')}</span>`:'-'}</td><td>${ev?.rating?`<b>${ev.rating.toFixed(2)}</b><br><span class="small">Ath ${ev.athleticism||'-'} · Skill ${ev.skill||'-'} · IQ ${ev.iq||'-'} · Effort ${ev.effort||'-'} · Coach ${ev.coachability||'-'}</span>`:'-'}</td><td>${esc(ev?.recommendation||'-')}</td><td>${esc(ev?.notes||'-')}</td><td><input id="drRating_${p.id}" value="${esc(dr?.rating||'')}" ${!p.checkedIn&&!dr?.override?'disabled':''}></td><td><select id="drRec_${p.id}" ${!p.checkedIn&&!dr?.override?'disabled':''}>${opts(['Elite','Gold','Silver','Development','Not Selected / Follow-Up'],dr?.recommendation||'','Select')}</select></td><td><textarea id="drNotes_${p.id}" ${!p.checkedIn&&!dr?.override?'disabled':''}>${esc(dr?.notes||'')}</textarea></td><td>${esc(dr?.reviewedBy||'-')}</td><td><span class="badge ${dr?'success':'warn'}">${dr?'Reviewed':'Not Reviewed'}</span></td><td>${!p.checkedIn&&!dr?.override?`<button class="amber" onclick="directorOverrideReview('${p.id}')">Director Override</button>`:`<button class="light" onclick="saveDirectorReview('${p.id}')">${dr?'Edit Review':'Save Review'}</button>`}</td></tr>`;
+ let g=document.getElementById('reviewGrade')?.value||'',
+     y=document.getElementById('reviewGrad')?.value||'',
+     f=document.getElementById('reviewStatusFilter')?.value||'';
+
+ let players=state.players.filter(p=>(!g||p.grade===g)&&(!y||p.grad===y));
+ if(f)players=players.filter(p=>f==='Not Reviewed'?directorReviewFor(p.id).status!=='Reviewed':directorReviewFor(p.id).status===f);
+
+ let out=document.getElementById('reviewTable');if(!out)return;
+ if(!players.length){
+   out.innerHTML='<div class="card"><b>No players match these filters.</b><p class="note">Clear the filters or confirm registrations were loaded.</p></div>';
+   return;
+ }
+
+ out.innerHTML='<table><tr><th>Player</th><th>Attendance</th><th>Court</th><th>Evaluator / Source</th><th>Evaluator Rating</th><th>Evaluator Recommendation</th><th>Evaluator Notes</th><th>Director Rating</th><th>Director Recommendation</th><th>Director Notes / Rationale</th><th>Reviewed By</th><th>Status</th><th>Action</th></tr>'+players.map(p=>{
+   let o=originalEvalSummary(p),r=directorReviewFor(p.id),teams=[...gradeTeams(p.grade,p.grad),state.setup.notSelected];
+   let attended=!!p.checkedIn,override=!!r.override,locked=!attended&&!override;
+   let attendanceLabel=attended?'Attended':(p.status==='No-Show'?'Did Not Attend':'Not Checked In');
+   let attendanceClass=attended?'success':'danger';
+   let action='';
+   if(locked){
+     action=`<button class="amber" onclick="directorOverrideReview('${p.id}')">Director Override</button>`;
+   }else if(r.status==='Reviewed'){
+     action=`<button class="light" onclick="reopenDirectorReview('${p.id}')">Edit Review</button>`;
+   }else{
+     action=`<button class="green" onclick="finalizeDirectorReview('${p.id}')">Save Review</button>`;
+   }
+   return `<tr>
+   <td><b>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</b><br><span class="small">${esc(p.grade)} / ${esc(p.grad)}</span></td>
+   <td><span class="badge ${attendanceClass}">${esc(attendanceLabel)}</span>${!attended?`<br><button class="light" style="margin-top:5px" onclick="directorCorrectAttendance('${p.id}')">Correct Attendance</button>`:''}${override?'<br><span class="badge warn" style="margin-top:5px">Director Override</span>':''}</td>
+   <td>${esc(p.court||'-')}</td>
+   <td>${esc(o.evaluators||'-')}<br><span class="small">${esc(o.source||'')}</span></td>
+   <td><b>${esc(o.average||'-')}</b><br><span class="small">${esc(o.categoryScores||'')}</span></td>
+   <td>${esc(o.recommendation||'-')}</td>
+   <td>${esc(o.notes||'-')}</td>
+   <td><input type="number" min="1" max="5" step=".01" value="${esc(r.directorRating||'')}" ${locked?'disabled':''} onchange="updateDirectorReview('${p.id}','directorRating',this.value)"></td>
+   <td><select ${locked?'disabled':''} onchange="updateDirectorReview('${p.id}','directorRecommendation',this.value)">${opts(teams,r.directorRecommendation||'','Select')}</select></td>
+   <td><textarea ${locked?'disabled':''} onchange="updateDirectorReview('${p.id}','directorNotes',this.value)">${esc(r.directorNotes||'')}</textarea></td>
+   <td>${esc(r.reviewedBy||'-')}<br><span class="small">${esc(r.reviewDate||'')}</span></td>
+   <td id="reviewStatus-${p.id}"><span class="badge ${r.status==='Reviewed'?'success':'warn'}">${esc(r.status==='Draft'?'Draft — Not Reviewed':r.status||'Not Reviewed')}</span></td>
+   <td>${action}</td></tr>`;
  }).join('')+'</table>';
 }
+
+
 function directorCorrectAttendance(id){
  let p=state.players.find(x=>x.id===id);if(!p)return;
  if(!confirm(`Mark ${p.first} ${p.last} as having attended tryouts?`))return;
- p.checkedIn=true;p.status='Checked In';save();renderAll();
+ p.checkedIn=true;p.status='Checked In';
+ save();renderAll();
 }
+
+
 function directorOverrideReview(id){
  let p=state.players.find(x=>x.id===id);if(!p)return;
  if(!confirm(`Allow Director Review for ${p.first} ${p.last} even though they are not marked as attended? This will be recorded as a Director Override.`))return;
- state.directorReviews??={};state.directorReviews[id]={...(state.directorReviews[id]||{}),override:true,overrideReason:'Reviewed without recorded attendance'};
- save();renderAll();
+ let r=directorReviewFor(id);
+ r.override=true;
+ r.overrideReason='Reviewed without recorded attendance';
+ if(r.status==='Reviewed')r.status='Draft';
+ save();renderReview();
 }
 
 function exportDirectorReview(){let rows=[['Player ID','Player','Grade','Graduation Year','Attendance','Court','Evaluator','Evaluation Source','Evaluator Rating','Evaluator Recommendation','Evaluator Notes','Director Rating','Director Recommendation','Director Notes','Reviewed By','Review Date','Review Status']];state.players.filter(p=>(!reviewGrade.value||p.grade===reviewGrade.value)&&(!reviewGrad.value||p.grad===reviewGrad.value)).forEach(p=>{let o=originalEvalSummary(p),r=directorReviewFor(p.id);rows.push([p.id,`${p.first} ${p.last}`,p.grade,p.grad,p.checkedIn?'Attended':p.status,p.court,o.evaluators,o.source,o.average,o.recommendation,o.notes,r.directorRating,r.directorRecommendation,r.directorNotes,r.reviewedBy,r.reviewDate,r.status])});downloadCSV('MSS_Director_Review_Master_List.csv',rows)}
@@ -1776,6 +1848,7 @@ function safeRender(name,fn){
 }
 
 function renderAll(){
+ normalizeDirectorReviews();
  let names=['renderCoachMasterList','renderSessions','fillSelects','renderSetupSummary','bindRegistrationCsv','renderRegistrations','renderCheckin','renderAssignments','renderCoach','renderPaperEntryPlayers','renderPacket','renderReview','renderBoard','renderTeamSetup','renderTeamsMaster','renderCommunicationCenter','renderOffers','renderParentPortal','renderDocuments','renderTeamsDashboard','loadTeamPlanSettings','renderPayments','renderActivation','renderTeamAccounting','renderTeamAdmin','renderWorkflow','renderStepBar'];
  names.forEach(name=>{try{let fn=window[name];if(typeof fn==='function')fn();else console.warn('Missing render function:',name)}catch(e){console.error(name,e)}});
 }

@@ -1,20 +1,23 @@
-MSS Club Management Suite Demo v0.52 — Attendance Gate + Evaluation Sync
+MSS Club Management Suite Demo v0.53 — Paper Entry / Director Review Repair
 
-- Paper Score Entry feeds the unified player evaluation record used by Director Review.
-- Paper ratings such as Grace Wilson's 2.60 now flow to Director Review.
-- Director Review links evaluation records by unique player ID.
+FIXED — PAPER SCORE ENTRY
+- Restored the correct Paper Score Entry player-list renderer and its actual field IDs.
+- Checked-in players now appear again by grade/status/evaluator.
+- Existing paper evaluations display rating, recommendation, evaluator and entered-by.
+- Enter/Edit Scores opens the lower evaluation form.
+- Paper evaluations continue using the established per-player/per-evaluator data structure.
 
-CHECK-IN
-- Full registered-player list restored on the Check-In tile.
-- Filter by session, grade, status, or search.
-- Check In button on each registered-player row.
-- Checked-in status turns green.
-- Court/evaluator assignment is available after check-in.
-- Mark remaining players as No-Shows.
+FIXED — DIRECTOR REVIEW
+- Director Review again reads the same nested evaluation data used by Coach Quick Form and Paper Score Entry.
+- Paper ratings and recommendations flow to Director Review.
+- Reviewed By, Review Date, Draft / Reviewed status and Edit Review use the established director-review fields.
+- Edit Review reopens a Reviewed record as Draft and makes it editable.
+- Old phantom Reviewed statuses with no reviewer are normalized to Draft/Not Reviewed.
 
-ATTENDANCE GATE
-- Only checked-in players appear in normal Paper Score Entry.
-- Director Review still includes every registered player.
-- Did Not Attend / Not Checked In is highlighted.
-- Director fields are locked for non-attendees unless Director Override is selected.
-- Director can Correct Attendance when check-in was missed.
+ATTENDANCE
+- All registered players remain visible to the Director.
+- Non-attendees are highlighted and normal Director fields are locked.
+- Correct Attendance marks a missed check-in as attended.
+- Director Override deliberately unlocks review without changing attendance.
+
+Existing v0.52 browser data migrates automatically.
