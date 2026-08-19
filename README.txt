@@ -1,23 +1,24 @@
-MSS Club Management Suite Demo v0.53 — Paper Entry / Director Review Repair
+MSS Club Management Suite Demo v0.54 — Director Recommendation + Team Directory Repair
 
-FIXED — PAPER SCORE ENTRY
-- Restored the correct Paper Score Entry player-list renderer and its actual field IDs.
-- Checked-in players now appear again by grade/status/evaluator.
-- Existing paper evaluations display rating, recommendation, evaluator and entered-by.
-- Enter/Edit Scores opens the lower evaluation form.
-- Paper evaluations continue using the established per-player/per-evaluator data structure.
+DIRECTOR REVIEW
+- Removed Director Rating from the review workflow.
+- Director now reviews evaluator scores and selects the final Team Recommendation.
+- Rationale/notes remain available.
+- If the Director recommendation differs from the evaluator recommendation, a Director Override badge and change are shown.
+- Attendance override remains separately identified.
+- Reviewed By / review date / Edit Review behavior remain intact.
 
-FIXED — DIRECTOR REVIEW
-- Director Review again reads the same nested evaluation data used by Coach Quick Form and Paper Score Entry.
-- Paper ratings and recommendations flow to Director Review.
-- Reviewed By, Review Date, Draft / Reviewed status and Edit Review use the established director-review fields.
-- Edit Review reopens a Reviewed record as Draft and makes it editable.
-- Old phantom Reviewed statuses with no reviewer are normalized to Draft/Not Reviewed.
+TEAM PLACEMENT
+- Displays evaluator rating, not a second Director rating.
+- Uses Director Team Recommendation when present.
+- Shows Director Override when final recommendation differs from evaluator recommendation.
 
-ATTENDANCE
-- All registered players remain visible to the Director.
-- Non-attendees are highlighted and normal Director fields are locked.
-- Correct Attendance marks a missed check-in as attended.
-- Director Override deliberately unlocks review without changing attendance.
+TEAMS
+- Save / Create Team now refreshes Teams Being Formed, Teams, and Teams Dashboard immediately.
+- Team directory and Team Setup card rendering are defensive so an accounting-data issue cannot leave the directory blank.
+- Saved team status is retained.
 
-Existing v0.52 browser data migrates automatically.
+DEMO DATA
+- New 150-player generator uses unique player names rather than repeating names within the demo pool.
+- Bundled Demo CSV updated to the same unique-name set.
+- Existing v0.53 browser data migrates; regenerate demo players if you want the new unique demo names.
