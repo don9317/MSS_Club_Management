@@ -1,9 +1,8 @@
-MSS Club Management Suite Demo v0.60 — Team Source-of-Truth & Reconciliation
+MSS Club Management Suite Demo v0.61 — Team Setup Active-Team Handoff
 
-- Team Setup/teamCatalog is the authoritative team list.
-- Teams, Payment Plans and Team Accounting use actual saved teams rather than player placement labels.
-- Delete Team added for teams without linked history.
-- Archive Team preserves teams with roster/payment/accounting history.
-- Legacy player labels are linked automatically when there is one exact grade/team match.
-- Unlinked Team Data identifies orphaned labels such as an old Elite roster and provides Create / Repair Team.
-- Existing v0.59 data migrates automatically.
+- Team Setup now shows both Teams in Formation and Active Teams.
+- Active teams no longer appear to disappear after activation.
+- Active Team cards show coach, roster count, collected, outstanding, and season dates.
+- Open Team from Team Setup goes directly to the permanent Team Workspace in the Teams tile.
+- Archive remains available from Team Setup.
+- Existing v0.60 data migrates automatically.
