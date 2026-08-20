@@ -1,24 +1,11 @@
-MSS Club Management Suite Demo v0.54 — Director Recommendation + Team Directory Repair
+MSS Club Management Suite Demo v0.55 — Simplified Team Workflow
 
-DIRECTOR REVIEW
-- Removed Director Rating from the review workflow.
-- Director now reviews evaluator scores and selects the final Team Recommendation.
-- Rationale/notes remain available.
-- If the Director recommendation differs from the evaluator recommendation, a Director Override badge and change are shown.
-- Attendance override remains separately identified.
-- Reviewed By / review date / Edit Review behavior remain intact.
-
-TEAM PLACEMENT
-- Displays evaluator rating, not a second Director rating.
-- Uses Director Team Recommendation when present.
-- Shows Director Override when final recommendation differs from evaluator recommendation.
-
-TEAMS
-- Save / Create Team now refreshes Teams Being Formed, Teams, and Teams Dashboard immediately.
-- Team directory and Team Setup card rendering are defensive so an accounting-data issue cannot leave the directory blank.
-- Saved team status is retained.
-
-DEMO DATA
-- New 150-player generator uses unique player names rather than repeating names within the demo pool.
-- Bundled Demo CSV updated to the same unique-name set.
-- Existing v0.53 browser data migrates; regenerate demo players if you want the new unique demo names.
+- Removed Teams Dashboard.
+- Team Placement recommendations no longer automatically become actual teams.
+- Team Setup is the only team-creation/formation screen.
+- Teams is the permanent operational team workspace.
+- Team Setup includes season dates, player cost, coach, roster targets, formation player status, and Activate Team.
+- Teams shows roster, collected, outstanding, past due, season, and a functional Team Workspace.
+- Team Workspace links to Payment Plans, Payments, Team Accounting, Documents and Communication.
+- Planning/Forming/Active/Completed/Archived lifecycle retained.
+- Existing v0.54 data migrates; legacy auto-created recommendation teams are hidden unless they appear explicitly configured.
