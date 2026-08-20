@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MSS Club Management Demo v0.57</title>
+<title>MSS Club Management Demo v0.58</title>
 <style>
 :root{--navy:#0b2545;--blue:#1d4ed8;--bg:#f4f7fb;--border:#d9e2ec;--muted:#667085;--green:#067647;--amber:#b54708;--red:#b42318}
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#172033}
@@ -77,7 +77,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </style>
 </head>
 <body>
-<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.57 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, and Roster Activation</div></header>
+<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.58 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, Team Readiness, and Team Accounting</div></header>
 <div class="wrap">
 <div class="tabs no-print">
 <button class="tab active" data-tab="workflow">Workflow Dashboard</button><button class="tab" data-tab="setup">Setup</button>
@@ -94,16 +94,18 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 <button class="tab" data-tab="parent">Parent Response</button><button class="tab" data-tab="teams">Teams</button><button class="tab" data-tab="documents">Documents & Acknowledgments</button>
 <button class="tab" data-tab="plans">Payment Plans</button>
 <button class="tab" data-tab="payments">Payments</button>
-<button class="tab" data-tab="activation">Roster Activation</button><button class="tab" data-tab="accounting">Team Accounting</button><button class="tab" data-tab="teamadmin">Team Administration</button>
+<button class="tab" data-tab="accounting">Team Accounting</button><button class="tab" data-tab="teamadmin">Team Administration</button>
 </div>
 
 
 <section id="workflow" class="section active">
 <div class="card">
 <div class="grid3"><div><div class="small">Organization</div><h2 id="wfOrg"></h2></div><div><div class="small">Season</div><h2 id="wfSeason"></h2></div><div><div class="small">Event</div><h2 id="wfEvent"></h2></div></div>
-<div><div style="display:flex;justify-content:space-between"><b>Overall Progress</b><span id="wfPercent"></span></div><div class="workflow-progress"><div id="wfProgressBar"></div></div></div>
+<div class="grid3" style="margin:8px 0 14px"><div><label>Dashboard View</label><select id="wfGradeFilter" onchange="renderWorkflow()"></select></div><div><label>Tryout Session</label><select id="wfSessionFilter" onchange="renderWorkflow()"></select></div><div><label>View Purpose</label><input value="Operational progress for selected grade/session" readonly></div></div>
+<div><div style="display:flex;justify-content:space-between"><b>Overall Progress — Required Milestones</b><span id="wfPercent"></span></div><div class="workflow-progress"><div id="wfProgressBar"></div></div></div>
 </div>
 <div id="wfMetrics" class="metricrow"></div>
+<div class="card"><h2>Grade / Age Summary</h2><p class="note">Use All Grades for the executive view. Click a grade below to focus the entire dashboard on that group.</p><div id="wfGradeSummary"></div></div>
 <div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h2>Workflow</h2><div class="actions"><button class="light" onclick="openHelpFor('workflow')">? Help</button><button onclick="startGuidedTour()">🚀 Start Guided Tour</button></div></div><div id="workflowTiles" class="workflow-grid"></div></div>
 <div class="card"><h2>Attention Required</h2><div id="workflowAlerts"></div></div>
 </section>
@@ -352,10 +354,6 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </div>
 </section>
 
-<section id="activation" class="section">
-<div id="activationMetrics" class="metricrow"></div>
-<div class="card"><h2>Roster Activation</h2><p class="note">A player becomes active after accepting the offer, selecting a plan, and completing the deposit/first payment.</p><div id="activationTable"></div></div>
-</section>
 <section id="accounting" class="section"><div class="card"><h2>Team Accounting</h2><p class="note">Team financial dashboard and player payment ledger. The Pay Now button simulates Stripe Checkout in this prototype.</p><div class="grid4"><div><label>Team</label><select id="acctTeam" onchange="renderTeamAccounting()"></select></div><div><label>Season</label><input id="acctSeason" readonly></div><div><label>Status</label><select id="acctFilter" onchange="renderTeamAccounting()"><option value="">All</option><option>Paid in Full</option><option>Current</option><option>Past Due</option><option>No Plan</option></select></div><div style="align-self:end"><button class="light" onclick="exportTeamAccounting()">Export Team Ledger CSV</button></div></div></div><div id="acctMetrics" class="metricrow"></div><div class="card"><h2>Player Payment Status</h2><div id="acctPlayers"></div><div id="acctLedger"></div></div>
 <div class="card">
 <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
@@ -393,21 +391,21 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </div>
 <div id="budgetTable" style="margin-top:12px"></div>
 </div>
-<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.57 · Prototype</div><script>
+<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.58 · Prototype</div><script>
 function money(v){
  let n=Number(v||0);
  if(!Number.isFinite(n))n=0;
  return n.toLocaleString('en-US',{style:'currency',currency:'USD'});
 }
 
-const KEY='mssClubDemoV057';
+const KEY='mssClubDemoV058';
 let state={
  setup:{orgName:'Oklahoma Swarm',season:'2026-27',eventName:'Oklahoma Swarm Tryouts',evalMethod:'Hybrid',courtCount:4,courts:['HIVE Court 1','HIVE Court 2','HIVE Court 3','HIVE Court 4'],teams:['Elite','Gold','Silver','Development'],notSelected:'Not Selected / Follow-Up',evaluators:['Coach Rob','','Coach Taylor','','Coach David','','Coach Julie',''],gradeTeams:{},offerTemplate:'Congratulations, {Player}! You have been offered a place on {Team}. Please respond by {Deadline}.',notSelectedTemplate:'Thank you for attending tryouts, {Player}. We would like to keep you informed about future opportunities.'},
  players:[],evaluations:{},offers:{},payments:[],directorReviews:{},directorName:'',checkinClosed:false,sessions:[],teamRecords:{},teamHistory:[],communication:{provider:'',connected:false,account:'',fromName:'',replyTo:'',drafts:{},sentLog:[]},requiredDocuments:[{id:'waiver',name:'Participation Waiver',type:'Waiver',version:'1.0',required:true},{id:'conduct',name:'Code of Conduct Acknowledgment',type:'Code of Conduct',version:'1.0',required:true},{id:'emergency',name:'Emergency Contact & Medical Information',type:'Emergency Contact',version:'1.0',required:true},{id:'uniform',name:'Uniform Information',type:'Uniform Information',version:'1.0',required:true}],documentCompletions:{},paymentPlans:[{id:'monthly',name:'Monthly',total:1800,deposit:300,installments:6},{id:'paidfull',name:'Paid in Full',total:1650,deposit:1650,installments:1}],placementsFinal:false
 };
 
 const WORKFLOW=[
-['workflow','Dashboard'],['setup','Setup'],['sessions','Tryout Sessions'],['registrations','Registrations'],['checkin','Check-In'],['assignments','Assignments'],['coach','Coach Evaluations'],['paper','Paper Packets'],['paperentry','Paper Score Entry'],['review','Director Review'],['board','Team Placement'],['teamsetup','Team Setup'],['communication','Communication Center'],['offers','Parent Communication'],['parent','Parent Response'],['teams','Teams'],['documents','Documents & Acknowledgments'],['plans','Payment Plans'],['payments','Payments'],['activation','Roster Activation'],['accounting','Team Accounting'],['teamadmin','Team Administration']
+['workflow','Dashboard'],['setup','Setup'],['sessions','Tryout Sessions'],['registrations','Registrations'],['checkin','Check-In'],['assignments','Assignments'],['coach','Coach Evaluations'],['paper','Paper Evaluation Tools'],['paperentry','Paper Score Entry'],['review','Director Review'],['board','Team Placement'],['teamsetup','Team Setup'],['communication','Communication Center'],['offers','Parent Communication'],['parent','Parent Response'],['teams','Teams'],['documents','Documents & Acknowledgments'],['plans','Payment Plans'],['payments','Payments'],['accounting','Team Accounting'],['teamadmin','Team Administration']
 ];
 let currentSection='workflow';
 function wfIndex(id){return WORKFLOW.findIndex(x=>x[0]===id)}
@@ -421,38 +419,72 @@ function addPageFooter(id){
 function renderStepBar(){let i=wfIndex(currentSection);stepBar.innerHTML=WORKFLOW.map((x,n)=>`<span class="stepchip ${n===i?'active':''}">${n+1}. ${x[1]}</span>`).join('')}
 function evaluated(p){return Object.values(state.evaluations[p.id]||{}).some(e=>evaluationHasContent(e)&&e.scores?.every(v=>+v>0))}
 function reviewed(p){return state.directorReviews?.[p.id]?.status==='Reviewed'}
-function stepStatus(id){
- let total=state.players.length,checked=state.players.filter(p=>p.checkedIn).length,assigned=state.players.filter(p=>p.checkedIn&&p.court&&p.evaluator).length,ev=state.players.filter(evaluated).length,rv=state.players.filter(reviewed).length;
+function workflowScope(){
+ let grade=document.getElementById('wfGradeFilter')?.value||'All';
+ let sessionId=document.getElementById('wfSessionFilter')?.value||'All';
+ let players=state.players.slice();
+ if(grade!=='All')players=players.filter(p=>p.grade===grade);
+ if(sessionId!=='All'){
+   let sess=state.sessions.find(x=>x.id===sessionId);
+   if(sess)players=players.filter(p=>p.grade===sess.grade);
+ }
+ return {grade,sessionId,players};
+}
+function workflowStats(players){
+ let total=players.length,checked=players.filter(p=>p.checkedIn).length,noShows=players.filter(p=>p.status==='No-Show').length;
+ let eligible=players.filter(p=>p.checkedIn),assigned=eligible.filter(p=>p.court&&p.evaluator).length,ev=eligible.filter(evaluated).length,rv=eligible.filter(reviewed).length;
+ let placed=players.filter(p=>p.team&&p.team!==state.setup.notSelected).length;
+ let offers=players.filter(p=>state.offers?.[p.id]).length,accepted=players.filter(p=>state.offers?.[p.id]?.status==='Accepted').length;
+ let docs=players.filter(p=>state.offers?.[p.id]?.status==='Accepted'&&requiredDocumentsComplete(p)).length;
+ let paid=players.filter(p=>parentFinancials(p).paid>0).length;
+ let ready=players.filter(p=>p.rosterStatus==='Active'||(state.offers?.[p.id]?.status==='Accepted'&&requiredDocumentsComplete(p)&&parentFinancials(p).paid>0)).length;
+ return {total,checked,noShows,eligible:eligible.length,assigned,ev,rv,placed,offers,accepted,docs,paid,ready};
+}
+function stepStatus(id,players=workflowScope().players){
+ let q=workflowStats(players),total=q.total,checked=q.checked,assigned=q.assigned,ev=q.ev,rv=q.rv;
  if(id==='setup')return [state.setup.orgName&&state.setup.eventName?'Complete':'In Progress',state.setup.orgName||'Not configured'];
- if(id==='sessions')return [state.sessions.length?'Complete':'Not Started',`${state.sessions.length} configured`];
+ if(id==='sessions'){let grades=new Set(players.map(p=>p.grade));let ss=state.sessions.filter(x=>!grades.size||grades.has(x.grade));return [ss.length?'Complete':'Not Started',`${ss.length} configured`];}
  if(id==='registrations')return [total?'Complete':'Not Started',`${total} players`];
  if(id==='checkin')return [checked===total&&total?'Complete':checked?'In Progress':'Not Started',`${checked}/${total}`];
  if(id==='assignments')return [assigned===checked&&checked?'Complete':assigned?'In Progress':'Not Started',`${assigned}/${checked}`];
- if(['coach','paper','paperentry'].includes(id))return [ev===checked&&checked?'Complete':ev?'In Progress':'Not Started',`${ev}/${checked}`];
+ if(id==='coach')return [ev===checked&&checked?'Complete':ev?'In Progress':'Not Started',`${ev}/${checked}`];
+ if(id==='paper')return ['Available','Print/backup utility'];
+ if(id==='paperentry')return [ev===checked&&checked?'Complete':ev?'In Progress':'Not Started',`${ev}/${checked} evaluated`];
  if(id==='review')return [rv===checked&&checked?'Complete':rv?'In Progress':'Not Started',`${rv}/${checked}`];
- if(id==='board')return [state.placementsFinal?'Complete':state.players.some(p=>p.team)?'In Progress':'Not Started',state.placementsFinal?'Finalized':''];
+ if(id==='board')return [q.placed&&q.placed>=rv?'Complete':q.placed?'In Progress':'Not Started',`${q.placed} placed`];
  if(id==='communication')return [state.communication.sentLog.length?'In Progress':state.communication.connected?'Ready':'Not Started',state.communication.connected?state.communication.provider:'Not connected'];
- if(id==='offers')return [Object.keys(state.offers||{}).length?'In Progress':'Not Started',`${Object.keys(state.offers||{}).length} offers/messages`];
- if(id==='parent')return [state.players.some(p=>state.offers?.[p.id]?.status==='Accepted')?'In Progress':'Not Started',''];
- if(id==='documents'){let a=state.players.filter(p=>state.offers?.[p.id]?.status==='Accepted'),done=a.filter(requiredDocumentsComplete).length;return [a.length&&done===a.length?'Complete':done?'In Progress':'Not Started',`${done}/${a.length} complete`];}
- if(id==='plans')return [state.players.some(p=>p.paymentPlanId)?'In Progress':'Not Started',''];
- if(id==='payments')return [(state.payments||[]).length?'In Progress':'Not Started',`${(state.payments||[]).length} transactions`];
- if(id==='activation')return [state.players.some(p=>p.rosterStatus==='Active')?'In Progress':'Not Started',''];
- if(id==='accounting'){let t=acctTeams(),b=state.players.filter(p=>p.team&&p.team!==state.setup.notSelected).reduce((s,p)=>s+acctTotals(p).balance,0);return [t.length?'In Progress':'Not Started',t.length?`${t.length} team(s) · ${money(b)} outstanding`:''];}
+ if(id==='offers')return [q.offers?'In Progress':'Not Started',`${q.offers} offers/messages`];
+ if(id==='parent')return [q.accepted?'In Progress':'Not Started',`${q.accepted} accepted`];
+ if(id==='documents')return [q.accepted&&q.docs===q.accepted?'Complete':q.docs?'In Progress':'Not Started',`${q.docs}/${q.accepted} complete`];
+ if(id==='plans')return [players.some(p=>p.paymentPlanId)?'In Progress':'Not Started',''];
+ if(id==='payments')return [q.paid?'In Progress':'Not Started',`${q.paid} player(s) paid`];
+ if(id==='accounting'){let b=players.filter(p=>p.team&&p.team!==state.setup.notSelected).reduce((sum,p)=>sum+acctTotals(p).balance,0);return [q.placed?'In Progress':'Not Started',q.placed?`${money(b)} outstanding`:''];}
  if(id==='teamadmin')return [(state.teamHistory||[]).length?'In Progress':'Not Started',''];
+ if(id==='teamsetup'||id==='teams')return [q.placed?'Available':'Not Started',q.placed?`${q.placed} placed player(s)`:'' ];
  return ['Available',''];
 }
 function renderWorkflow(){
  if(!document.getElementById('workflowTiles'))return;
  wfOrg.textContent=state.setup.orgName||'Not set';wfSeason.textContent=state.setup.season||'Not set';wfEvent.textContent=state.setup.eventName||'Not set';
- let total=state.players.length,checked=state.players.filter(p=>p.checkedIn).length,noShows=state.players.filter(p=>p.status==='No-Show').length,ev=state.players.filter(evaluated).length,rv=state.players.filter(reviewed).length,active=state.players.filter(p=>p.rosterStatus==='Active').length;
- wfMetrics.innerHTML=`<div class="metric">Registered<b>${total}</b></div><div class="metric">Checked In<b>${checked}</b></div><div class="metric">No-Shows<b>${noShows}</b></div><div class="metric">Evaluated<b>${ev}</b></div><div class="metric">Reviewed<b>${rv}</b></div><div class="metric">Active<b>${active}</b></div>`;
- let items=WORKFLOW.slice(1).map(x=>[x[0],x[1],...stepStatus(x[0])]),complete=items.filter(x=>x[2]==='Complete').length,pct=Math.round(complete/items.length*100);
+ let grades=[...new Set(state.players.map(p=>p.grade).filter(Boolean))].sort((a,b)=>parseInt(a)-parseInt(b));
+ let gf=document.getElementById('wfGradeFilter'),sf=document.getElementById('wfSessionFilter');
+ let gv=gf.value||'All',sv=sf.value||'All';
+ gf.innerHTML='<option value="All">All Grades — Executive Summary</option>'+grades.map(g=>`<option value="${esc(g)}">${esc(g)} Grade</option>`).join('');
+ if(grades.includes(gv))gf.value=gv; else gf.value='All';
+ let sessionChoices=state.sessions.filter(x=>gf.value==='All'||x.grade===gf.value);
+ sf.innerHTML='<option value="All">All Sessions for Selected Grade</option>'+sessionChoices.map(x=>`<option value="${x.id}">${esc(x.name||x.grade+' Tryouts')}</option>`).join('');
+ if(sessionChoices.some(x=>x.id===sv))sf.value=sv; else sf.value='All';
+ let {players}=workflowScope(),q=workflowStats(players);
+ wfMetrics.innerHTML=`<div class="metric">Registered<b>${q.total}</b></div><div class="metric">Checked In<b>${q.checked}</b></div><div class="metric">No-Shows<b>${q.noShows}</b></div><div class="metric">Evaluated<b>${q.ev}</b></div><div class="metric">Reviewed<b>${q.rv}</b></div><div class="metric">Placed<b>${q.placed}</b></div><div class="metric">Accepted<b>${q.accepted}</b></div><div class="metric">Roster Ready<b>${q.ready}</b></div>`;
+ let milestones=[q.total>0,q.checked>0&&q.checked+q.noShows>=q.total,q.checked>0&&q.ev>=q.checked,q.checked>0&&q.rv>=q.checked,q.rv>0&&q.placed>=q.rv,q.placed>0&&q.offers>=q.placed,q.offers>0&&q.accepted>0,q.accepted>0&&q.docs>=q.accepted];
+ let applicable=milestones.filter((x,i)=>i<5||q.placed||q.offers||q.accepted),done=applicable.filter(Boolean).length,pct=applicable.length?Math.round(done/applicable.length*100):0;
  wfPercent.textContent=pct+'%';wfProgressBar.style.width=pct+'%';
+ let items=WORKFLOW.slice(1).map(x=>[x[0],x[1],...stepStatus(x[0],players)]);
  workflowTiles.innerHTML=items.map(x=>`<div class="workflow-tile" onclick="showTab('${x[0]}')"><h3>${x[1]}</h3><span class="badge ${x[2]==='Complete'?'success':x[2]==='In Progress'?'warn':''}">${x[2]}</span><div class="small" style="margin-top:7px">${x[3]}</div></div>`).join('');
- let alerts=[],ua=state.players.filter(p=>p.checkedIn&&(!p.court||!p.evaluator)).length,me=state.players.filter(p=>p.checkedIn&&!evaluated(p)).length,mr=state.players.filter(p=>p.checkedIn&&!reviewed(p)).length;
- if(ua)alerts.push([`${ua} players need assignments`,'assignments']);if(me)alerts.push([`${me} evaluations are incomplete`,'coach']);if(mr)alerts.push([`${mr} players await Director Review`,'review']);let md=state.players.filter(p=>state.offers?.[p.id]?.status==='Accepted'&&!requiredDocumentsComplete(p)).length;if(md)alerts.push([`${md} accepted player(s) have incomplete required documents`,'documents']);
- workflowAlerts.innerHTML=alerts.length?alerts.map(a=>`<div class="alert-item" onclick="showTab('${a[1]}')">⚠ ${a[0]}</div>`).join(''):'<span class="badge success">No urgent items</span>';
+ wfGradeSummary.innerHTML=`<table><thead><tr><th>GRADE</th><th>REGISTERED</th><th>CHECKED IN</th><th>EVALUATED</th><th>REVIEWED</th><th>PLACED</th><th>ACCEPTED</th><th>ROSTER READY</th></tr></thead><tbody>${grades.map(g=>{let z=workflowStats(state.players.filter(p=>p.grade===g));return `<tr style="cursor:pointer" onclick="wfGradeFilter.value='${esc(g)}';renderWorkflow()"><td><b>${esc(g)}</b></td><td>${z.total}</td><td>${z.checked}</td><td>${z.ev}</td><td>${z.rv}</td><td>${z.placed}</td><td>${z.accepted}</td><td>${z.ready}</td></tr>`}).join('')}</tbody></table>`;
+ let alerts=[],ua=players.filter(p=>p.checkedIn&&(!p.court||!p.evaluator)).length,me=players.filter(p=>p.checkedIn&&!evaluated(p)).length,mr=players.filter(p=>p.checkedIn&&!reviewed(p)).length;
+ if(ua)alerts.push([`${ua} players need assignments`,'assignments']);if(me)alerts.push([`${me} evaluations are incomplete`,'coach']);if(mr)alerts.push([`${mr} players await Director Review`,'review']);let md=players.filter(p=>state.offers?.[p.id]?.status==='Accepted'&&!requiredDocumentsComplete(p)).length;if(md)alerts.push([`${md} accepted player(s) have incomplete required documents`,'documents']);
+ workflowAlerts.innerHTML=alerts.length?alerts.map(a=>`<div class="alert-item" onclick="showTab('${a[1]}')">⚠ ${a[0]}</div>`).join(''):'<span class="badge success">No urgent items for this view</span>';
 }
 
 const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),uid=()=>Math.random().toString(36).slice(2,9);
@@ -463,9 +495,16 @@ function save(){
  readSetup();
  localStorage.setItem(KEY,JSON.stringify(state));
 }
+
+function cleanupLegacyDemoNames(){
+ if(state.demoNameCleanupV058)return;
+ let seen={},pool=['Jordan','Parker','Reese','Morgan','Taylor','Cameron','Quinn','Skylar','Peyton','Rowan','Emery','Blake','Kendall','Sydney','Bailey','Casey','Drew','Logan','Aubrey','Hayden','Kelsey','Jenna','Paige','Molly','Lauren','Natalie','Madison','Caroline','Rachel','Brooke','Megan','Hailey','Kayla','Allison','Samantha','Julia','Nicole','Erin','Leah','Maya'];
+ state.players.forEach((p,i)=>{let key=((p.first||'')+' '+(p.last||'')).trim().toLowerCase();if(!key)return;seen[key]=(seen[key]||0)+1;if(seen[key]>1&&/@example\.com$/i.test(p.parentEmail||'')){p.first=pool[(i+seen[key])%pool.length];p.last=(p.last||'Player')+' '+String.fromCharCode(64+Math.min(26,seen[key]));}});
+ state.demoNameCleanupV058=true;
+}
 function load(){
  currentSection='workflow';
- let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV056')||localStorage.getItem('mssClubDemoV055')||localStorage.getItem('mssClubDemoV054')||localStorage.getItem('mssClubDemoV053')||localStorage.getItem('mssClubDemoV052')||localStorage.getItem('mssClubDemoV051')||localStorage.getItem('mssClubDemoV050')||localStorage.getItem('mssClubDemoV049')||localStorage.getItem('mssClubDemoV048')||localStorage.getItem('mssClubDemoV047')||localStorage.getItem('mssClubDemoV046')||localStorage.getItem('mssClubDemoV045')||localStorage.getItem('mssClubDemoV044')||localStorage.getItem('mssClubDemoV043')||localStorage.getItem('mssClubDemoV042')||localStorage.getItem('mssClubDemoV041')||localStorage.getItem('mssClubDemoV040')||localStorage.getItem('mssClubDemoV039')||localStorage.getItem('mssClubDemoV038')||localStorage.getItem('mssClubDemoV037')||localStorage.getItem('mssClubDemoV036')||localStorage.getItem('mssClubDemoV035')||localStorage.getItem('mssClubDemoV034')||localStorage.getItem('mssClubDemoV033')||localStorage.getItem('mssClubDemoV032')||localStorage.getItem('mssClubDemoV031')||localStorage.getItem('mssClubDemoV030')||localStorage.getItem('mssClubDemoV029');
+ let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV057')||localStorage.getItem('mssClubDemoV056')||localStorage.getItem('mssClubDemoV055')||localStorage.getItem('mssClubDemoV054')||localStorage.getItem('mssClubDemoV053')||localStorage.getItem('mssClubDemoV052')||localStorage.getItem('mssClubDemoV051')||localStorage.getItem('mssClubDemoV050')||localStorage.getItem('mssClubDemoV049')||localStorage.getItem('mssClubDemoV048')||localStorage.getItem('mssClubDemoV047')||localStorage.getItem('mssClubDemoV046')||localStorage.getItem('mssClubDemoV045')||localStorage.getItem('mssClubDemoV044')||localStorage.getItem('mssClubDemoV043')||localStorage.getItem('mssClubDemoV042')||localStorage.getItem('mssClubDemoV041')||localStorage.getItem('mssClubDemoV040')||localStorage.getItem('mssClubDemoV039')||localStorage.getItem('mssClubDemoV038')||localStorage.getItem('mssClubDemoV037')||localStorage.getItem('mssClubDemoV036')||localStorage.getItem('mssClubDemoV035')||localStorage.getItem('mssClubDemoV034')||localStorage.getItem('mssClubDemoV033')||localStorage.getItem('mssClubDemoV032')||localStorage.getItem('mssClubDemoV031')||localStorage.getItem('mssClubDemoV030')||localStorage.getItem('mssClubDemoV029');
  if(x)try{state=JSON.parse(x)}catch(e){console.error('Could not load saved data',e)}
  state.payments??=[];
  state.paymentPlans??=[];
@@ -495,6 +534,7 @@ function load(){
  state.communication.sentLog??=[];
  state.requiredDocuments??=[];
  state.documentCompletions??={};
+ cleanupLegacyDemoNames();
  bindSetup();
  if(!state.players.length){
    generate150();
@@ -647,7 +687,7 @@ function renderSessions(){
  }).join('')+'</table>';
 }
 function sessionEvaluatorsForPlayerCourt(p,court){let s=state.sessions.find(x=>x.id===p.sessionId),a=s?.assignments?.[court],ids=[a?.a,a?.b].filter(Boolean),names=ids.map(id=>state.setup.coaches.find(c=>c.id===id)?.name).filter(Boolean);return names.length?names:activeCoachNames()}
-const HELP_CONTENT={workflow:['Workflow Dashboard','See overall progress, alerts, and open any step.'],setup:['Setup','Enter organization, courts, teams, and maintain the master coach list.'],sessions:['Tryout Sessions','Create or edit sessions and assign up to two coaches per court.'],registrations:['Registrations','Import players, generate demo players, or add walk-ins.'],checkin:['Check-In','Mark arrivals and identify no-shows.'],assignments:['Assignments','Balance players among eligible courts and evaluators.'],coach:['Coach Evaluations','Enter 1–5 scores, recommendation, and notes.'],paper:['Paper Packets','Generate named packets by evaluator, grade, or court, or print a completely blank scoresheet for walk-ins and backup use.'],paperentry:['Paper Score Entry','Enter completed paper forms.'],review:['Director Review','Review scores and enter final director decisions.'],board:['Team Placement','Populate teams from completed Director Reviews, then drag players to make final adjustments before placement is finalized.'],teamsetup:['Team Setup','Create the actual team record, review placed players and commitments, then activate the team when ready. Placement recommendations do not automatically create teams.'],communication:['Communication Center','Review recipients, preview messages, send a test, open a prepared email draft, or export the queue.'],offers:['Parent Communication','Create offers and follow-ups.'],parent:['Parent Response','Track accept, decline, or questions.'],teams:['Teams','Permanent team workspace for roster, payments, documents, budget, communications, and team history.'],documents:['Documents & Acknowledgments','Configure required waivers and acknowledgments, simulate parent completion, and review player readiness before roster activation.'],plans:['Payment Plans','Create and assign plans.'],payments:['Payments','Record payments and print receipts.'],activation:['Roster Activation','Activate players after requirements are met.'],accounting:['Team Accounting','Review player balances, team budget, charges, credits, offline payments, receipts, and simulated Stripe payments.'],teamadmin:['Team Administration','Extend teams or transfer players.']}
+const HELP_CONTENT={workflow:['Workflow Dashboard','See overall progress, alerts, and open any step.'],setup:['Setup','Enter organization, courts, teams, and maintain the master coach list.'],sessions:['Tryout Sessions','Create or edit sessions and assign up to two coaches per court.'],registrations:['Registrations','Import players, generate demo players, or add walk-ins.'],checkin:['Check-In','Mark arrivals and identify no-shows.'],assignments:['Assignments','Balance players among eligible courts and evaluators.'],coach:['Coach Evaluations','Enter 1–5 scores, recommendation, and notes.'],paper:['Paper Packets','Generate named packets by evaluator, grade, or court, or print a completely blank scoresheet for walk-ins and backup use.'],paperentry:['Paper Score Entry','Enter completed paper forms.'],review:['Director Review','Review scores and enter final director decisions.'],board:['Team Placement','Populate teams from completed Director Reviews, then drag players to make final adjustments before placement is finalized.'],teamsetup:['Team Setup','Create the actual team record, review placed players and commitments, then activate the team when ready. Placement recommendations do not automatically create teams.'],communication:['Communication Center','Review recipients, preview messages, send a test, open a prepared email draft, or export the queue.'],offers:['Parent Communication','Create offers and follow-ups.'],parent:['Parent Response','Track accept, decline, or questions.'],teams:['Teams','Permanent team workspace for roster, payments, documents, budget, communications, and team history.'],documents:['Documents & Acknowledgments','Configure required waivers and acknowledgments, simulate parent completion, and review player readiness before roster activation.'],plans:['Payment Plans','Create and assign plans.'],payments:['Payments','Record payments and print receipts.'],accounting:['Team Accounting','Review player balances, team budget, charges, credits, offline payments, receipts, and simulated Stripe payments.'],teamadmin:['Team Administration','Extend teams or transfer players.']}
 let tourMode=false,tourIndex=0;
 
 function saveProgress(){
@@ -693,8 +733,8 @@ function completionFor(playerId,doc){
  if(direct)return direct;
  return Object.values(state.documentCompletions||{}).find(c=>c.playerId===playerId&&c.docId===doc.id&&String(c.version||'')===String(doc.version||''))||null;
 }
-function completeDocument(playerId,docId){let doc=state.requiredDocuments.find(x=>x.id===docId);if(!doc)return;let signer=documentSigner.value.trim();if(!signer)return alert('Enter the parent or guardian name.');let date=documentDate.value||new Date().toISOString().slice(0,10);state.documentCompletions[playerDocumentKey(playerId,doc)]={playerId,docId:doc.id,docName:doc.name,docType:doc.type,version:doc.version,organization:state.setup.orgName||'',season:state.setup.season||'',signer,date,timestamp:new Date().toISOString(),status:'Complete'};save();renderDocumentCompletion();renderDocuments();renderActivation()}
-function removeDocumentCompletion(playerId,docId){let doc=state.requiredDocuments.find(x=>x.id===docId);if(!doc)return;delete state.documentCompletions[playerDocumentKey(playerId,doc)];save();renderDocumentCompletion();renderDocuments();renderActivation()}
+function completeDocument(playerId,docId){let doc=state.requiredDocuments.find(x=>x.id===docId);if(!doc)return;let signer=documentSigner.value.trim();if(!signer)return alert('Enter the parent or guardian name.');let date=documentDate.value||new Date().toISOString().slice(0,10);state.documentCompletions[playerDocumentKey(playerId,doc)]={playerId,docId:doc.id,docName:doc.name,docType:doc.type,version:doc.version,organization:state.setup.orgName||'',season:state.setup.season||'',signer,date,timestamp:new Date().toISOString(),status:'Complete'};save();renderDocumentCompletion();renderDocuments()}
+function removeDocumentCompletion(playerId,docId){let doc=state.requiredDocuments.find(x=>x.id===docId);if(!doc)return;delete state.documentCompletions[playerDocumentKey(playerId,doc)];save();renderDocumentCompletion();renderDocuments()}
 function requiredDocumentsComplete(p){
  let required=(state.requiredDocuments||[]).filter(d=>d.required);
  return required.every(d=>!!completionFor(p.id,d));
@@ -1888,7 +1928,7 @@ function safeRender(name,fn){
 
 function renderAll(){
  normalizeDirectorReviews();
- let names=['renderCoachMasterList','renderSessions','fillSelects','renderSetupSummary','bindRegistrationCsv','renderRegistrations','renderCheckin','renderAssignments','renderCoach','renderPaperEntryPlayers','renderPacket','renderReview','renderBoard','renderTeamSetup','renderTeamsMaster','renderCommunicationCenter','renderOffers','renderParentPortal','renderDocuments','loadTeamPlanSettings','renderPayments','renderActivation','renderTeamAccounting','renderTeamAdmin','renderWorkflow','renderStepBar'];
+ let names=['renderCoachMasterList','renderSessions','fillSelects','renderSetupSummary','bindRegistrationCsv','renderRegistrations','renderCheckin','renderAssignments','renderCoach','renderPaperEntryPlayers','renderPacket','renderReview','renderBoard','renderTeamSetup','renderTeamsMaster','renderCommunicationCenter','renderOffers','renderParentPortal','renderDocuments','loadTeamPlanSettings','renderPayments','renderTeamAccounting','renderTeamAdmin','renderWorkflow','renderStepBar'];
  names.forEach(name=>{try{let fn=window[name];if(typeof fn==='function')fn();else console.warn('Missing render function:',name)}catch(e){console.error(name,e)}});
 }
 load();
