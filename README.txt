@@ -1,11 +1,10 @@
-MSS Club Management Suite Demo v0.55 — Simplified Team Workflow
+MSS Club Management Suite Demo v0.56 — Team Listing Display Repair
 
-- Removed Teams Dashboard.
-- Team Placement recommendations no longer automatically become actual teams.
-- Team Setup is the only team-creation/formation screen.
-- Teams is the permanent operational team workspace.
-- Team Setup includes season dates, player cost, coach, roster targets, formation player status, and Activate Team.
-- Teams shows roster, collected, outstanding, past due, season, and a functional Team Workspace.
-- Team Workspace links to Payment Plans, Payments, Team Accounting, Documents and Communication.
-- Planning/Forming/Active/Completed/Archived lifecycle retained.
-- Existing v0.54 data migrates; legacy auto-created recommendation teams are hidden unless they appear explicitly configured.
+- Restored/added the currency formatter required by the new team screens.
+- Team Setup cards now render even if one summary calculation fails.
+- Team Directory rows now render even if a financial calculation fails.
+- Saved teams are explicitly flagged as real team records.
+- Team counts, Teams in Formation, and Teams Directory now use the same real-team source.
+- Existing v0.55 browser data migrates automatically.
+
+Expected: if Team Setup says Teams Forming = 3, those same three teams should appear under Teams in Formation and under Teams.
