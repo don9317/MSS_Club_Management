@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MSS Club Management Demo v0.59</title>
+<title>MSS Club Management Demo v0.60</title>
 <style>
 :root{--navy:#0b2545;--blue:#1d4ed8;--bg:#f4f7fb;--border:#d9e2ec;--muted:#667085;--green:#067647;--amber:#b54708;--red:#b42318}
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#172033}
@@ -77,7 +77,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </style>
 </head>
 <body>
-<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.59 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, Team Readiness, and Team Accounting</div></header>
+<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.60 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, Team Readiness, and Team Accounting</div></header>
 <div class="wrap">
 <div class="tabs no-print">
 <button class="tab active" data-tab="workflow">Workflow Dashboard</button><button class="tab" data-tab="setup">Setup</button>
@@ -267,7 +267,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 <section id="teams" class="section">
 <div class="card"><div style="display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap"><div><h2>Teams</h2><p class="note">Permanent team home for forming, active, completed, and archived teams. Open a team to manage its roster, balances, documents, payments, budget, and communications.</p></div><button class="green" onclick="saveProgress()">Save Progress</button></div>
 <div class="grid4"><div><label>Search</label><input id="teamsSearch" placeholder="Team, grade or coach" oninput="renderTeamsMaster()"></div><div><label>Status</label><select id="teamsStatusFilter" onchange="renderTeamsMaster()"><option value="">All Current</option><option>Planning</option><option>Forming</option><option>Active</option><option>Completed</option><option>Archived</option></select></div><div><label>Grade</label><select id="teamsGradeFilter" onchange="renderTeamsMaster()"><option value="">All Grades</option></select></div><div><label>History</label><select id="teamsViewFilter" onchange="renderTeamsMaster()"><option value="current">Current Teams</option><option value="all">Include Completed / Archived</option></select></div></div><div id="teamsMasterMetrics" class="metricrow" style="margin-top:14px"></div></div>
-<div class="card"><h2>Team Directory</h2><div id="teamsMasterList"></div></div>
+<div class="card"><h2>Team Directory</h2><div id="teamsMasterList"></div></div><div class="card"><h2>Unlinked Team Data</h2><p class="note">Legacy player/accounting team labels that are not linked to an actual Team Setup record appear here.</p><div id="unlinkedTeamData"></div></div>
 <div class="card" id="teamMasterDetailCard" style="display:none"><div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap"><div><h2 id="teamMasterDetailTitle">Team Workspace</h2><div id="teamMasterDetailSubtitle" class="note"></div></div><div class="actions"><button class="light" onclick="openCurrentTeamFormation()">Formation</button><button class="light" onclick="openCurrentTeamArea('plans')">Payment Plans</button><button class="light" onclick="openCurrentTeamArea('payments')">Payments</button><button class="light" onclick="openCurrentTeamArea('accounting')">Team Accounting</button><button class="light" onclick="openCurrentTeamArea('documents')">Documents</button><button class="light" onclick="openCurrentTeamArea('communication')">Communication</button><button onclick="closeTeamMasterDetail()">Close</button></div></div><div id="teamMasterDetail"></div></div>
 </section>
 <section id="plans" class="section">
@@ -391,14 +391,14 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </div>
 <div id="budgetTable" style="margin-top:12px"></div>
 </div>
-<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.59 · Prototype</div><script>
+<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.60 · Prototype</div><script>
 function money(v){
  let n=Number(v||0);
  if(!Number.isFinite(n))n=0;
  return n.toLocaleString('en-US',{style:'currency',currency:'USD'});
 }
 
-const KEY='mssClubDemoV059';
+const KEY='mssClubDemoV060';
 let state={
  setup:{orgName:'Oklahoma Swarm',season:'2026-27',eventName:'Oklahoma Swarm Tryouts',evalMethod:'Hybrid',courtCount:4,courts:['HIVE Court 1','HIVE Court 2','HIVE Court 3','HIVE Court 4'],teams:['Elite','Gold','Silver','Development'],notSelected:'Not Selected / Follow-Up',evaluators:['Coach Rob','','Coach Taylor','','Coach David','','Coach Julie',''],gradeTeams:{},offerTemplate:'Congratulations, {Player}! You have been offered a place on {Team}. Please respond by {Deadline}.',notSelectedTemplate:'Thank you for attending tryouts, {Player}. We would like to keep you informed about future opportunities.'},
  players:[],evaluations:{},offers:{},payments:[],directorReviews:{},directorName:'',checkinClosed:false,sessions:[],teamRecords:{},teamHistory:[],communication:{provider:'',connected:false,account:'',fromName:'',replyTo:'',drafts:{},sentLog:[]},requiredDocuments:[{id:'waiver',name:'Participation Waiver',type:'Waiver',version:'1.0',required:true},{id:'conduct',name:'Code of Conduct Acknowledgment',type:'Code of Conduct',version:'1.0',required:true},{id:'emergency',name:'Emergency Contact & Medical Information',type:'Emergency Contact',version:'1.0',required:true},{id:'uniform',name:'Uniform Information',type:'Uniform Information',version:'1.0',required:true}],documentCompletions:{},paymentPlans:[{id:'monthly',name:'Monthly',total:1800,deposit:300,installments:6},{id:'paidfull',name:'Paid in Full',total:1650,deposit:1650,installments:1}],placementsFinal:false
@@ -636,7 +636,7 @@ function recordOfflinePaymentAndReceipt(){if(!isOfflineMethod(paymentMethod.valu
 function generateReceipt(t){let p=state.players.find(x=>x.id===t.playerId);receiptPreview.innerHTML=`<div id="printableReceipt"><h2>${esc(state.setup.orgName||'Club')} Payment Receipt</h2><p><b>Receipt:</b> ${esc(t.id)}</p><p><b>Date:</b> ${esc(t.date)}</p><p><b>Player:</b> ${esc(p?`${p.first} ${p.last}`:'')}</p><p><b>Team:</b> ${esc(p?.team||'')}</p><p><b>Amount:</b> ${money(t.amount)}</p><p><b>Method:</b> ${esc(t.method)}</p><p><b>Reference:</b> ${esc(t.reference||'-')}</p><p><b>Received By:</b> ${esc(t.enteredBy||'')}</p><button onclick="printReceipt()">Print Receipt</button></div>`}
 function printReceipt(){let h=document.getElementById('printableReceipt')?.innerHTML;if(!h)return;let w=window.open('','_blank');w.document.write(`<html><body style="font-family:Arial;padding:30px">${h}</body></html>`);w.document.close();w.print()}
 function ensureTeamRecord(n){state.teamRecords[n]??={name:n,endDate:''};return state.teamRecords[n]}
-function renderTeamAdmin(){let teams=[...new Set(state.players.map(p=>p.team).filter(Boolean))],tv=adminTeam.value,pv=transferPlayer.value;adminTeam.innerHTML=teams.map(t=>`<option>${esc(t)}</option>`).join('');adminTeam.value=tv&&teams.includes(tv)?tv:(teams[0]||'');transferTo.innerHTML=teams.map(t=>`<option>${esc(t)}</option>`).join('');transferPlayer.innerHTML=state.players.filter(p=>p.team).map(p=>`<option value="${p.id}">${esc(p.first)} ${esc(p.last)} — ${esc(p.team)}</option>`).join('');transferPlayer.value=pv;let tr=state.players.find(p=>p.id===transferPlayer.value);transferFrom.value=tr?.team||'';teamCurrentEnd.value=adminTeam.value?ensureTeamRecord(adminTeam.value).endDate:'';teamHistoryTable.innerHTML='<table><tr><th>Date</th><th>Type</th><th>Subject</th><th>Details</th><th>Adjustment</th></tr>'+[...state.teamHistory].reverse().map(h=>`<tr><td>${h.date}</td><td>${esc(h.type)}</td><td>${esc(h.subject)}</td><td>${esc(h.details)}</td><td>${money(h.adjustment||0)}</td></tr>`).join('')+'</table>'}
+function renderTeamAdmin(){let teams=actualTeams().map(t=>displayTeamName(t)),tv=adminTeam.value,pv=transferPlayer.value;adminTeam.innerHTML=teams.map(t=>`<option>${esc(t)}</option>`).join('');adminTeam.value=tv&&teams.includes(tv)?tv:(teams[0]||'');transferTo.innerHTML=teams.map(t=>`<option>${esc(t)}</option>`).join('');transferPlayer.innerHTML=state.players.filter(p=>p.team).map(p=>`<option value="${p.id}">${esc(p.first)} ${esc(p.last)} — ${esc(p.team)}</option>`).join('');transferPlayer.value=pv;let tr=state.players.find(p=>p.id===transferPlayer.value);transferFrom.value=tr?.team||'';teamCurrentEnd.value=adminTeam.value?ensureTeamRecord(adminTeam.value).endDate:'';teamHistoryTable.innerHTML='<table><tr><th>Date</th><th>Type</th><th>Subject</th><th>Details</th><th>Adjustment</th></tr>'+[...state.teamHistory].reverse().map(h=>`<tr><td>${h.date}</td><td>${esc(h.type)}</td><td>${esc(h.subject)}</td><td>${esc(h.details)}</td><td>${money(h.adjustment||0)}</td></tr>`).join('')+'</table>'}
 function extendTeam(){let team=adminTeam.value;if(!team||!teamNewEnd.value)return alert('Select a team and new end date.');let r=ensureTeamRecord(team),old=r.endDate||'Not set',fee=+teamExtensionFee.value||0;r.endDate=teamNewEnd.value;if(fee)state.players.filter(p=>p.team===team).forEach(p=>state.payments.push({id:uid(),playerId:p.id,type:'Charge Adjustment',method:'Team Extension',amount:fee,date:new Date().toISOString().slice(0,10),appliedTo:'Team Extension',reference:team,enteredBy:'Club Administrator',notes:`Extended to ${teamNewEnd.value}`}));state.teamHistory.push({date:new Date().toISOString().slice(0,10),type:'Team Extension',subject:team,details:`End date changed from ${old} to ${teamNewEnd.value}`,adjustment:fee});save();renderAll()}
 function transferPlayer(){let p=state.players.find(x=>x.id===transferPlayer.value),to=transferTo.value;if(!p||!to)return;let from=p.team;if(from===to)return alert('Select a different team.');p.team=to;let fee=+transferAdjustment.value||0;if(fee)state.payments.push({id:uid(),playerId:p.id,type:'Charge Adjustment',method:'Team Transfer',amount:fee,date:new Date().toISOString().slice(0,10),appliedTo:'Team Transfer',reference:`${from} to ${to}`,enteredBy:'Club Administrator',notes:transferNotes.value});state.teamHistory.push({date:new Date().toISOString().slice(0,10),type:'Player Transfer',subject:`${p.first} ${p.last}`,details:`${from} to ${to}. ${transferNotes.value||''}`,adjustment:fee});save();renderAll()}
 
@@ -732,7 +732,7 @@ function disconnectEmailProvider(){state.communication.connected=false;state.com
 function communicationRecipients(){let g=commGroup?.value||'All Offers';return state.players.filter(p=>{let o=state.offers?.[p.id];if(!p.email)return false;if(g==='All Offers')return !!o;if(g==='Offer Pending')return o?.status==='Offer Pending';if(g==='Accepted')return o?.status==='Accepted';if(g==='Declined')return o?.status==='Declined';if(g==='Not Selected')return p.team===state.setup.notSelected;return p.team===g})}
 function defaultCommunicationTemplate(t){let org=state.setup.orgName||'Our Club';if(t==='Team Offer')return{subject:`${org} Team Offer`,body:`Congratulations {Player},\n\nWe are pleased to offer you a position on the {Team} team.\n\nThank you,\n{FromName}`};if(t==='Offer Reminder')return{subject:`Reminder: ${org} Team Offer`,body:`Hello {Player},\n\nYour offer for the {Team} team is awaiting a response.\n\nThank you,\n{FromName}`};if(t==='Wait List')return{subject:`${org} Tryout Update`,body:`Hello {Player},\n\nYou are currently on our wait list.\n\nThank you,\n{FromName}`};if(t==='Not Selected')return{subject:`Thank You for Attending ${org} Tryouts`,body:`Hello {Player},\n\nThank you for attending tryouts.\n\nThank you,\n{FromName}`};return{subject:`${org} Payment Reminder`,body:`Hello {Player},\n\nThis is a reminder regarding the balance for the {Team} team.\n\nThank you,\n{FromName}`}}
 function mergeCommunication(x,p){return String(x||'').replaceAll('{Player}',`${p.first} ${p.last}`).replaceAll('{Team}',p.team||'').replaceAll('{FromName}',state.communication.fromName||state.setup.orgName||'Club Director')}
-function renderCommunicationCenter(){if(!document.getElementById('commGroup'))return;let teams=[...new Set(state.players.map(p=>p.team).filter(Boolean))],cur=commGroup.value;commGroup.innerHTML=['All Offers','Offer Pending','Accepted','Declined','Not Selected',...teams].map(x=>`<option ${x===cur?'selected':''}>${esc(x)}</option>`).join('');let k=commMessageType.value||'Team Offer',d=state.communication.drafts[k],def=defaultCommunicationTemplate(k);commSubject.value=d?.subject||def.subject;commBody.value=d?.body||def.body;commConnectedAccount.value=state.communication.connected?`${state.communication.provider}: ${state.communication.account}`:'Not Connected';commReplyDisplay.value=state.communication.replyTo||'';let r=communicationRecipients(),missing=state.players.filter(p=>state.offers?.[p.id]&&!p.email).length;commMetrics.innerHTML=`<div class="metric">Ready<b>${r.length}</b></div><div class="metric">Valid Email<b>${r.length}</b></div><div class="metric">Missing Email<b>${missing}</b></div><div class="metric">Sent Log<b>${state.communication.sentLog.length}</b></div>`;commQueueTable.innerHTML='<table><tr><th>Player</th><th>Team</th><th>Email</th><th>Status</th><th>Type</th></tr>'+r.map(p=>`<tr><td>${esc(p.first)} ${esc(p.last)}</td><td>${esc(p.team||'')}</td><td>${esc(p.email)}</td><td>${esc(state.offers?.[p.id]?.status||'')}</td><td>${esc(k)}</td></tr>`).join('')+'</table>'}
+function renderCommunicationCenter(){if(!document.getElementById('commGroup'))return;let teams=actualTeams().map(t=>displayTeamName(t)),cur=commGroup.value;commGroup.innerHTML=['All Offers','Offer Pending','Accepted','Declined','Not Selected',...teams].map(x=>`<option ${x===cur?'selected':''}>${esc(x)}</option>`).join('');let k=commMessageType.value||'Team Offer',d=state.communication.drafts[k],def=defaultCommunicationTemplate(k);commSubject.value=d?.subject||def.subject;commBody.value=d?.body||def.body;commConnectedAccount.value=state.communication.connected?`${state.communication.provider}: ${state.communication.account}`:'Not Connected';commReplyDisplay.value=state.communication.replyTo||'';let r=communicationRecipients(),missing=state.players.filter(p=>state.offers?.[p.id]&&!p.email).length;commMetrics.innerHTML=`<div class="metric">Ready<b>${r.length}</b></div><div class="metric">Valid Email<b>${r.length}</b></div><div class="metric">Missing Email<b>${missing}</b></div><div class="metric">Sent Log<b>${state.communication.sentLog.length}</b></div>`;commQueueTable.innerHTML='<table><tr><th>Player</th><th>Team</th><th>Email</th><th>Status</th><th>Type</th></tr>'+r.map(p=>`<tr><td>${esc(p.first)} ${esc(p.last)}</td><td>${esc(p.team||'')}</td><td>${esc(p.email)}</td><td>${esc(state.offers?.[p.id]?.status||'')}</td><td>${esc(k)}</td></tr>`).join('')+'</table>'}
 function previewCommunication(){let p=communicationRecipients()[0];if(!p)return alert('No recipients match this group.');commPreview.innerHTML=`<div class="card"><p><b>To:</b> ${esc(p.email)}</p><p><b>Subject:</b> ${esc(mergeCommunication(commSubject.value,p))}</p><hr><div style="white-space:pre-wrap">${esc(mergeCommunication(commBody.value,p))}</div></div>`}
 function openMailDraft(to,sub,body){window.location.href=`mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`}
 function sendTestCommunication(){let e=commTestEmail.value.trim();if(!e)return alert('Enter a test email address.');let p=communicationRecipients()[0]||{first:'Test',last:'Player',team:'Sample Team'};openMailDraft(e,mergeCommunication(commSubject.value,p),mergeCommunication(commBody.value,p))}
@@ -853,13 +853,7 @@ function exportTeamAccounting(){let t=acctTeam.value,r=[['Player','Team','Plan',
 
 
 
-function configuredTeamNames(){
- let setupTeams=(state.setup?.teams||[]).filter(Boolean);
- let rosterTeams=state.players.map(p=>p.team).filter(t=>t&&t!==state.setup.notSelected);
- let planTeams=Object.keys(state.teamAccounting?.teamPlanSettings||{});
- return [...new Set([...setupTeams,...rosterTeams,...planTeams])];
-}
-
+function configuredTeamNames(){return actualTeams().map(t=>displayTeamName(t))}
 function teamPlanDefaults(team){
  let fee=+(state.teamAccounting.feeConfig?.[team]?.appliedFee||0);
  return {team,seasonCost:fee||0,seasonStart:'',seasonEnd:'',billingDay:1,allowPayInFull:true,allowInstallments:true,installmentCount:4,allowMonthly:true,requireAutoPay:true,processingFee:5,processingFeeType:'percent',requireFirstPayment:false,sendAutoReminders:true,reminderDaysBefore:5,sendFollowups:true,followupEveryDays:3,allowPartialPayments:true,minimumPartialPayment:100,combinePastDue:true,combinePastDueWindow:7,plans:[]};
@@ -931,7 +925,7 @@ function teamPlanSettingsForPlayer(p){
 function loadTeamPlanSettings(){
  if(!document.getElementById('planTeam'))return;
  ensureTeamCatalog();
- let teams=teamSetupRecords().filter(t=>!['Completed','Archived'].includes(t.status));
+ let teams=actualTeams().filter(t=>!['Completed','Archived'].includes(t.status));
  let old=planTeam.value;
  planTeam.innerHTML=teams.length?teams.map(t=>`<option value="${t.id}">${esc(displayTeamName(t))}</option>`).join(''):'<option value="">No teams created yet</option>';
  if(old&&teams.some(t=>t.id===old))planTeam.value=old;
@@ -1129,7 +1123,7 @@ function teamPlayerFinancials(p,t){let raw={due:0,paid:0,credits:0,balance:0};tr
 function teamFinancialSummaryV55(t){let ps=teamWorkspacePlayers(t),due=0,paid=0,balance=0,pastDue=0;ps.forEach(p=>{let f=teamPlayerFinancials(p,t);due+=f.due;paid+=f.paid;balance+=f.balance;if(f.pastDue)pastDue+=f.balance});let budget=0,actual=0;try{let b=state.teamAccounting?.budgets?.[t.name]||[];budget=b.reduce((s,x)=>s+(+x.amount||0),0);actual=b.reduce((s,x)=>s+(+x.actual||0),0)}catch(e){}return{players:ps,due,paid,balance,pastDue,budget,actual,seasonCost:teamRecordSeasonCost(t)}}
 function documentCompleteV55(p){try{return requiredDocumentsComplete(p)}catch(e){return false}}
 let currentFormationTeamId='',currentTeamWorkspaceId='';
-function teamSetupRecords(){return catalogTeams()}
+function teamSetupRecords(){ensureTeamCatalog();return (state.teamCatalog||[]).filter(t=>t.active!==false&&!t.legacyPlacementOnly)}
 function teamSetupFor(t){
  t.minimumPlayers??=+(state.teamAccounting?.feeConfig?.[t.name]?.minPlayers||8);
  t.targetPlayers??=Math.max(t.minimumPlayers,10);
@@ -1176,10 +1170,10 @@ function renderTeamSetup(){
  forming.forEach(t=>{
    try{
      let o=teamOfferCountsV55(t),c=placementCandidatesForTeam(t),need=Math.max(0,(t.minimumPlayers||8)-o.accepted);
-     rows.push(`<div class="teamsetup-card"><h3>${esc(displayTeamName(t))}</h3><div class="small">${esc(t.coach||'Coach not assigned')}</div><p><b>Season:</b> ${esc(t.seasonStart||'-')} to ${esc(t.seasonEnd||'-')}</p><p><b>Player Cost:</b> ${teamMoney(teamRecordSeasonCost(t))}</p><p><b>Placed:</b> ${c.length} &nbsp; <b>Accepted:</b> ${o.accepted} &nbsp; <b>Pending:</b> ${o.pending}</p><p><b>Minimum:</b> ${t.minimumPlayers||8} &nbsp; <b>Still Needed:</b> ${need?need:'Met ✓'}</p><button style="width:100%" onclick="openTeamSetupDetail('${t.id}')">Open Team Formation</button></div>`);
+     rows.push(`<div class="teamsetup-card"><h3>${esc(displayTeamName(t))}</h3><div class="small">${esc(t.coach||'Coach not assigned')}</div><p><b>Season:</b> ${esc(t.seasonStart||'-')} to ${esc(t.seasonEnd||'-')}</p><p><b>Player Cost:</b> ${teamMoney(teamRecordSeasonCost(t))}</p><p><b>Placed:</b> ${c.length} &nbsp; <b>Accepted:</b> ${o.accepted} &nbsp; <b>Pending:</b> ${o.pending}</p><p><b>Minimum:</b> ${t.minimumPlayers||8} &nbsp; <b>Still Needed:</b> ${need?need:'Met ✓'}</p><button style="width:100%" onclick="openTeamSetupDetail('${t.id}')">Open Team Formation</button> <button class="light" onclick="archiveTeam('${t.id}')">Archive</button> <button class="red" onclick="deleteTeam('${t.id}')">Delete</button></div>`);
    }catch(e){
      console.error('Team formation card failed',t,e);
-     rows.push(`<div class="teamsetup-card"><h3>${esc(displayTeamName(t))}</h3><div class="small">${esc(t.coach||'Coach not assigned')}</div><p class="note">Team saved. Some summary details could not be calculated.</p><button style="width:100%" onclick="openTeamSetupDetail('${t.id}')">Open Team Formation</button></div>`);
+     rows.push(`<div class="teamsetup-card"><h3>${esc(displayTeamName(t))}</h3><div class="small">${esc(t.coach||'Coach not assigned')}</div><p class="note">Team saved. Some summary details could not be calculated.</p><button style="width:100%" onclick="openTeamSetupDetail('${t.id}')">Open Team Formation</button> <button class="light" onclick="archiveTeam('${t.id}')">Archive</button> <button class="red" onclick="deleteTeam('${t.id}')">Delete</button></div>`);
    }
  });
  cards.innerHTML=rows.join('')||'<p class="note">No teams are currently being formed. Create a team above, or manage active teams from the Teams tile.</p>';
@@ -1188,25 +1182,70 @@ function renderTeamSetup(){
  if(currentFormationTeamId){let t=teams.find(x=>x.id===currentFormationTeamId);if(t&&!['Active','Completed','Archived'].includes(t.status))renderFormationDetail(t);else closeFormationTeam()}
 }
 function teamLifecycleStatus(t){return t.status||'Planning'}
-function renderTeamsMaster(){
+
+function actualTeams(){
  ensureTeamCatalog();
- let teams=teamSetupRecords(),q=(document.getElementById('teamsSearch')?.value||'').toLowerCase(),sf=document.getElementById('teamsStatusFilter')?.value||'',gf=document.getElementById('teamsGradeFilter')?.value||'',vf=document.getElementById('teamsViewFilter')?.value||'current';
+ return (state.teamCatalog||[]).filter(t=>t.active!==false&&!t.legacyPlacementOnly);
+}
+function teamDependencies(t){
+ let labeled=state.players.filter(p=>normalizeTeamPart(p.grade)===normalizeTeamPart(t.grade)&&normalizeTeamPart(p.team)===normalizeTeamPart(t.name));
+ let direct=state.players.filter(p=>p.teamRecordId===t.id);
+ let ids=new Set([...labeled,...direct].map(p=>p.id));
+ let offers=Object.entries(state.offers||{}).filter(([id])=>ids.has(id)).length;
+ let payments=(state.payments||[]).filter(x=>ids.has(x.playerId)).length;
+ let accounting=!!(state.teamAccounting?.budgets?.[t.name]?.length||state.teamAccounting?.feeConfig?.[t.name]||state.teamAccounting?.teamPlanSettings?.[`team:${t.id}`]||state.teamAccounting?.teamPlanSettings?.[t.name]);
+ return {players:new Set([...labeled,...direct].map(p=>p.id)).size,offers,payments,accounting,hasHistory:ids.size>0||offers>0||payments>0||accounting};
+}
+function archiveTeam(id){
+ let t=actualTeams().find(x=>x.id===id);if(!t)return;
+ if(!confirm(`Archive ${displayTeamName(t)}? Historical data will be preserved.`))return;
+ t.status='Archived';t.archivedDate=new Date().toISOString().slice(0,10);save();renderAll();
+}
+function deleteTeam(id){
+ let t=actualTeams().find(x=>x.id===id);if(!t)return;
+ let d=teamDependencies(t);
+ if(d.hasHistory)return alert(`${displayTeamName(t)} has linked players, offers, payments, or accounting history. Archive it instead of deleting it.`);
+ if(!confirm(`Delete ${displayTeamName(t)}? This cannot be undone.`))return;
+ state.teamCatalog=state.teamCatalog.filter(x=>x.id!==id);save();renderAll();
+}
+function findActualTeamForPlayer(p){
+ if(p.teamRecordId){let t=actualTeams().find(x=>x.id===p.teamRecordId);if(t)return t}
+ return actualTeams().find(t=>normalizeTeamPart(t.grade)===normalizeTeamPart(p.grade)&&normalizeTeamPart(t.name)===normalizeTeamPart(p.team))||null;
+}
+function unlinkedTeamGroups(){
+ let g={};
+ state.players.forEach(p=>{
+   if(!p.team||findActualTeamForPlayer(p))return;
+   let k=`${normalizeTeamPart(p.grade)}||${normalizeTeamPart(p.team)}`;
+   g[k]??={grade:p.grade,name:p.team,players:[]};g[k].players.push(p);
+ });
+ return Object.values(g);
+}
+function createTeamFromUnlinkedGroup(grade,name){
+ let t=actualTeams().find(x=>normalizeTeamPart(x.grade)===normalizeTeamPart(grade)&&normalizeTeamPart(x.name)===normalizeTeamPart(name));
+ if(!t){t={id:uid(),grade,name,coach:'',minimumPlayers:8,targetPlayers:10,maximumPlayers:12,status:'Forming',active:true,createdViaSetup:true,explicitTeamRecord:true,legacyPlacementOnly:false};state.teamCatalog.push(t)}
+ state.players.filter(p=>normalizeTeamPart(p.grade)===normalizeTeamPart(grade)&&normalizeTeamPart(p.team)===normalizeTeamPart(name)).forEach(p=>p.teamRecordId=t.id);
+ save();renderAll();showTab('teams');setTimeout(()=>openTeamMasterDetail(t.id),50);
+}
+function renderUnlinkedTeamData(){
+ let box=document.getElementById('unlinkedTeamData');if(!box)return;
+ let groups=unlinkedTeamGroups();
+ box.innerHTML=groups.length?'<table><tr><th>Unlinked Team Data</th><th>Players</th><th>Action</th></tr>'+groups.map(g=>`<tr><td><b>${esc(g.grade)} ${esc(g.name)}</b></td><td>${g.players.length}</td><td><button onclick="createTeamFromUnlinkedGroup('${esc(g.grade)}','${esc(g.name)}')">Create / Repair Team</button></td></tr>`).join('')+'</table>':'<p class="note">No unlinked team data detected.</p>';
+}
+function reconcileLegacyTeamLinksV60(){
+ if(state.teamLinksV60)return;
+ state.players.forEach(p=>{if(!p.teamRecordId){let t=findActualTeamForPlayer(p);if(t)p.teamRecordId=t.id}});
+ state.teamLinksV60=true;
+}
+function renderTeamsMaster(){
+ ensureTeamCatalog();let teams=actualTeams(),q=(document.getElementById('teamsSearch')?.value||'').toLowerCase(),sf=document.getElementById('teamsStatusFilter')?.value||'',gf=document.getElementById('teamsGradeFilter')?.value||'',vf=document.getElementById('teamsViewFilter')?.value||'current';
  let ge=document.getElementById('teamsGradeFilter');if(ge){let old=ge.value;ge.innerHTML='<option value="">All Grades</option>'+[...new Set(teams.map(t=>t.grade).filter(Boolean))].sort().map(g=>`<option>${esc(g)}</option>`).join('');if([...ge.options].some(o=>o.value===old))ge.value=old;gf=ge.value}
  let current=teams.filter(t=>!['Completed','Archived'].includes(t.status)),active=teams.filter(t=>t.status==='Active').length,forming=current.filter(t=>t.status!=='Active').length,history=teams.length-current.length;
- teamsMasterMetrics.innerHTML=`<div class="metric">Current Teams<b>${current.length}</b></div><div class="metric">Forming<b>${forming}</b></div><div class="metric">Active<b>${active}</b></div><div class="metric">Completed / Archived<b>${history}</b></div>`;
+ if(document.getElementById('teamsMasterMetrics'))teamsMasterMetrics.innerHTML=`<div class="metric">Current Teams<b>${current.length}</b></div><div class="metric">Forming<b>${forming}</b></div><div class="metric">Active<b>${active}</b></div><div class="metric">Completed / Archived<b>${history}</b></div>`;
  let filtered=teams.filter(t=>{if(vf==='current'&&['Completed','Archived'].includes(t.status))return false;if(sf&&t.status!==sf)return false;if(gf&&t.grade!==gf)return false;return!q||`${displayTeamName(t)} ${t.coach||''}`.toLowerCase().includes(q)});
- if(!filtered.length){teamsMasterList.innerHTML='<p class="note">No teams match these filters. Create teams from Team Setup.</p>';return}
- let rows=[];
- filtered.forEach(t=>{
-   try{
-     let f=teamFinancialSummaryV55(t),roster=teamWorkspacePlayers(t).length;
-     rows.push(`<tr><td><b>${esc(displayTeamName(t))}</b></td><td><span class="badge ${t.status==='Active'?'success':t.status==='Archived'||t.status==='Completed'?'':'warn'}">${esc(t.status||'Planning')}</span></td><td>${esc(t.coach||'-')}</td><td>${roster}</td><td>${teamMoney(f.paid)}</td><td>${teamMoney(f.balance)}</td><td>${teamMoney(f.pastDue)}</td><td>${esc(t.seasonStart||'-')} → ${esc(t.seasonEnd||'-')}</td><td><button onclick="openTeamMasterDetail('${t.id}')">Open Team</button></td></tr>`);
-   }catch(e){
-     console.error('Team directory row failed',t,e);
-     rows.push(`<tr><td><b>${esc(displayTeamName(t))}</b></td><td><span class="badge warn">${esc(t.status||'Planning')}</span></td><td>${esc(t.coach||'-')}</td><td>-</td><td>-</td><td>-</td><td>-</td><td>${esc(t.seasonStart||'-')} → ${esc(t.seasonEnd||'-')}</td><td><button onclick="openTeamMasterDetail('${t.id}')">Open Team</button></td></tr>`);
-   }
- });
- teamsMasterList.innerHTML='<table><tr><th>Team</th><th>Status</th><th>Coach</th><th>Roster</th><th>Collected</th><th>Outstanding</th><th>Past Due</th><th>Season</th><th>Action</th></tr>'+rows.join('')+'</table>';
+ let rows=filtered.map(t=>{let f={paid:0,balance:0,pastDue:0};try{f=teamFinancialSummaryV55(t)}catch(e){}let d=teamDependencies(t);return`<tr><td><b>${esc(displayTeamName(t))}</b></td><td><span class="badge ${t.status==='Active'?'success':t.status==='Archived'?'':'warn'}">${esc(t.status||'Planning')}</span></td><td>${esc(t.coach||'-')}</td><td>${teamWorkspacePlayers(t).length}</td><td>${teamMoney(f.paid)}</td><td>${teamMoney(f.balance)}</td><td>${teamMoney(f.pastDue)}</td><td>${esc(t.seasonStart||'-')} → ${esc(t.seasonEnd||'-')}</td><td><button onclick="openTeamMasterDetail('${t.id}')">Open Team</button> <button class="light" onclick="archiveTeam('${t.id}')">Archive</button> <button class="red" onclick="deleteTeam('${t.id}')">Delete</button></td></tr>`}).join('');
+ teamsMasterList.innerHTML=filtered.length?'<table><tr><th>Team</th><th>Status</th><th>Coach</th><th>Roster</th><th>Collected</th><th>Outstanding</th><th>Past Due</th><th>Season</th><th>Actions</th></tr>'+rows+'</table>':'<p class="note">No teams match these filters.</p>';
+ renderUnlinkedTeamData();
  if(currentTeamWorkspaceId){let t=teams.find(x=>x.id===currentTeamWorkspaceId);if(t)renderTeamWorkspace(t)}
 }
 function openTeamMasterDetail(id){let t=teamSetupRecords().find(x=>x.id===id);if(!t)return;currentTeamWorkspaceId=id;renderTeamWorkspace(t)}
@@ -1944,6 +1983,7 @@ function safeRender(name,fn){
 }
 
 function renderAll(){
+ reconcileLegacyTeamLinksV60();
  normalizeDirectorReviews();
  let names=['renderCoachMasterList','renderSessions','fillSelects','renderSetupSummary','bindRegistrationCsv','renderRegistrations','renderCheckin','renderAssignments','renderCoach','renderPaperEntryPlayers','renderPacket','renderReview','renderBoard','renderTeamSetup','renderTeamsMaster','renderCommunicationCenter','renderOffers','renderParentPortal','renderDocuments','loadTeamPlanSettings','renderPayments','renderTeamAccounting','renderTeamAdmin','renderWorkflow','renderStepBar'];
  names.forEach(name=>{try{let fn=window[name];if(typeof fn==='function')fn();else console.warn('Missing render function:',name)}catch(e){console.error(name,e)}});

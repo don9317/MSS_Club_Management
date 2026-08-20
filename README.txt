@@ -1,12 +1,9 @@
-MSS Club Management Suite Demo v0.58 — Workflow Dashboard Cleanup
+MSS Club Management Suite Demo v0.60 — Team Source-of-Truth & Reconciliation
 
-- Workflow Dashboard is now grade/session aware.
-- All Grades remains an executive summary; clicking a grade focuses the dashboard.
-- Added Grade/Age Summary table.
-- Overall Progress uses required milestones rather than averaging unrelated tiles.
-- Workflow counts use checked-in players as the denominator for evaluations/reviews.
-- Paper Packets renamed Paper Evaluation Tools on the workflow and treated as a utility, not a completion milestone.
-- Roster Activation removed as a standalone tab/tile; readiness remains part of Teams and underlying roster status logic.
-- Added Roster Ready metric.
-- Legacy generated demo records with repeated names are renamed once during v0.58 migration while preserving IDs, attendance, scores, reviews, placements and payments.
-- Existing v0.57 browser data migrates automatically.
+- Team Setup/teamCatalog is the authoritative team list.
+- Teams, Payment Plans and Team Accounting use actual saved teams rather than player placement labels.
+- Delete Team added for teams without linked history.
+- Archive Team preserves teams with roster/payment/accounting history.
+- Legacy player labels are linked automatically when there is one exact grade/team match.
+- Unlinked Team Data identifies orphaned labels such as an old Elite roster and provides Create / Repair Team.
+- Existing v0.59 data migrates automatically.
