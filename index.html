@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MSS Club Management Demo v0.62</title>
+<title>MSS Club Management Demo v0.63</title>
 <style>
 :root{--navy:#0b2545;--blue:#1d4ed8;--bg:#f4f7fb;--border:#d9e2ec;--muted:#667085;--green:#067647;--amber:#b54708;--red:#b42318}
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#172033}
@@ -78,10 +78,16 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 .roster-warning{background:#fff7ed;border:1px solid #fdba74;color:#9a3412;padding:9px 11px;border-radius:10px;font-weight:700;margin:8px 0}
 .headshot-thumb{width:46px;height:46px;border-radius:50%;object-fit:cover;border:1px solid #cbd5e1;background:#f1f5f9}
 .headshot-placeholder{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#e2e8f0;color:#475569;font-weight:700;border:1px solid #cbd5e1}
+
+.webcam-modal{position:fixed;inset:0;background:rgba(15,23,42,.72);display:none;align-items:center;justify-content:center;z-index:9999;padding:20px}
+.webcam-panel{background:#fff;border-radius:16px;max-width:760px;width:100%;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.webcam-video-wrap{background:#0f172a;border-radius:12px;overflow:hidden;min-height:280px;display:flex;align-items:center;justify-content:center}
+.webcam-video-wrap video{width:100%;max-height:520px;object-fit:cover;transform:scaleX(-1)}
+.webcam-message{padding:14px;background:#fff7ed;border:1px solid #fdba74;border-radius:10px;color:#9a3412;margin:10px 0}
 </style>
 </head>
 <body>
-<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.62 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, Team Readiness, and Team Accounting</div></header>
+<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.63 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, Team Readiness, and Team Accounting</div></header>
 <div class="wrap">
 <div class="tabs no-print">
 <button class="tab active" data-tab="workflow">Workflow Dashboard</button><button class="tab" data-tab="setup">Setup</button>
@@ -400,14 +406,14 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </div>
 <div id="budgetTable" style="margin-top:12px"></div>
 </div>
-<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.62 · Prototype</div><script>
+<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.63 · Prototype</div><script>
 function money(v){
  let n=Number(v||0);
  if(!Number.isFinite(n))n=0;
  return n.toLocaleString('en-US',{style:'currency',currency:'USD'});
 }
 
-const KEY='mssClubDemoV062';
+const KEY='mssClubDemoV063';
 let state={
  setup:{orgName:'Oklahoma Swarm',season:'2026-27',eventName:'Oklahoma Swarm Tryouts',evalMethod:'Hybrid',courtCount:4,courts:['HIVE Court 1','HIVE Court 2','HIVE Court 3','HIVE Court 4'],teams:['Elite','Gold','Silver','Development'],notSelected:'Not Selected / Follow-Up',evaluators:['Coach Rob','','Coach Taylor','','Coach David','','Coach Julie',''],gradeTeams:{},offerTemplate:'Congratulations, {Player}! You have been offered a place on {Team}. Please respond by {Deadline}.',notSelectedTemplate:'Thank you for attending tryouts, {Player}. We would like to keep you informed about future opportunities.'},
  players:[],evaluations:{},offers:{},payments:[],directorReviews:{},directorName:'',checkinClosed:false,sessions:[],teamRecords:{},teamHistory:[],communication:{provider:'',connected:false,account:'',fromName:'',replyTo:'',drafts:{},sentLog:[]},requiredDocuments:[{id:'waiver',name:'Participation Waiver',type:'Waiver',version:'1.0',required:true},{id:'conduct',name:'Code of Conduct Acknowledgment',type:'Code of Conduct',version:'1.0',required:true},{id:'emergency',name:'Emergency Contact & Medical Information',type:'Emergency Contact',version:'1.0',required:true},{id:'uniform',name:'Uniform Information',type:'Uniform Information',version:'1.0',required:true}],documentCompletions:{},paymentPlans:[{id:'monthly',name:'Monthly',total:1800,deposit:300,installments:6},{id:'paidfull',name:'Paid in Full',total:1650,deposit:1650,installments:1}],placementsFinal:false
@@ -530,7 +536,7 @@ function cleanupLegacyDemoNames(){
 }
 function load(){
  currentSection='workflow';
- let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV058')||localStorage.getItem('mssClubDemoV057')||localStorage.getItem('mssClubDemoV056')||localStorage.getItem('mssClubDemoV055')||localStorage.getItem('mssClubDemoV054')||localStorage.getItem('mssClubDemoV053')||localStorage.getItem('mssClubDemoV052')||localStorage.getItem('mssClubDemoV051')||localStorage.getItem('mssClubDemoV050')||localStorage.getItem('mssClubDemoV049')||localStorage.getItem('mssClubDemoV048')||localStorage.getItem('mssClubDemoV047')||localStorage.getItem('mssClubDemoV046')||localStorage.getItem('mssClubDemoV045')||localStorage.getItem('mssClubDemoV044')||localStorage.getItem('mssClubDemoV043')||localStorage.getItem('mssClubDemoV042')||localStorage.getItem('mssClubDemoV041')||localStorage.getItem('mssClubDemoV040')||localStorage.getItem('mssClubDemoV039')||localStorage.getItem('mssClubDemoV038')||localStorage.getItem('mssClubDemoV037')||localStorage.getItem('mssClubDemoV036')||localStorage.getItem('mssClubDemoV035')||localStorage.getItem('mssClubDemoV034')||localStorage.getItem('mssClubDemoV033')||localStorage.getItem('mssClubDemoV032')||localStorage.getItem('mssClubDemoV031')||localStorage.getItem('mssClubDemoV030')||localStorage.getItem('mssClubDemoV029');
+ let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV062')||localStorage.getItem('mssClubDemoV058')||localStorage.getItem('mssClubDemoV057')||localStorage.getItem('mssClubDemoV056')||localStorage.getItem('mssClubDemoV055')||localStorage.getItem('mssClubDemoV054')||localStorage.getItem('mssClubDemoV053')||localStorage.getItem('mssClubDemoV052')||localStorage.getItem('mssClubDemoV051')||localStorage.getItem('mssClubDemoV050')||localStorage.getItem('mssClubDemoV049')||localStorage.getItem('mssClubDemoV048')||localStorage.getItem('mssClubDemoV047')||localStorage.getItem('mssClubDemoV046')||localStorage.getItem('mssClubDemoV045')||localStorage.getItem('mssClubDemoV044')||localStorage.getItem('mssClubDemoV043')||localStorage.getItem('mssClubDemoV042')||localStorage.getItem('mssClubDemoV041')||localStorage.getItem('mssClubDemoV040')||localStorage.getItem('mssClubDemoV039')||localStorage.getItem('mssClubDemoV038')||localStorage.getItem('mssClubDemoV037')||localStorage.getItem('mssClubDemoV036')||localStorage.getItem('mssClubDemoV035')||localStorage.getItem('mssClubDemoV034')||localStorage.getItem('mssClubDemoV033')||localStorage.getItem('mssClubDemoV032')||localStorage.getItem('mssClubDemoV031')||localStorage.getItem('mssClubDemoV030')||localStorage.getItem('mssClubDemoV029');
  if(x)try{state=JSON.parse(x)}catch(e){console.error('Could not load saved data',e)}
  state.payments??=[];
  state.paymentPlans??=[];
@@ -643,7 +649,26 @@ function deleteSession(id){
 function isOfflineMethod(m){return ['Cash','Check','Invoice','External Payment','Other'].includes(m)}
 function recordOfflinePaymentAndReceipt(){if(!isOfflineMethod(paymentMethod.value))return alert('Choose Cash, Check, Invoice, External Payment, or Other.');recordPayment();let t=state.payments[state.payments.length-1];if(t)generateReceipt(t)}
 function generateReceipt(t){let p=state.players.find(x=>x.id===t.playerId);receiptPreview.innerHTML=`<div id="printableReceipt"><h2>${esc(state.setup.orgName||'Club')} Payment Receipt</h2><p><b>Receipt:</b> ${esc(t.id)}</p><p><b>Date:</b> ${esc(t.date)}</p><p><b>Player:</b> ${esc(p?`${p.first} ${p.last}`:'')}</p><p><b>Team:</b> ${esc(p?.team||'')}</p><p><b>Amount:</b> ${money(t.amount)}</p><p><b>Method:</b> ${esc(t.method)}</p><p><b>Reference:</b> ${esc(t.reference||'-')}</p><p><b>Received By:</b> ${esc(t.enteredBy||'')}</p><button onclick="printReceipt()">Print Receipt</button></div>`}
-function printReceipt(){let h=document.getElementById('printableReceipt')?.innerHTML;if(!h)return;let w=window.open('','_blank');w.document.write(`<html><body style="font-family:Arial;padding:30px">${h}</body></html>`);w.document.close();w.print()}
+function printReceipt(){let h=document.getElementById('printableReceipt')?.innerHTML;if(!h)return;let w=window.open('','_blank');w.document.write(`<html><body style="font-family:Arial;padding:30px">${h}
+<div id="webcamModal" class="webcam-modal" aria-hidden="true">
+  <div class="webcam-panel">
+    <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start">
+      <div><h2 style="margin:0">Take Headshot</h2><div id="webcamPlayerName" class="note"></div></div>
+      <button class="light" onclick="closeWebcam()">Close</button>
+    </div>
+    <div id="webcamMessage" class="webcam-message" style="display:none"></div>
+    <div class="webcam-video-wrap" style="margin-top:12px">
+      <video id="webcamVideo" autoplay playsinline muted></video>
+    </div>
+    <canvas id="webcamCanvas" style="display:none"></canvas>
+    <div class="actions" style="margin-top:12px">
+      <button class="green" id="captureHeadshotBtn" onclick="captureHeadshot()">Capture & Save</button>
+      <button class="light" onclick="chooseHeadshotFile()">Upload Photo Instead</button>
+    </div>
+  </div>
+</div>
+
+</body></html>`);w.document.close();w.print()}
 function ensureTeamRecord(n){state.teamRecords[n]??={name:n,endDate:''};return state.teamRecords[n]}
 function renderTeamAdmin(){let teams=actualTeams().map(t=>displayTeamName(t)),tv=adminTeam.value,pv=transferPlayer.value;adminTeam.innerHTML=teams.map(t=>`<option>${esc(t)}</option>`).join('');adminTeam.value=tv&&teams.includes(tv)?tv:(teams[0]||'');transferTo.innerHTML=teams.map(t=>`<option>${esc(t)}</option>`).join('');transferPlayer.innerHTML=state.players.filter(p=>p.team).map(p=>`<option value="${p.id}">${esc(p.first)} ${esc(p.last)} — ${esc(p.team)}</option>`).join('');transferPlayer.value=pv;let tr=state.players.find(p=>p.id===transferPlayer.value);transferFrom.value=tr?.team||'';teamCurrentEnd.value=adminTeam.value?ensureTeamRecord(adminTeam.value).endDate:'';teamHistoryTable.innerHTML='<table><tr><th>Date</th><th>Type</th><th>Subject</th><th>Details</th><th>Adjustment</th></tr>'+[...state.teamHistory].reverse().map(h=>`<tr><td>${h.date}</td><td>${esc(h.type)}</td><td>${esc(h.subject)}</td><td>${esc(h.details)}</td><td>${money(h.adjustment||0)}</td></tr>`).join('')+'</table>'}
 function extendTeam(){let team=adminTeam.value;if(!team||!teamNewEnd.value)return alert('Select a team and new end date.');let r=ensureTeamRecord(team),old=r.endDate||'Not set',fee=+teamExtensionFee.value||0;r.endDate=teamNewEnd.value;if(fee)state.players.filter(p=>p.team===team).forEach(p=>state.payments.push({id:uid(),playerId:p.id,type:'Charge Adjustment',method:'Team Extension',amount:fee,date:new Date().toISOString().slice(0,10),appliedTo:'Team Extension',reference:team,enteredBy:'Club Administrator',notes:`Extended to ${teamNewEnd.value}`}));state.teamHistory.push({date:new Date().toISOString().slice(0,10),type:'Team Extension',subject:team,details:`End date changed from ${old} to ${teamNewEnd.value}`,adjustment:fee});save();renderAll()}
@@ -1204,9 +1229,23 @@ function renderTeamSetup(){
 }
 function teamLifecycleStatus(t){return t.status||'Planning'}
 
+
+function deletedTeamKey(grade,name){return `${normalizeTeamPart(grade)}||${normalizeTeamPart(name)}`}
+function deletedTeamKeys(){state.deletedTeamTombstones??=[];return new Set(state.deletedTeamTombstones.map(x=>typeof x==='string'?x:x.key))}
+function isTeamTombstoned(grade,name){return deletedTeamKeys().has(deletedTeamKey(grade,name))}
+function addTeamTombstone(t){
+ state.deletedTeamTombstones??=[];
+ let key=deletedTeamKey(t.grade,t.name);
+ state.deletedTeamTombstones=state.deletedTeamTombstones.filter(x=>(typeof x==='string'?x:x.key)!==key);
+ state.deletedTeamTombstones.push({key,grade:t.grade,name:t.name,deletedAt:new Date().toISOString()});
+}
+function removeTeamTombstone(grade,name){
+ let key=deletedTeamKey(grade,name);
+ state.deletedTeamTombstones=(state.deletedTeamTombstones||[]).filter(x=>(typeof x==='string'?x:x.key)!==key);
+}
 function actualTeams(){
  ensureTeamCatalog();
- return (state.teamCatalog||[]).filter(t=>t.active!==false&&!t.legacyPlacementOnly);
+ return (state.teamCatalog||[]).filter(t=>t.active!==false&&!t.legacyPlacementOnly&&!isTeamTombstoned(t.grade,t.name));
 }
 function teamDependencies(t){
  let labeled=state.players.filter(p=>normalizeTeamPart(p.grade)===normalizeTeamPart(t.grade)&&normalizeTeamPart(p.team)===normalizeTeamPart(t.name));
@@ -1223,11 +1262,14 @@ function archiveTeam(id){
  t.status='Archived';t.archivedDate=new Date().toISOString().slice(0,10);save();renderAll();
 }
 function deleteTeam(id){
- let t=actualTeams().find(x=>x.id===id);if(!t)return;
+ let t=(state.teamCatalog||[]).find(x=>x.id===id);if(!t)return;
  let d=teamDependencies(t);
  if(d.hasHistory)return alert(`${displayTeamName(t)} has linked players, offers, payments, or accounting history. Archive it instead of deleting it.`);
  if(!confirm(`Delete ${displayTeamName(t)}? This cannot be undone.`))return;
- state.teamCatalog=state.teamCatalog.filter(x=>x.id!==id);save();renderAll();
+ addTeamTombstone(t);
+ state.teamCatalog=state.teamCatalog.filter(x=>x.id!==id);
+ save();renderAll();
+ alert(`${displayTeamName(t)} deleted. Future version migrations will not recreate it automatically.`);
 }
 function findActualTeamForPlayer(p){
  if(p.teamRecordId){let t=actualTeams().find(x=>x.id===p.teamRecordId);if(t)return t}
@@ -1236,13 +1278,14 @@ function findActualTeamForPlayer(p){
 function unlinkedTeamGroups(){
  let g={};
  state.players.forEach(p=>{
-   if(!p.team||findActualTeamForPlayer(p))return;
+   if(!p.team||isTeamTombstoned(p.grade,p.team)||findActualTeamForPlayer(p))return;
    let k=`${normalizeTeamPart(p.grade)}||${normalizeTeamPart(p.team)}`;
    g[k]??={grade:p.grade,name:p.team,players:[]};g[k].players.push(p);
  });
  return Object.values(g);
 }
 function createTeamFromUnlinkedGroup(grade,name){
+ removeTeamTombstone(grade,name);
  let t=actualTeams().find(x=>normalizeTeamPart(x.grade)===normalizeTeamPart(grade)&&normalizeTeamPart(x.name)===normalizeTeamPart(name));
  if(!t){t={id:uid(),grade,name,coach:'',minimumPlayers:8,targetPlayers:10,maximumPlayers:12,status:'Forming',active:true,createdViaSetup:true,explicitTeamRecord:true,legacyPlacementOnly:false};state.teamCatalog.push(t)}
  state.players.filter(p=>normalizeTeamPart(p.grade)===normalizeTeamPart(grade)&&normalizeTeamPart(p.team)===normalizeTeamPart(name)).forEach(p=>p.teamRecordId=t.id);
@@ -1254,9 +1297,12 @@ function renderUnlinkedTeamData(){
  box.innerHTML=groups.length?'<table><tr><th>Unlinked Team Data</th><th>Players</th><th>Action</th></tr>'+groups.map(g=>`<tr><td><b>${esc(g.grade)} ${esc(g.name)}</b></td><td>${g.players.length}</td><td><button onclick="createTeamFromUnlinkedGroup('${esc(g.grade)}','${esc(g.name)}')">Create / Repair Team</button></td></tr>`).join('')+'</table>':'<p class="note">No unlinked team data detected.</p>';
 }
 function reconcileLegacyTeamLinksV60(){
- if(state.teamLinksV60)return;
- state.players.forEach(p=>{if(!p.teamRecordId){let t=findActualTeamForPlayer(p);if(t)p.teamRecordId=t.id}});
- state.teamLinksV60=true;
+ if(state.teamLinksV63)return;
+ state.players.forEach(p=>{
+   if(p.teamRecordId||!p.team||isTeamTombstoned(p.grade,p.team))return;
+   let t=findActualTeamForPlayer(p);if(t)p.teamRecordId=t.id;
+ });
+ state.teamLinksV63=true;
 }
 function openActiveTeamFromSetup(id){
  let t=actualTeams().find(x=>x.id===id);if(!t)return;
@@ -1287,7 +1333,21 @@ function openCurrentTeamFormation(){let t=teamSetupRecords().find(x=>x.id===curr
 function openCurrentTeamArea(area){let t=teamSetupRecords().find(x=>x.id===currentTeamWorkspaceId);if(!t)return;if(area==='plans'){showTab('plans');setTimeout(()=>{planTeam.value=t.id;loadTeamPlanSettings()},50);return}if(area==='payments'){showTab('payments');return}if(area==='accounting'){showTab('accounting');setTimeout(()=>{acctTeam.value=t.name;renderTeamAccounting()},50);return}if(area==='documents'){showTab('documents');return}if(area==='communication'){showTab('communication');setTimeout(()=>{commGroup.value=t.name;renderCommunicationCenter()},50);return}}
 function updateTeamLifecycle(id){let t=teamSetupRecords().find(x=>x.id===id);if(!t)return;t.status=masterTeamStatus.value||t.status;if(t.status==='Active')placementCandidatesForTeam(t).filter(p=>state.offers?.[p.id]?.status==='Accepted').forEach(p=>p.teamRecordId=t.id);save();renderTeamsMaster();renderTeamSetup();renderTeamWorkspace(t)}
 function closeTeamMasterDetail(){currentTeamWorkspaceId='';let c=document.getElementById('teamMasterDetailCard');if(c)c.style.display='none'}
-function saveTeamSetup(){ensureTeamCatalog();state.setup.teams??=[];let grade=teamSetupGrade.value||'',name=(teamSetupName.value||'').trim();if(!grade||!name)return alert('Enter a grade and team name.');let t=state.teamCatalog.find(x=>normalizeTeamPart(x.grade)===normalizeTeamPart(grade)&&normalizeTeamPart(x.name)===normalizeTeamPart(name));if(!t){t={id:uid(),grade,name,active:true};state.teamCatalog.push(t)}t.grade=grade;t.name=name;t.createdViaSetup=true;t.legacyPlacementOnly=false;t.active=true;t.explicitTeamRecord=true;t.coach=(teamSetupCoach.value||'').trim();t.minimumPlayers=+teamSetupMinimum.value||8;t.targetPlayers=+teamSetupTarget.value||10;t.maximumPlayers=+teamSetupMaximum.value||12;t.seasonStart=teamSetupSeasonStart.value||t.seasonStart||'';t.seasonEnd=teamSetupSeasonEnd.value||t.seasonEnd||'';t.seasonCost=+teamSetupSeasonCost.value||t.seasonCost||0;if(!['Active','Completed','Archived'].includes(t.status))t.status=teamOfferCountsV55(t).sent?'Forming':'Planning';if(!state.setup.teams.includes(name))state.setup.teams.push(name);currentFormationTeamId=t.id;save();renderTeamSetup();renderTeamsMaster();teamSetupSaveStatus.textContent=`SAVED: ${displayTeamName(t)} is now an actual team record.`;teamSetupSaveStatus.style.color='#067647';teamSetupSaveStatus.style.fontWeight='700';alert(`${displayTeamName(t)} saved. Open it under Teams in Formation to review players and activate the team.`)}
+function saveTeamSetup(){
+ ensureTeamCatalog();state.setup.teams??=[];
+ let grade=teamSetupGrade.value||'',name=(teamSetupName.value||'').trim();if(!grade||!name)return alert('Enter a grade and team name.');
+ removeTeamTombstone(grade,name);
+ let t=state.teamCatalog.find(x=>normalizeTeamPart(x.grade)===normalizeTeamPart(grade)&&normalizeTeamPart(x.name)===normalizeTeamPart(name));
+ if(!t){t={id:uid(),grade,name,active:true};state.teamCatalog.push(t)}
+ t.grade=grade;t.name=name;t.createdViaSetup=true;t.legacyPlacementOnly=false;t.active=true;t.explicitTeamRecord=true;
+ t.coach=(teamSetupCoach.value||'').trim();t.minimumPlayers=+teamSetupMinimum.value||8;t.targetPlayers=+teamSetupTarget.value||10;t.maximumPlayers=+teamSetupMaximum.value||12;
+ t.seasonStart=teamSetupSeasonStart.value||t.seasonStart||'';t.seasonEnd=teamSetupSeasonEnd.value||t.seasonEnd||'';t.seasonCost=+teamSetupSeasonCost.value||t.seasonCost||0;
+ if(!['Active','Completed','Archived'].includes(t.status))t.status=teamOfferCountsV55(t).sent?'Forming':'Planning';
+ if(!state.setup.teams.includes(name))state.setup.teams.push(name);
+ currentFormationTeamId=t.id;save();renderTeamSetup();renderTeamsMaster();
+ teamSetupSaveStatus.textContent=`SAVED: ${displayTeamName(t)} is now an actual team record.`;teamSetupSaveStatus.style.color='#067647';teamSetupSaveStatus.style.fontWeight='700';
+ alert(`${displayTeamName(t)} saved. Open it under Teams in Formation to review players and activate the team.`);
+}
 function renderFormationDetail(t){let panel=document.getElementById('teamSetupDetail');if(!panel)return;let ps=placementCandidatesForTeam(t),o=teamOfferCountsV55(t),cost=teamRecordSeasonCost(t);panel.style.display='block';teamSetupDetailTitle.textContent=`${displayTeamName(t)} — Formation`;teamSetupDetailSub.textContent=`${t.coach||'Coach not assigned'} · ${t.seasonStart||'Season start not set'} to ${t.seasonEnd||'season end not set'}`;teamSetupDetailMetrics.innerHTML=`<div class="metric">Placed<b>${ps.length}</b></div><div class="metric">Offers Sent<b>${o.sent}</b></div><div class="metric">Accepted / Committed<b>${o.accepted}</b></div><div class="metric">Pending<b>${o.pending}</b></div><div class="metric">Minimum<b>${t.minimumPlayers||8}</b></div><div class="metric">Player Cost<b>${teamMoney(cost)}</b></div>`;activateFormationTeamBtn.textContent=`Activate ${displayTeamName(t)}`;teamSetupPlayerList.innerHTML='<table><tr><th>Player</th><th>Placement</th><th>Offer</th><th>Payment Plan</th><th>Paid</th><th>Balance</th><th>Documents</th><th>Roster Readiness</th></tr>'+ps.map(p=>{let offer=state.offers?.[p.id]?.status||'Not Sent',f=teamPlayerFinancials(p,t),r=playerReadiness(p),plan=p.selectedPaymentPlan?.name||'Not Selected',docs=documentCompleteV55(p);return`<tr><td><b>${esc(p.first)} ${esc(p.last)}</b><br><span class="small">${esc(p.id)}</span></td><td>${esc(p.team||'-')}</td><td><span class="badge ${offer==='Accepted'?'success':offer==='Declined'?'danger':'warn'}">${esc(offer)}</span></td><td>${esc(plan)}</td><td>${teamMoney(f.paid)}</td><td>${teamMoney(f.balance)}</td><td><span class="badge ${docs?'success':'warn'}">${docs?'Complete':'Incomplete'}</span></td><td><span class="badge ${r.ready?'success':'warn'}">${r.ready?'Ready':'Pending'}</span></td></tr>`}).join('')+'</table>';panel.scrollIntoView({behavior:'smooth',block:'start'})}
 function closeFormationTeam(){currentFormationTeamId='';let panel=document.getElementById('teamSetupDetail');if(panel)panel.style.display='none'}
 function editFormationTeam(){let t=teamSetupRecords().find(x=>x.id===currentFormationTeamId);if(!t)return;teamSetupGrade.value=t.grade;teamSetupName.value=t.name;teamSetupCoach.value=t.coach||'';teamSetupMinimum.value=t.minimumPlayers||8;teamSetupTarget.value=t.targetPlayers||10;teamSetupMaximum.value=t.maximumPlayers||12;teamSetupSeasonStart.value=t.seasonStart||'';teamSetupSeasonEnd.value=t.seasonEnd||'';teamSetupSeasonCost.value=teamRecordSeasonCost(t)||'';window.scrollTo({top:document.getElementById('teamsetup').offsetTop,behavior:'smooth'})}
@@ -1392,11 +1452,55 @@ function generate150(){
 function playerInitials(p){return `${(p.first||'').charAt(0)}${(p.last||'').charAt(0)}`.toUpperCase()||'?'}
 function headshotCell(p){
  let pic=p.photo||p.headshot||'';
- return `<div style="display:flex;align-items:center;gap:8px">${pic?`<img class="headshot-thumb" src="${esc(pic)}" alt="Headshot">`:`<div class="headshot-placeholder">${esc(playerInitials(p))}</div>`}<div><button class="light" onclick="chooseHeadshot('${p.id}')">${pic?'Change Photo':'Add Headshot'}</button>${pic?`<br><button class="light" style="margin-top:4px" onclick="removeHeadshot('${p.id}')">Remove</button>`:''}</div></div>`;
+ return `<div style="display:flex;align-items:center;gap:8px">${pic?`<img class="headshot-thumb" src="${esc(pic)}" alt="Headshot">`:`<div class="headshot-placeholder">${esc(playerInitials(p))}</div>`}<div><button class="green" onclick="takeHeadshot('${p.id}')">📷 ${pic?'Retake':'Take Photo'}</button><br><button class="light" style="margin-top:4px" onclick="chooseHeadshot('${p.id}')">📁 Upload</button>${pic?`<br><button class="light" style="margin-top:4px" onclick="removeHeadshot('${p.id}')">Remove</button>`:''}</div></div>`;
+}
+function takeHeadshot(id){
+ let p=state.players.find(x=>x.id===id);if(!p)return;
+ webcamPlayerId=id;
+ webcamPlayerName.textContent=`${p.first} ${p.last} · ${p.id}`;
+ webcamMessage.style.display='none';webcamMessage.textContent='';
+ webcamModal.style.display='flex';webcamModal.setAttribute('aria-hidden','false');
+ startWebcam();
+}
+async function startWebcam(){
+ stopWebcamStream();
+ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+   webcamMessage.style.display='block';
+   webcamMessage.textContent='This browser cannot open the webcam directly. Use Upload Photo Instead, or open the app in a current Chrome/Edge browser with camera permission.';
+   captureHeadshotBtn.disabled=true;return;
+ }
+ try{
+   webcamStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:640},height:{ideal:480}},audio:false});
+   webcamVideo.srcObject=webcamStream;captureHeadshotBtn.disabled=false;
+ }catch(err){
+   webcamMessage.style.display='block';
+   webcamMessage.textContent='Camera access was not available. Check browser camera permission, then try again, or use Upload Photo Instead.';
+   captureHeadshotBtn.disabled=true;
+ }
+}
+function stopWebcamStream(){
+ if(webcamStream){webcamStream.getTracks().forEach(t=>t.stop());webcamStream=null}
+ if(document.getElementById('webcamVideo'))webcamVideo.srcObject=null;
+}
+function closeWebcam(){stopWebcamStream();webcamPlayerId='';webcamModal.style.display='none';webcamModal.setAttribute('aria-hidden','true')}
+function captureHeadshot(){
+ let p=state.players.find(x=>x.id===webcamPlayerId);if(!p||!webcamVideo.videoWidth)return alert('Camera image is not ready yet.');
+ let max=320,scale=Math.min(1,max/Math.max(webcamVideo.videoWidth,webcamVideo.videoHeight)),w=Math.round(webcamVideo.videoWidth*scale),h=Math.round(webcamVideo.videoHeight*scale);
+ webcamCanvas.width=w;webcamCanvas.height=h;
+ let ctx=webcamCanvas.getContext('2d');
+ ctx.save();ctx.translate(w,0);ctx.scale(-1,1);ctx.drawImage(webcamVideo,0,0,w,h);ctx.restore();
+ p.photo=webcamCanvas.toDataURL('image/jpeg',0.78);
+ save();closeWebcam();renderAll();
+}
+function chooseHeadshotFile(){
+ let id=webcamPlayerId;
+ let input=document.createElement('input');input.type='file';input.accept='image/*';
+ input.onchange=()=>{let file=input.files&&input.files[0];if(file){closeWebcam();saveHeadshotFile(id,file)}};
+ input.click();
 }
 function chooseHeadshot(id){
  let input=document.createElement('input');
- input.type='file';input.accept='image/*';input.setAttribute('capture','user');
+ input.type='file';input.accept='image/*';
  input.onchange=()=>{let file=input.files&&input.files[0];if(file)saveHeadshotFile(id,file)};
  input.click();
 }
