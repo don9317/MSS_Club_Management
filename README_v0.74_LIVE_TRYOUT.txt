@@ -1,0 +1,1 @@
+Check-In always sorts by first name, then last name. Grade filter still works. v0.73 live data migrates forward.
