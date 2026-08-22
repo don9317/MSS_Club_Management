@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MSS Club Management Demo v0.70</title>
+<title>MSS Club Management Demo v0.71</title>
 <style>
 :root{--navy:#0b2545;--blue:#1d4ed8;--bg:#f4f7fb;--border:#d9e2ec;--muted:#667085;--green:#067647;--amber:#b54708;--red:#b42318}
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#172033}
@@ -87,7 +87,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </style>
 </head>
 <body>
-<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.70 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, Team Readiness, and Team Accounting</div></header>
+<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.71 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, Team Readiness, and Team Accounting</div></header>
 <div class="wrap">
 <div class="tabs no-print">
 <button class="tab active" data-tab="workflow">Workflow Dashboard</button><button class="tab" data-tab="setup">Setup</button>
@@ -444,14 +444,14 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </div>
 <div id="budgetTable" style="margin-top:12px"></div>
 </div>
-<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.70 · Prototype</div><script>
+<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.71 · Prototype</div><script>
 function money(v){
  let n=Number(v||0);
  if(!Number.isFinite(n))n=0;
  return n.toLocaleString('en-US',{style:'currency',currency:'USD'});
 }
 
-const KEY='mssClubDemoV070';
+const KEY='mssClubDemoV071';
 let state={
  setup:{orgName:'Oklahoma Swarm',season:'2026-27',eventName:'Oklahoma Swarm Tryouts',evalMethod:'Hybrid',courtCount:4,courts:['HIVE Court 1','HIVE Court 2','HIVE Court 3','HIVE Court 4'],teams:['Elite','Gold','Silver','Development'],notSelected:'Not Selected / Follow-Up',evaluators:['Coach Rob','','Coach Taylor','','Coach David','','Coach Julie',''],gradeTeams:{},offerTemplate:'Congratulations, {Player}! You have been offered a place on {Team}. Please respond by {Deadline}.',notSelectedTemplate:'Thank you for attending tryouts, {Player}. We would like to keep you informed about future opportunities.'},
  players:[],evaluations:{},offers:{},payments:[],directorReviews:{},directorName:'',checkinClosed:false,sessions:[],teamRecords:{},teamHistory:[],communication:{provider:'',connected:false,account:'',fromName:'',replyTo:'',drafts:{},sentLog:[]},requiredDocuments:[{id:'waiver',name:'Participation Waiver',type:'Waiver',version:'1.0',required:true},{id:'conduct',name:'Code of Conduct Acknowledgment',type:'Code of Conduct',version:'1.0',required:true},{id:'emergency',name:'Emergency Contact & Medical Information',type:'Emergency Contact',version:'1.0',required:true},{id:'uniform',name:'Uniform Information',type:'Uniform Information',version:'1.0',required:true}],documentCompletions:{},paymentPlans:[{id:'monthly',name:'Monthly',total:1800,deposit:300,installments:6},{id:'paidfull',name:'Paid in Full',total:1650,deposit:1650,installments:1}],placementsFinal:false
@@ -624,7 +624,7 @@ function cleanupLegacyDemoNames(){
 }
 function load(){
  currentSection='workflow';
- let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV069')||localStorage.getItem('mssClubDemoV068');
+ let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV070')||localStorage.getItem('mssClubDemoV069')||localStorage.getItem('mssClubDemoV068');
  if(x)try{state=JSON.parse(x)}catch(e){console.error('Could not load saved data',e)}
  state.payments??=[];
  state.paymentPlans??=[];
@@ -2309,28 +2309,45 @@ function parseCSVLine(line){
 }
 
 function normalizeImportedGrade(value){
- let s=String(value||'').trim();
- if(!s)return '';
- let low=s.toLowerCase();
+ let raw=String(value||'').trim();
+ if(!raw)return '';
+ let s=raw.toLowerCase()
+   .replace(/[–—_]/g,'-')
+   .replace(/\s+/g,' ');
 
- // Direct forms: 3rd, 4th grade, Grade 5, 6, 7th Girls, etc.
- let m=low.match(/\b(?:grade\s*)?(3|4|5|6|7|8|9|10|11|12)(?:st|nd|rd|th)?(?:\s*grade)?\b/);
- if(m){
-   let n=+m[1];
-   if(n===3)return '3rd';
-   if(n===4)return '4th';
-   if(n===5)return '5th';
-   if(n===6)return '6th';
-   if(n===7)return '7th';
-   if(n===8)return '8th';
-   if(n===9)return '9th';
-   if(n===10)return '10th';
-   if(n===11)return '11th';
-   if(n===12)return '12th';
+ // Explicit ordinal forms anywhere in the Program text.
+ let ordinal=s.match(/(?:^|[^0-9])(3rd|4th|5th|6th|7th|8th|9th|10th|11th|12th)(?:\s*grade)?(?:[^0-9]|$)/i);
+ if(ordinal)return ordinal[1].toLowerCase();
+
+ // "Grade 3", "Grade: 3", "Grade-3", "3 Grade"
+ let gm=s.match(/\bgrade\s*[:#-]?\s*(3|4|5|6|7|8|9|10|11|12)\b/i);
+ if(gm){
+   let n=+gm[1];
+   return n===3?'3rd':n===4?'4th':n===5?'5th':n===6?'6th':n===7?'7th':n===8?'8th':n===9?'9th':n===10?'10th':n===11?'11th':'12th';
  }
- // Word forms sometimes used in program names.
- let words={third:'3rd',fourth:'4th',fifth:'5th',sixth:'6th',seventh:'7th',eighth:'8th',ninth:'9th',tenth:'10th',eleventh:'11th',twelfth:'12th'};
- for(let [word,grade] of Object.entries(words)){if(new RegExp(`\\b${word}\\b`).test(low))return grade}
+ let ng=s.match(/\b(3|4|5|6|7|8|9|10|11|12)\s*(?:grade|grader|graders)\b/i);
+ if(ng){
+   let n=+ng[1];
+   return n===3?'3rd':n===4?'4th':n===5?'5th':n===6?'6th':n===7?'7th':n===8?'8th':n===9?'9th':n===10?'10th':n===11?'11th':'12th';
+ }
+
+ // Word forms.
+ let words={
+   third:'3rd',fourth:'4th',fifth:'5th',sixth:'6th',seventh:'7th',eighth:'8th',
+   ninth:'9th',tenth:'10th',eleventh:'11th',twelfth:'12th'
+ };
+ for(let [word,grade] of Object.entries(words)){
+   if(new RegExp(`\\b${word}(?:\\s+grade)?\\b`,'i').test(s))return grade;
+ }
+
+ // Final fallback for Program labels that contain a single standalone grade number,
+ // e.g. "Swarm Tryout 5 Girls". Avoid 4-digit years.
+ let nums=[...s.matchAll(/\b(3|4|5|6|7|8|9|10|11|12)\b/g)].map(m=>m[1]);
+ let unique=[...new Set(nums)];
+ if(unique.length===1){
+   let n=+unique[0];
+   return n===3?'3rd':n===4?'4th':n===5?'5th':n===6?'6th':n===7?'7th':n===8?'8th':n===9?'9th':n===10?'10th':n===11?'11th':'12th';
+ }
  return '';
 }
 function gradeFromRegistrationFields(gradeValue,programValue){
@@ -2340,31 +2357,64 @@ function gradeFromRegistrationFields(gradeValue,programValue){
 function importRegistrationCSVText(text){
  let lines=String(text||'').replace(/^\uFEFF/,'').split(/\r?\n/).filter(x=>x.trim()!=='');
  if(lines.length<2)return 0;
- let h=parseCSVLine(lines.shift()).map(x=>x.trim().toLowerCase()),added=0;
- let ix=(...names)=>{for(let n of names){let i=h.indexOf(n);if(i>=0)return i}return -1};
+
+ let originalHeaders=parseCSVLine(lines.shift()).map(x=>x.trim());
+ let h=originalHeaders.map(x=>x.toLowerCase().replace(/\s+/g,' ').trim()),added=0;
+
+ let ix=(...names)=>{
+   for(let n of names){
+     let exact=h.indexOf(n);
+     if(exact>=0)return exact;
+   }
+   return -1;
+ };
+ let containsHeader=(...terms)=>{
+   for(let term of terms){
+     let i=h.findIndex(x=>x.includes(term));
+     if(i>=0)return i;
+   }
+   return -1;
+ };
+
  let cols={
    id:ix('player id','tryout number','player number'),
    first:ix('first name','first','participant first name','player first name'),
    last:ix('last name','last','participant last name','player last name'),
    grade:ix('grade','player grade','participant grade'),
-   program:ix('program','program name','registration program'),
+   program:containsHeader('program'),
    grad:ix('graduation year','grad year'),
    email:ix('parent email','email','guardian email'),
    phone:ix('parent phone','phone','guardian phone'),
    photo:ix('headshot url','photo')
  };
+
  for(let line of lines){
    let a=parseCSVLine(line),get=k=>cols[k]>=0?(a[cols[k]]||'').trim():'';
    let id=get('id')||uid(),first=get('first'),last=get('last');
    if(!first&&!last)continue;
    if(state.players.some(p=>p.id===id))continue;
-   let grade=gradeFromRegistrationFields(get('grade'),get('program'));
+
+   let program=get('program');
+   let rawGrade=get('grade');
+   let grade=normalizeImportedGrade(rawGrade)||normalizeImportedGrade(program);
+
    state.players.push({
-     id,first,last,grade,program:get('program'),grad:get('grad'),email:get('email'),phone:get('phone'),photo:get('photo'),
-     status:'Registered',checkedIn:false,court:'',evaluator:'',team:'',offerStatus:'Not Created',paymentPlanId:'',depositPaid:false,rosterStatus:'Not Active',sessionId:''
+     id,first,last,grade,program,rawImportedGrade:rawGrade,grad:get('grad'),
+     email:get('email'),phone:get('phone'),photo:get('photo'),
+     status:'Registered',checkedIn:false,court:'',evaluator:'',team:'',
+     offerStatus:'Not Created',paymentPlanId:'',depositPaid:false,
+     rosterStatus:'Not Active',sessionId:''
    });
    added++;
  }
+
+ // Store import diagnostics so the operator can see what headings were recognized.
+ state.lastRegistrationImport={
+   headers:originalHeaders,
+   programHeader:cols.program>=0?originalHeaders[cols.program]:'',
+   gradeHeader:cols.grade>=0?originalHeaders[cols.grade]:'',
+   importedAt:new Date().toISOString()
+ };
  return added;
 }
 function bindRegistrationCsv(){
@@ -2378,10 +2428,16 @@ function bindRegistrationCsv(){
      try{
        let added=importRegistrationCSVText(r.result);
        save();renderAll();
-       setRegistrationLoadStatus(`SUCCESS: ${added} player registration(s) imported from ${f.name}.`);
-       alert(`${added} player registration(s) imported successfully.`);
+       let diag=state.lastRegistrationImport||{};
+       let recognized=state.players.filter(p=>p.grade).length;
+       let missing=state.players.filter(p=>!p.grade).length;
+       let msg=`SUCCESS: ${added} registration(s) imported. Program column recognized as "${diag.programHeader||'NOT FOUND'}". ${recognized} player(s) have a grade; ${missing} need grade review.`;
+       setRegistrationLoadStatus(msg,missing===0);
+       alert(msg);
      }catch(e){
-       console.error(e);setRegistrationLoadStatus(`ERROR importing ${f.name}: ${e.message}`,false);alert('CSV import failed: '+e.message);
+       console.error(e);
+       setRegistrationLoadStatus(`ERROR importing ${f.name}: ${e.message}`,false);
+       alert('CSV import failed: '+e.message);
      }finally{el.value=''}
    };
    r.onerror=()=>setRegistrationLoadStatus(`ERROR reading ${f.name}.`,false);
