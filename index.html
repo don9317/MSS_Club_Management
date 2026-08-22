@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MSS Club Management Demo v0.71</title>
+<title>MSS Club Management Demo v0.72</title>
 <style>
 :root{--navy:#0b2545;--blue:#1d4ed8;--bg:#f4f7fb;--border:#d9e2ec;--muted:#667085;--green:#067647;--amber:#b54708;--red:#b42318}
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#172033}
@@ -87,7 +87,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </style>
 </head>
 <body>
-<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.71 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, Team Readiness, and Team Accounting</div></header>
+<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.72 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, Team Readiness, and Team Accounting</div></header>
 <div class="wrap">
 <div class="tabs no-print">
 <button class="tab active" data-tab="workflow">Workflow Dashboard</button><button class="tab" data-tab="setup">Setup</button>
@@ -149,7 +149,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 <div class="card"><h2>Coaches / Evaluators</h2><p class="note">Maintain one master coach list here. Sessions use this list for evaluator dropdowns.</p>
 <div class="grid5"><div><label>Name</label><input id="coachName"></div><div><label>Email</label><input id="coachEmail"></div><div><label>Phone</label><input id="coachPhone"></div><div><label>Notes</label><input id="coachNotes"></div><div style="align-self:end"><button onclick="saveCoachRecord()">Add Coach</button></div></div>
 <div id="coachMasterList"></div></div>
-<div class="card"><h2>Communication Connection</h2><p class="note">Prototype connection for Gmail or Microsoft 365. Production requires secure OAuth.</p><div class="grid4"><div><label>Email Provider</label><select id="commProvider"><option value="">Not Selected</option><option>Gmail</option><option>Microsoft 365</option></select></div><div><label>From Name</label><input id="commFromName"></div><div><label>Reply-To Email</label><input id="commReplyTo" type="email"></div><div><label>Status</label><input id="commStatus" readonly></div></div><div class="actions" style="margin-top:12px"><button onclick="connectEmailProvider()">Connect Selected Provider</button><button class="light" onclick="disconnectEmailProvider()">Disconnect</button></div></div><div class="card"><h2>Grade / Graduation Year Team Setup</h2><p class="note">Select a grade/year and set the team names used for that group.</p><div class="grid3"><div><label>Grade</label><select id="teamGrade"><option>3rd</option><option>4th</option><option>5th</option><option>6th</option><option>7th</option></select></div><div><label>Graduation Year</label><select id="teamGrad"><option>2036</option><option>2035</option><option>2034</option><option>2033</option><option>2032</option></select></div><div style="align-self:end"><button onclick="saveGradeTeams()">Save Grade Team Names</button></div></div><div id="gradeTeamSummary"></div></div>
+<div class="card"><h2>Communication Connection</h2><p class="note">Prototype connection for Gmail or Microsoft 365. Production requires secure OAuth.</p><div class="grid4"><div><label>Email Provider</label><select id="commProvider"><option value="">Not Selected</option><option>Gmail</option><option>Microsoft 365</option></select></div><div><label>From Name</label><input id="commFromName"></div><div><label>Reply-To Email</label><input id="commReplyTo" type="email"></div><div><label>Status</label><input id="commStatus" readonly></div></div><div class="actions" style="margin-top:12px"><button onclick="connectEmailProvider()">Connect Selected Provider</button><button class="light" onclick="disconnectEmailProvider()">Disconnect</button></div></div><div class="card"><h2>Grade / Graduation Year Team Setup</h2><p class="note">Select a grade/year and set the team names used for that group.</p><div class="grid3"><div><label>Grade</label><select id="teamGrade"><option>K</option><option>1st</option><option>2nd</option><option>3rd</option><option>4th</option><option>5th</option><option>6th</option><option>7th</option><option>8th</option><option>9th</option><option>10th</option><option>11th</option><option>12th</option></select></div><div><label>Graduation Year</label><select id="teamGrad"><option>2036</option><option>2035</option><option>2034</option><option>2033</option><option>2032</option></select></div><div style="align-self:end"><button onclick="saveGradeTeams()">Save Grade Team Names</button></div></div><div id="gradeTeamSummary"></div></div>
 <div class="card"><h2>Communication Templates</h2><div class="grid2"><div><label>Team Offer Message</label><textarea id="offerTemplate"></textarea></div><div><label>Not Selected / Follow-Up Message</label><textarea id="notSelectedTemplate"></textarea></div></div></div>
 </section>
 
@@ -157,7 +157,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 <section id="sessions" class="section">
 <div class="card"><h2>Tryout Sessions</h2><p class="note">Create or edit a session. Select courts and assign up to two evaluators per court.</p>
 <input type="hidden" id="editingSessionId">
-<div class="grid6"><div><label>Session Name</label><input id="sessionName"></div><div><label>Date</label><input id="sessionDate" type="date"></div><div><label>Start</label><select id="sessionStart"></select></div><div><label>End</label><select id="sessionEnd"></select></div><div><label>Grade</label><select id="sessionGrade"><option>3rd</option><option>4th</option><option>5th</option><option>6th</option><option>7th</option></select></div><div style="align-self:end"><button onclick="saveSession()">Save Session</button></div></div>
+<div class="grid6"><div><label>Session Name</label><input id="sessionName"></div><div><label>Date</label><input id="sessionDate" type="date"></div><div><label>Start</label><select id="sessionStart"></select></div><div><label>End</label><select id="sessionEnd"></select></div><div><label>Grade</label><select id="sessionGrade"><option>K</option><option>1st</option><option>2nd</option><option>3rd</option><option>4th</option><option>5th</option><option>6th</option><option>7th</option><option>8th</option><option>9th</option><option>10th</option><option>11th</option><option>12th</option></select></div><div style="align-self:end"><button onclick="saveSession()">Save Session</button></div></div>
 <div class="grid2" style="margin-top:12px"><div><label>Select Courts</label><select id="sessionCourts" multiple size="4" onchange="renderSessionCourtAssignments()"></select><div id="courtSessionHelp" class="small" style="margin-top:5px">Courts come from Setup.</div></div><div><label>Notes</label><textarea id="sessionNotes"></textarea></div></div>
 <div id="sessionCourtAssignments"></div>
 <div class="actions" style="margin-top:12px"><button class="light" onclick="addCoachFromSession()">+ Add Coach</button><button class="light" onclick="clearSessionForm()">Clear Form</button></div>
@@ -165,7 +165,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </section><section id="registrations" class="section">
 <div id="registrationMetrics" class="metricrow"></div>
 <div class="card"><div class="badge success" style="margin-bottom:8px">LIVE TRYOUT MODE</div><h2>Registration Data</h2><p class="note"><b>No demo players load automatically.</b> Import your real registration CSV to create tomorrow's roster. Generate 150 Demo Players remains optional for future testing only.</p><div id="registrationLoadStatus" class="note" style="margin-bottom:10px">No registration data loaded yet.</div><div class="actions"><label class="btn">Import CSV<input type="file" id="csvFile" accept=".csv" style="display:none"></label><button class="amber" onclick="generate150()">Generate 150 Demo Players</button><a class="btn light" href="MSS_Tryout_Demo_150_Players.csv" download>Download Demo CSV</a><button onclick="exportPlayers()">Export Players</button><button class="red" onclick="clearAll()">Clear All</button></div></div>
-<div class="card"><h2>Add Walk-In / Registration</h2><div class="grid6"><div><label>Tryout Number</label><input id="pId"></div><div><label>First Name</label><input id="pFirst"></div><div><label>Last Name</label><input id="pLast"></div><div><label>Grade</label><select id="pGrade"><option>3rd</option><option>4th</option><option>5th</option><option>6th</option><option>7th</option></select></div><div><label>Graduation Year</label><input id="pGrad"></div><div><label>Parent Email</label><input id="pEmail"></div></div><div class="grid3" style="margin-top:12px"><div><label>Parent Phone</label><input id="pPhone"></div><div><label>Headshot URL</label><input id="pPhoto"></div><div style="align-self:end"><button onclick="addPlayer()">Add Player</button></div></div></div>
+<div class="card"><h2>Add Walk-In / Registration</h2><div class="grid6"><div><label>Tryout Number</label><input id="pId"></div><div><label>First Name</label><input id="pFirst"></div><div><label>Last Name</label><input id="pLast"></div><div><label>Grade</label><select id="pGrade"><option>K</option><option>1st</option><option>2nd</option><option>3rd</option><option>4th</option><option>5th</option><option>6th</option><option>7th</option><option>8th</option><option>9th</option><option>10th</option><option>11th</option><option>12th</option></select></div><div><label>Graduation Year</label><input id="pGrad"></div><div><label>Parent Email</label><input id="pEmail"></div></div><div class="grid3" style="margin-top:12px"><div><label>Parent Phone</label><input id="pPhone"></div><div><label>Headshot URL</label><input id="pPhoto"></div><div style="align-self:end"><button onclick="addPlayer()">Add Player</button></div></div></div>
 <div class="card"><h2>Master Registration List</h2><p class="note">Player number, grade, and graduation year can be edited. Grade corrections preserve registration, contact information, check-in status, photo, and evaluation history.</p><div id="registrationTable"></div></div>
 </section>
 
@@ -444,14 +444,14 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </div>
 <div id="budgetTable" style="margin-top:12px"></div>
 </div>
-<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.71 · Prototype</div><script>
+<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.72 · Prototype</div><script>
 function money(v){
  let n=Number(v||0);
  if(!Number.isFinite(n))n=0;
  return n.toLocaleString('en-US',{style:'currency',currency:'USD'});
 }
 
-const KEY='mssClubDemoV071';
+const KEY='mssClubDemoV072';
 let state={
  setup:{orgName:'Oklahoma Swarm',season:'2026-27',eventName:'Oklahoma Swarm Tryouts',evalMethod:'Hybrid',courtCount:4,courts:['HIVE Court 1','HIVE Court 2','HIVE Court 3','HIVE Court 4'],teams:['Elite','Gold','Silver','Development'],notSelected:'Not Selected / Follow-Up',evaluators:['Coach Rob','','Coach Taylor','','Coach David','','Coach Julie',''],gradeTeams:{},offerTemplate:'Congratulations, {Player}! You have been offered a place on {Team}. Please respond by {Deadline}.',notSelectedTemplate:'Thank you for attending tryouts, {Player}. We would like to keep you informed about future opportunities.'},
  players:[],evaluations:{},offers:{},payments:[],directorReviews:{},directorName:'',checkinClosed:false,sessions:[],teamRecords:{},teamHistory:[],communication:{provider:'',connected:false,account:'',fromName:'',replyTo:'',drafts:{},sentLog:[]},requiredDocuments:[{id:'waiver',name:'Participation Waiver',type:'Waiver',version:'1.0',required:true},{id:'conduct',name:'Code of Conduct Acknowledgment',type:'Code of Conduct',version:'1.0',required:true},{id:'emergency',name:'Emergency Contact & Medical Information',type:'Emergency Contact',version:'1.0',required:true},{id:'uniform',name:'Uniform Information',type:'Uniform Information',version:'1.0',required:true}],documentCompletions:{},paymentPlans:[{id:'monthly',name:'Monthly',total:1800,deposit:300,installments:6},{id:'paidfull',name:'Paid in Full',total:1650,deposit:1650,installments:1}],placementsFinal:false
@@ -624,7 +624,7 @@ function cleanupLegacyDemoNames(){
 }
 function load(){
  currentSection='workflow';
- let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV070')||localStorage.getItem('mssClubDemoV069')||localStorage.getItem('mssClubDemoV068');
+ let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV071')||localStorage.getItem('mssClubDemoV070')||localStorage.getItem('mssClubDemoV069')||localStorage.getItem('mssClubDemoV068');
  if(x)try{state=JSON.parse(x)}catch(e){console.error('Could not load saved data',e)}
  state.payments??=[];
  state.paymentPlans??=[];
@@ -1121,7 +1121,12 @@ function assignParentPlan(playerId,planId){
  p.selectedPaymentPlan={...plan,team:p.team,teamId:t?.id||''};
  save();renderAll();if(document.getElementById('parentPlayer'))parentPlayer.value=playerId;renderParentPortal();
 }
-function gradeNumberPrefix(grade){let n=parseInt(String(grade||'').replace(/\D/g,''),10);return Number.isFinite(n)?n:''}
+function gradeNumberPrefix(grade){
+ let g=String(grade||'').trim();
+ if(/^k$/i.test(g))return 'K';
+ let n=parseInt(g.replace(/\D/g,''),10);
+ return Number.isFinite(n)?n:'';
+}
 function migratePlayerId(oldId,newId){
  if(oldId===newId)return;let p=state.players.find(x=>x.id===oldId);if(!p)return;p.id=newId;
  if(state.evaluations?.[oldId]){state.evaluations[newId]=state.evaluations[oldId];delete state.evaluations[oldId]}
@@ -1506,7 +1511,7 @@ function renderRegistrations(){
  }
  if(!box)return;
  if(!state.players.length){box.innerHTML='<p class="note">No players loaded.</p>';return}
- let gradeOptions=['','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th'];
+ let gradeOptions=['','K','1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th'];
  box.innerHTML='<table><tr><th>Player Number</th><th>Player</th><th>Grade</th><th>Program</th><th>Grad Year</th><th>Parent Email</th><th>Phone</th><th>Status</th><th>Check-In</th><th>Action</th></tr>'+
  state.players.map(p=>`<tr><td><input value="${esc(p.id)}" style="max-width:110px" onchange="setPlayerNumber('${p.id}',this.value)"></td><td><b>${esc(p.first)} ${esc(p.last)}</b></td><td><select class="${!p.grade?'attendance-no':''}" onchange="updatePlayerGrade('${p.id}',this.value,'${esc(p.grad||'')}')">${gradeOptions.map(g=>`<option value="${g}" ${p.grade===g?'selected':''}>${g||'Select Grade'}</option>`).join('')}</select></td><td>${esc(p.program||'-')}</td><td><input value="${esc(p.grad||'')}" style="max-width:95px" onchange="updatePlayerGrade('${p.id}','${esc(p.grade)}',this.value)"></td><td>${esc(p.email||'')}</td><td>${esc(p.phone||'')}</td><td><span class="badge ${p.checkedIn?'success':p.status==='No-Show'?'danger':''}">${esc(p.status||'Registered')}</span></td><td>${p.checkedIn?`<button class="green" disabled>Checked In ✓</button><br><button class="light" style="margin-top:5px" onclick="undoCheckin('${p.id}')">Undo</button>`:`<button class="green" onclick="checkIn('${p.id}')">Check In</button>`}</td><td><button class="light" onclick="editPlayerPrompt('${p.id}')">Edit Player</button></td></tr>`).join('')+'</table>';
 }
@@ -2308,46 +2313,47 @@ function parseCSVLine(line){
  out.push(cur);return out;
 }
 
+function gradeLabel(n){
+ n=+n;
+ if(n===1)return '1st';if(n===2)return '2nd';if(n===3)return '3rd';
+ if(n>=4&&n<=12)return `${n}th`;
+ return '';
+}
 function normalizeImportedGrade(value){
  let raw=String(value||'').trim();
  if(!raw)return '';
- let s=raw.toLowerCase()
-   .replace(/[–—_]/g,'-')
-   .replace(/\s+/g,' ');
+ let s=raw.toLowerCase().replace(/[–—_]/g,'-').replace(/\s+/g,' ');
 
- // Explicit ordinal forms anywhere in the Program text.
- let ordinal=s.match(/(?:^|[^0-9])(3rd|4th|5th|6th|7th|8th|9th|10th|11th|12th)(?:\s*grade)?(?:[^0-9]|$)/i);
+ // Kindergarten forms.
+ if(/\b(kindergarten|kindergarden|kinder|grade\s*k|k\s*grade)\b/i.test(s))return 'K';
+ if(/(?:^|[\s:/#-])k(?:[\s:/#-]|$)/i.test(s))return 'K';
+
+ // Explicit ordinal forms anywhere in Program text.
+ let ordinal=s.match(/(?:^|[^0-9])(1st|2nd|3rd|4th|5th|6th|7th|8th|9th|10th|11th|12th)(?:\s*grade)?(?:[^0-9]|$)/i);
  if(ordinal)return ordinal[1].toLowerCase();
 
- // "Grade 3", "Grade: 3", "Grade-3", "3 Grade"
- let gm=s.match(/\bgrade\s*[:#-]?\s*(3|4|5|6|7|8|9|10|11|12)\b/i);
- if(gm){
-   let n=+gm[1];
-   return n===3?'3rd':n===4?'4th':n===5?'5th':n===6?'6th':n===7?'7th':n===8?'8th':n===9?'9th':n===10?'10th':n===11?'11th':'12th';
- }
- let ng=s.match(/\b(3|4|5|6|7|8|9|10|11|12)\s*(?:grade|grader|graders)\b/i);
- if(ng){
-   let n=+ng[1];
-   return n===3?'3rd':n===4?'4th':n===5?'5th':n===6?'6th':n===7?'7th':n===8?'8th':n===9?'9th':n===10?'10th':n===11?'11th':'12th';
- }
+ // Grade 1, Grade: 2, etc.
+ let gm=s.match(/\bgrade\s*[:#-]?\s*(1|2|3|4|5|6|7|8|9|10|11|12)\b/i);
+ if(gm)return gradeLabel(+gm[1]);
+
+ // 1 Grade / 2 graders / etc.
+ let ng=s.match(/\b(1|2|3|4|5|6|7|8|9|10|11|12)\s*(?:grade|grader|graders)\b/i);
+ if(ng)return gradeLabel(+ng[1]);
 
  // Word forms.
  let words={
-   third:'3rd',fourth:'4th',fifth:'5th',sixth:'6th',seventh:'7th',eighth:'8th',
-   ninth:'9th',tenth:'10th',eleventh:'11th',twelfth:'12th'
+   first:'1st',second:'2nd',third:'3rd',fourth:'4th',fifth:'5th',sixth:'6th',
+   seventh:'7th',eighth:'8th',ninth:'9th',tenth:'10th',eleventh:'11th',twelfth:'12th'
  };
  for(let [word,grade] of Object.entries(words)){
    if(new RegExp(`\\b${word}(?:\\s+grade)?\\b`,'i').test(s))return grade;
  }
 
- // Final fallback for Program labels that contain a single standalone grade number,
- // e.g. "Swarm Tryout 5 Girls". Avoid 4-digit years.
- let nums=[...s.matchAll(/\b(3|4|5|6|7|8|9|10|11|12)\b/g)].map(m=>m[1]);
+ // Final fallback: one standalone 1-12 grade number in the Program label.
+ let nums=[...s.matchAll(/\b(1|2|3|4|5|6|7|8|9|10|11|12)\b/g)].map(m=>m[1]);
  let unique=[...new Set(nums)];
- if(unique.length===1){
-   let n=+unique[0];
-   return n===3?'3rd':n===4?'4th':n===5?'5th':n===6?'6th':n===7?'7th':n===8?'8th':n===9?'9th':n===10?'10th':n===11?'11th':'12th';
- }
+ if(unique.length===1)return gradeLabel(+unique[0]);
+
  return '';
 }
 function gradeFromRegistrationFields(gradeValue,programValue){
