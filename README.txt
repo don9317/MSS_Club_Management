@@ -1,18 +1,10 @@
-MSS Club Management Suite Demo v0.65
+MSS Club Management Suite Demo v0.66
 
-TRYOUT-DAY STABILITY UPDATE
+CAMERA HOTFIX
+- Fixed the v0.65 error: "Camera window could not be initialized."
+- The webcam modal had accidentally been embedded inside the Print Receipt HTML template rather than the actual page DOM.
+- Webcam window is now real page markup and can open from Check-In.
+- Added a self-repair fallback that recreates the webcam dialog if its markup is ever missing.
 
-1. TAKE PHOTO
-- Reworked camera button to use explicit DOM references instead of browser-dependent implicit element globals.
-- Camera dialog now opens before the permission request.
-- Uses a simple video:true request for broader Windows/Chromebook compatibility.
-- Camera errors are displayed in the dialog and a startup failure also triggers an alert.
-- Upload Photo remains available.
-
-2. FULL BACKUP / RESTORE
-- Download Full Backup exports the entire Club Manager state to one JSON file.
-- Restore Full Backup imports that file on another computer/browser.
-- Includes registrations, check-ins, evaluations, director reviews, placements, teams, offers, parent responses, payment plans, payments, documents, accounting, and settings.
-- Available from Workflow Dashboard and Setup.
-
-Existing v0.64 data migrates automatically.
+FULL BACKUP / RESTORE from v0.65 is retained.
+Existing v0.65 data migrates automatically.
