@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MSS Club Management Demo v0.69</title>
+<title>MSS Club Management Demo v0.70</title>
 <style>
 :root{--navy:#0b2545;--blue:#1d4ed8;--bg:#f4f7fb;--border:#d9e2ec;--muted:#667085;--green:#067647;--amber:#b54708;--red:#b42318}
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#172033}
@@ -87,7 +87,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </style>
 </head>
 <body>
-<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.69 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, Team Readiness, and Team Accounting</div></header>
+<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.70 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, Team Readiness, and Team Accounting</div></header>
 <div class="wrap">
 <div class="tabs no-print">
 <button class="tab active" data-tab="workflow">Workflow Dashboard</button><button class="tab" data-tab="setup">Setup</button>
@@ -444,14 +444,14 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </div>
 <div id="budgetTable" style="margin-top:12px"></div>
 </div>
-<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.69 · Prototype</div><script>
+<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.70 · Prototype</div><script>
 function money(v){
  let n=Number(v||0);
  if(!Number.isFinite(n))n=0;
  return n.toLocaleString('en-US',{style:'currency',currency:'USD'});
 }
 
-const KEY='mssClubDemoV069';
+const KEY='mssClubDemoV070';
 let state={
  setup:{orgName:'Oklahoma Swarm',season:'2026-27',eventName:'Oklahoma Swarm Tryouts',evalMethod:'Hybrid',courtCount:4,courts:['HIVE Court 1','HIVE Court 2','HIVE Court 3','HIVE Court 4'],teams:['Elite','Gold','Silver','Development'],notSelected:'Not Selected / Follow-Up',evaluators:['Coach Rob','','Coach Taylor','','Coach David','','Coach Julie',''],gradeTeams:{},offerTemplate:'Congratulations, {Player}! You have been offered a place on {Team}. Please respond by {Deadline}.',notSelectedTemplate:'Thank you for attending tryouts, {Player}. We would like to keep you informed about future opportunities.'},
  players:[],evaluations:{},offers:{},payments:[],directorReviews:{},directorName:'',checkinClosed:false,sessions:[],teamRecords:{},teamHistory:[],communication:{provider:'',connected:false,account:'',fromName:'',replyTo:'',drafts:{},sentLog:[]},requiredDocuments:[{id:'waiver',name:'Participation Waiver',type:'Waiver',version:'1.0',required:true},{id:'conduct',name:'Code of Conduct Acknowledgment',type:'Code of Conduct',version:'1.0',required:true},{id:'emergency',name:'Emergency Contact & Medical Information',type:'Emergency Contact',version:'1.0',required:true},{id:'uniform',name:'Uniform Information',type:'Uniform Information',version:'1.0',required:true}],documentCompletions:{},paymentPlans:[{id:'monthly',name:'Monthly',total:1800,deposit:300,installments:6},{id:'paidfull',name:'Paid in Full',total:1650,deposit:1650,installments:1}],placementsFinal:false
@@ -624,7 +624,7 @@ function cleanupLegacyDemoNames(){
 }
 function load(){
  currentSection='workflow';
- let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV068');
+ let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV069')||localStorage.getItem('mssClubDemoV068');
  if(x)try{state=JSON.parse(x)}catch(e){console.error('Could not load saved data',e)}
  state.payments??=[];
  state.paymentPlans??=[];
@@ -1501,14 +1501,16 @@ function addPlayer(){let id=pId.value||uid();state.players.push({id,first:pFirst
 function renderRegistrations(){
  let metrics=document.getElementById('registrationMetrics'),box=document.getElementById('registrationTable');
  if(metrics){
-   let grades=[...new Set(state.players.map(p=>p.grade).filter(Boolean))];
-   metrics.innerHTML=`<div class="metric">Registered<b>${state.players.length}</b></div><div class="metric">Grades<b>${grades.length}</b></div><div class="metric">Checked In<b>${state.players.filter(p=>p.checkedIn).length}</b></div><div class="metric">Offers Accepted<b>${state.players.filter(p=>state.offers?.[p.id]?.status==='Accepted').length}</b></div>`;
+   let grades=[...new Set(state.players.map(p=>p.grade).filter(Boolean))],unassigned=state.players.filter(p=>!p.grade).length;
+   metrics.innerHTML=`<div class="metric">Registered<b>${state.players.length}</b></div><div class="metric">Grades<b>${grades.length}</b></div><div class="metric">Grade Not Recognized<b>${unassigned}</b></div><div class="metric">Checked In<b>${state.players.filter(p=>p.checkedIn).length}</b></div><div class="metric">Offers Accepted<b>${state.players.filter(p=>state.offers?.[p.id]?.status==='Accepted').length}</b></div>`;
  }
  if(!box)return;
  if(!state.players.length){box.innerHTML='<p class="note">No players loaded.</p>';return}
- box.innerHTML='<table><tr><th>Player Number</th><th>Player</th><th>Grade</th><th>Grad Year</th><th>Parent Email</th><th>Phone</th><th>Status</th><th>Check-In</th><th>Action</th></tr>'+
- state.players.map(p=>`<tr><td><input value="${esc(p.id)}" style="max-width:110px" onchange="setPlayerNumber('${p.id}',this.value)"></td><td><b>${esc(p.first)} ${esc(p.last)}</b></td><td><select onchange="updatePlayerGrade('${p.id}',this.value,'${esc(p.grad||'')}')">${['3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th'].map(g=>`<option ${p.grade===g?'selected':''}>${g}</option>`).join('')}</select></td><td><input value="${esc(p.grad||'')}" style="max-width:95px" onchange="updatePlayerGrade('${p.id}','${esc(p.grade)}',this.value)"></td><td>${esc(p.email||'')}</td><td>${esc(p.phone||'')}</td><td><span class="badge ${p.checkedIn?'success':p.status==='No-Show'?'danger':''}">${esc(p.status||'Registered')}</span></td><td>${p.checkedIn?`<button class="green" disabled>Checked In ✓</button><br><button class="light" style="margin-top:5px" onclick="undoCheckin('${p.id}')">Undo</button>`:`<button class="green" onclick="checkIn('${p.id}')">Check In</button>`}</td><td><button class="light" onclick="editPlayerPrompt('${p.id}')">Edit Player</button></td></tr>`).join('')+'</table>';
-}function clearAll(){
+ let gradeOptions=['','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th'];
+ box.innerHTML='<table><tr><th>Player Number</th><th>Player</th><th>Grade</th><th>Program</th><th>Grad Year</th><th>Parent Email</th><th>Phone</th><th>Status</th><th>Check-In</th><th>Action</th></tr>'+
+ state.players.map(p=>`<tr><td><input value="${esc(p.id)}" style="max-width:110px" onchange="setPlayerNumber('${p.id}',this.value)"></td><td><b>${esc(p.first)} ${esc(p.last)}</b></td><td><select class="${!p.grade?'attendance-no':''}" onchange="updatePlayerGrade('${p.id}',this.value,'${esc(p.grad||'')}')">${gradeOptions.map(g=>`<option value="${g}" ${p.grade===g?'selected':''}>${g||'Select Grade'}</option>`).join('')}</select></td><td>${esc(p.program||'-')}</td><td><input value="${esc(p.grad||'')}" style="max-width:95px" onchange="updatePlayerGrade('${p.id}','${esc(p.grade)}',this.value)"></td><td>${esc(p.email||'')}</td><td>${esc(p.phone||'')}</td><td><span class="badge ${p.checkedIn?'success':p.status==='No-Show'?'danger':''}">${esc(p.status||'Registered')}</span></td><td>${p.checkedIn?`<button class="green" disabled>Checked In ✓</button><br><button class="light" style="margin-top:5px" onclick="undoCheckin('${p.id}')">Undo</button>`:`<button class="green" onclick="checkIn('${p.id}')">Check In</button>`}</td><td><button class="light" onclick="editPlayerPrompt('${p.id}')">Edit Player</button></td></tr>`).join('')+'</table>';
+}
+function clearAll(){
  if(!confirm('Clear all player registration and workflow data?'))return;
  state.players=[];state.evaluations={};state.directorReviews={};state.offers={};state.payments=[];state.documentCompletions={};
  save();renderAll();
@@ -1552,7 +1554,7 @@ function ensureWebcamModal(){
    <div class="webcam-panel">
      <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start">
        <div><h2 style="margin:0">Take Headshot</h2><div id="webcamPlayerName" class="note"></div></div>
-       <button class="light" onclick="closeWebcam()">Close</button>
+       <button class="light" onclick="closeWebcam()">Close / Skip Camera</button>
      </div>
      <div id="webcamMessage" class="webcam-message" style="display:none"></div>
      <div class="webcam-video-wrap" style="margin-top:12px"><video id="webcamVideo" autoplay playsinline muted></video></div>
@@ -1570,61 +1572,69 @@ function takeHeadshot(id){
  try{
    ensureWebcamModal();
    let p=state.players.find(x=>x.id===id);if(!p)return;
-   let modal=document.getElementById('webcamModal');
-   let playerName=document.getElementById('webcamPlayerName');
-   let message=document.getElementById('webcamMessage');
-   let captureBtn=document.getElementById('captureHeadshotBtn');
-   if(!modal||!playerName||!message||!captureBtn){
-     alert('Camera window could not be initialized. Please reload the page and try again.');
-     return;
-   }
-   webcamPlayerId=id;
-   playerName.textContent=`${p.first} ${p.last} · ${p.id}`;
-   message.style.display='block';
-   message.textContent='Preparing camera…';
-   modal.style.display='flex';
-   modal.setAttribute('aria-hidden','false');
-   captureBtn.disabled=true;
-
-   if(!window.isSecureContext){
-     message.innerHTML='<b>Camera cannot open from this local file.</b><br>Live camera access requires HTTPS (such as GitHub Pages) or localhost. You can still use Upload Photo Instead.';
-     return;
-   }
-   if(!navigator.mediaDevices||typeof navigator.mediaDevices.getUserMedia!=='function'){
-     message.innerHTML='<b>Camera API unavailable in this browser.</b><br>Use a current Chrome or Edge browser, or use Upload Photo Instead.';
-     return;
-   }
+   let modal=document.getElementById('webcamModal'),playerName=document.getElementById('webcamPlayerName'),message=document.getElementById('webcamMessage'),captureBtn=document.getElementById('captureHeadshotBtn');
+   if(!modal||!playerName||!message||!captureBtn)return alert('Camera window could not be initialized. Use Upload Photo instead.');
+   webcamPlayerId=id;playerName.textContent=`${p.first} ${p.last} · ${p.id}`;
+   message.style.display='block';message.textContent='Preparing camera…';
+   modal.style.display='flex';modal.setAttribute('aria-hidden','false');captureBtn.disabled=true;
    startWebcam();
  }catch(err){
    console.error('Take Photo error',err);
-   alert(`Take Photo could not start: ${err?.message||err}`);
+   closeWebcam();
+   alert(`Take Photo could not start: ${err?.message||err}. Use Upload Photo instead.`);
  }
 }
-async function startWebcam(deviceId=''){
+function startWebcam(deviceId=''){
  let message=document.getElementById('webcamMessage'),captureBtn=document.getElementById('captureHeadshotBtn'),switchBtn=document.getElementById('switchCameraBtn'),video=document.getElementById('webcamVideo');
- if(!message||!captureBtn||!video){alert('Camera controls are unavailable. Reload the page and try again.');return}
- stopWebcamStream();message.style.display='block';message.textContent='Opening camera…';captureBtn.disabled=true;if(switchBtn)switchBtn.style.display='none';
- if(!window.isSecureContext){message.innerHTML='<b>Camera blocked because this page is not secure.</b><br>Open the HTTPS GitHub Pages address, or use Upload Photo Instead.';return}
- if(!navigator.mediaDevices||typeof navigator.mediaDevices.getUserMedia!=='function'){message.innerHTML='<b>Camera API unavailable.</b><br>Use a current Chrome/Edge browser or Upload Photo Instead.';return}
- let timeout=new Promise((_,reject)=>setTimeout(()=>reject(Object.assign(new Error('The browser did not return a camera stream within 5 seconds.'),{name:'CameraTimeout'})),5000));
- try{
-   webcamStream=await Promise.race([navigator.mediaDevices.getUserMedia({video:deviceId?{deviceId:{exact:deviceId}}:true,audio:false}),timeout]);
-   video.srcObject=webcamStream;await video.play();message.style.display='none';captureBtn.disabled=false;
+ if(!message||!captureBtn||!video){closeWebcam();return alert('Camera controls unavailable. Use Upload Photo instead.')}
+ stopWebcamStream();
+ let token=++webcamAttemptToken;
+ message.style.display='block';message.textContent='Preparing camera…';captureBtn.disabled=true;if(switchBtn)switchBtn.style.display='none';
+
+ if(!window.isSecureContext){
+   message.innerHTML='<b>Live camera is unavailable on this page.</b><br>Use Upload Photo Instead.';
+   return;
+ }
+ if(!navigator.mediaDevices||typeof navigator.mediaDevices.getUserMedia!=='function'){
+   message.innerHTML='<b>Camera API is unavailable.</b><br>Use Upload Photo Instead.';
+   return;
+ }
+
+ clearTimeout(webcamFailTimer);
+ webcamFailTimer=setTimeout(()=>{
+   if(token!==webcamAttemptToken)return;
+   webcamAttemptToken++;
+   stopWebcamStream();
+   closeWebcam();
+   alert('The camera did not open within 6 seconds. The camera window was closed so Check-In can continue. Use Upload Photo for this player.');
+ },6000);
+
+ navigator.mediaDevices.getUserMedia({video:deviceId?{deviceId:{exact:deviceId}}:true,audio:false})
+ .then(async stream=>{
+   if(token!==webcamAttemptToken){stream.getTracks().forEach(t=>t.stop());return}
+   clearTimeout(webcamFailTimer);webcamFailTimer=null;
+   webcamStream=stream;video.srcObject=stream;
+   try{await video.play()}catch(e){}
+   if(token!==webcamAttemptToken){stopWebcamStream();return}
+   message.style.display='none';captureBtn.disabled=false;
    try{
      webcamDevices=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==='videoinput');
-     let active=webcamStream.getVideoTracks()[0]?.getSettings?.().deviceId||'',idx=webcamDevices.findIndex(d=>d.deviceId===active);if(idx>=0)webcamDeviceIndex=idx;
+     let active=stream.getVideoTracks()[0]?.getSettings?.().deviceId||'',idx=webcamDevices.findIndex(d=>d.deviceId===active);
+     if(idx>=0)webcamDeviceIndex=idx;
      if(switchBtn)switchBtn.style.display=webcamDevices.length>1?'inline-block':'none';
-   }catch(e){console.warn('Camera enumeration unavailable',e)}
- }catch(err){
+   }catch(e){}
+ })
+ .catch(err=>{
+   if(token!==webcamAttemptToken)return;
+   clearTimeout(webcamFailTimer);webcamFailTimer=null;
    console.error('Camera error',err);stopWebcamStream();
    let detail='Camera access was not available.';
-   if(err?.name==='CameraTimeout')detail='Camera did not open within 5 seconds.';
-   else if(err?.name==='NotAllowedError'||err?.name==='SecurityError')detail='Camera permission was denied or blocked.';
+   if(err?.name==='NotAllowedError'||err?.name==='SecurityError')detail='Camera permission was denied or blocked.';
    else if(err?.name==='NotFoundError'||err?.name==='DevicesNotFoundError')detail='No usable camera was found.';
    else if(err?.name==='NotReadableError'||err?.name==='TrackStartError')detail='The camera may already be in use by another app.';
-   else if(err?.name==='OverconstrainedError')detail='That camera could not be opened with the requested settings.';
-   message.style.display='block';message.innerHTML=`<b>${detail}</b><br>${esc(err?.message||'')}<br>Close any app using the camera, check the browser Camera permission, and try again. You can also use Upload Photo Instead.`;captureBtn.disabled=true;
- }
+   message.style.display='block';message.innerHTML=`<b>${detail}</b><br>Close this window and use Upload Photo instead.`;
+   captureBtn.disabled=true;
+ });
 }
 async function switchWebcamCamera(){
  if(webcamDevices.length<2)return;
@@ -1637,6 +1647,8 @@ function stopWebcamStream(){
  if(video)video.srcObject=null;
 }
 function closeWebcam(){
+ webcamAttemptToken++;
+ if(webcamFailTimer){clearTimeout(webcamFailTimer);webcamFailTimer=null}
  stopWebcamStream();webcamPlayerId='';
  let modal=document.getElementById('webcamModal');
  if(modal){modal.style.display='none';modal.setAttribute('aria-hidden','true')}
@@ -2295,18 +2307,62 @@ function parseCSVLine(line){
  for(let i=0;i<line.length;i++){let ch=line[i];if(ch==='"'){if(q&&line[i+1]==='"'){cur+='"';i++}else q=!q}else if(ch===','&&!q){out.push(cur);cur=''}else cur+=ch}
  out.push(cur);return out;
 }
+
+function normalizeImportedGrade(value){
+ let s=String(value||'').trim();
+ if(!s)return '';
+ let low=s.toLowerCase();
+
+ // Direct forms: 3rd, 4th grade, Grade 5, 6, 7th Girls, etc.
+ let m=low.match(/\b(?:grade\s*)?(3|4|5|6|7|8|9|10|11|12)(?:st|nd|rd|th)?(?:\s*grade)?\b/);
+ if(m){
+   let n=+m[1];
+   if(n===3)return '3rd';
+   if(n===4)return '4th';
+   if(n===5)return '5th';
+   if(n===6)return '6th';
+   if(n===7)return '7th';
+   if(n===8)return '8th';
+   if(n===9)return '9th';
+   if(n===10)return '10th';
+   if(n===11)return '11th';
+   if(n===12)return '12th';
+ }
+ // Word forms sometimes used in program names.
+ let words={third:'3rd',fourth:'4th',fifth:'5th',sixth:'6th',seventh:'7th',eighth:'8th',ninth:'9th',tenth:'10th',eleventh:'11th',twelfth:'12th'};
+ for(let [word,grade] of Object.entries(words)){if(new RegExp(`\\b${word}\\b`).test(low))return grade}
+ return '';
+}
+function gradeFromRegistrationFields(gradeValue,programValue){
+ return normalizeImportedGrade(gradeValue)||normalizeImportedGrade(programValue)||'';
+}
+
 function importRegistrationCSVText(text){
  let lines=String(text||'').replace(/^\uFEFF/,'').split(/\r?\n/).filter(x=>x.trim()!=='');
  if(lines.length<2)return 0;
  let h=parseCSVLine(lines.shift()).map(x=>x.trim().toLowerCase()),added=0;
  let ix=(...names)=>{for(let n of names){let i=h.indexOf(n);if(i>=0)return i}return -1};
- let cols={id:ix('player id','tryout number','player number'),first:ix('first name','first'),last:ix('last name','last'),grade:ix('grade'),grad:ix('graduation year','grad year'),email:ix('parent email','email'),phone:ix('parent phone','phone'),photo:ix('headshot url','photo')};
+ let cols={
+   id:ix('player id','tryout number','player number'),
+   first:ix('first name','first','participant first name','player first name'),
+   last:ix('last name','last','participant last name','player last name'),
+   grade:ix('grade','player grade','participant grade'),
+   program:ix('program','program name','registration program'),
+   grad:ix('graduation year','grad year'),
+   email:ix('parent email','email','guardian email'),
+   phone:ix('parent phone','phone','guardian phone'),
+   photo:ix('headshot url','photo')
+ };
  for(let line of lines){
    let a=parseCSVLine(line),get=k=>cols[k]>=0?(a[cols[k]]||'').trim():'';
    let id=get('id')||uid(),first=get('first'),last=get('last');
    if(!first&&!last)continue;
    if(state.players.some(p=>p.id===id))continue;
-   state.players.push({id,first,last,grade:get('grade'),grad:get('grad'),email:get('email'),phone:get('phone'),photo:get('photo'),status:'Registered',checkedIn:false,court:'',evaluator:'',team:'',offerStatus:'Not Created',paymentPlanId:'',depositPaid:false,rosterStatus:'Not Active',sessionId:''});
+   let grade=gradeFromRegistrationFields(get('grade'),get('program'));
+   state.players.push({
+     id,first,last,grade,program:get('program'),grad:get('grad'),email:get('email'),phone:get('phone'),photo:get('photo'),
+     status:'Registered',checkedIn:false,court:'',evaluator:'',team:'',offerStatus:'Not Created',paymentPlanId:'',depositPaid:false,rosterStatus:'Not Active',sessionId:''
+   });
    added++;
  }
  return added;
@@ -2349,7 +2405,7 @@ load();
   <div class="webcam-panel">
     <div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start">
       <div><h2 style="margin:0">Take Headshot</h2><div id="webcamPlayerName" class="note"></div></div>
-      <button class="light" onclick="closeWebcam()">Close</button>
+      <button class="light" onclick="closeWebcam()">Close / Skip Camera</button>
     </div>
     <div id="webcamMessage" class="webcam-message" style="display:none"></div>
     <div class="webcam-video-wrap" style="margin-top:12px">
