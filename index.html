@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MSS Club Management Demo v0.64</title>
+<title>MSS Club Management Demo v0.65</title>
 <style>
 :root{--navy:#0b2545;--blue:#1d4ed8;--bg:#f4f7fb;--border:#d9e2ec;--muted:#667085;--green:#067647;--amber:#b54708;--red:#b42318}
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#172033}
@@ -87,7 +87,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </style>
 </head>
 <body>
-<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.64 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, Team Readiness, and Team Accounting</div></header>
+<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.65 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, Team Readiness, and Team Accounting</div></header>
 <div class="wrap">
 <div class="tabs no-print">
 <button class="tab active" data-tab="workflow">Workflow Dashboard</button><button class="tab" data-tab="setup">Setup</button>
@@ -109,6 +109,20 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 
 
 <section id="workflow" class="section active">
+<div class="card" style="margin-bottom:14px">
+  <div style="display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap">
+    <div>
+      <h2 style="margin:0 0 4px">Data Safety</h2>
+      <div class="note">Backup saves the entire Club Manager — registrations, check-ins, evaluations, teams, offers, payments, documents, and settings — so it can be restored on another computer/browser.</div>
+      <div id="backupStatus" class="small" style="margin-top:5px"></div>
+    </div>
+    <div class="actions">
+      <button class="green" onclick="exportClubBackup()">Download Full Backup</button>
+      <button class="light" onclick="chooseClubRestore()">Restore Full Backup</button>
+    </div>
+  </div>
+</div>
+
 <div class="card">
 <div class="grid3"><div><div class="small">Organization</div><h2 id="wfOrg"></h2></div><div><div class="small">Season</div><h2 id="wfSeason"></h2></div><div><div class="small">Event</div><h2 id="wfEvent"></h2></div></div>
 <div class="grid3" style="margin:8px 0 14px"><div><label>Dashboard View</label><select id="wfGradeFilter" onchange="renderWorkflow()"></select></div><div><label>Tryout Session</label><select id="wfSessionFilter" onchange="renderWorkflow()"></select></div><div><label>View Purpose</label><input value="Operational progress for selected grade/session" readonly></div></div>
@@ -120,6 +134,12 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 <div class="card"><h2>Attention Required</h2><div id="workflowAlerts"></div></div>
 </section>
 <section id="setup" class="section">
+<div class="card">
+  <h2>Full Backup / Restore</h2>
+  <p class="note">Use this before moving to another device or before installing a new prototype version.</p>
+  <div class="actions"><button class="green" onclick="exportClubBackup()">Download Full Backup</button><button class="light" onclick="chooseClubRestore()">Restore Full Backup</button></div>
+</div>
+
 <div class="card"><h2>Organization & Tryout Setup</h2><div class="grid4"><div><label>Organization</label><input id="orgName"></div><div><label>Season</label><input id="season"></div><div><label>Event</label><input id="eventName"></div><div><label>Evaluation Method</label><select id="evalMethod"><option>Paper</option><option>Tablet</option><option>Hybrid</option></select></div></div></div>
 
 <div class="card"><h2>Courts and Teams</h2>
@@ -412,14 +432,14 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </div>
 <div id="budgetTable" style="margin-top:12px"></div>
 </div>
-<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.64 · Prototype</div><script>
+<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.65 · Prototype</div><script>
 function money(v){
  let n=Number(v||0);
  if(!Number.isFinite(n))n=0;
  return n.toLocaleString('en-US',{style:'currency',currency:'USD'});
 }
 
-const KEY='mssClubDemoV064';
+const KEY='mssClubDemoV065';
 let state={
  setup:{orgName:'Oklahoma Swarm',season:'2026-27',eventName:'Oklahoma Swarm Tryouts',evalMethod:'Hybrid',courtCount:4,courts:['HIVE Court 1','HIVE Court 2','HIVE Court 3','HIVE Court 4'],teams:['Elite','Gold','Silver','Development'],notSelected:'Not Selected / Follow-Up',evaluators:['Coach Rob','','Coach Taylor','','Coach David','','Coach Julie',''],gradeTeams:{},offerTemplate:'Congratulations, {Player}! You have been offered a place on {Team}. Please respond by {Deadline}.',notSelectedTemplate:'Thank you for attending tryouts, {Player}. We would like to keep you informed about future opportunities.'},
  players:[],evaluations:{},offers:{},payments:[],directorReviews:{},directorName:'',checkinClosed:false,sessions:[],teamRecords:{},teamHistory:[],communication:{provider:'',connected:false,account:'',fromName:'',replyTo:'',drafts:{},sentLog:[]},requiredDocuments:[{id:'waiver',name:'Participation Waiver',type:'Waiver',version:'1.0',required:true},{id:'conduct',name:'Code of Conduct Acknowledgment',type:'Code of Conduct',version:'1.0',required:true},{id:'emergency',name:'Emergency Contact & Medical Information',type:'Emergency Contact',version:'1.0',required:true},{id:'uniform',name:'Uniform Information',type:'Uniform Information',version:'1.0',required:true}],documentCompletions:{},paymentPlans:[{id:'monthly',name:'Monthly',total:1800,deposit:300,installments:6},{id:'paidfull',name:'Paid in Full',total:1650,deposit:1650,installments:1}],placementsFinal:false
@@ -512,6 +532,56 @@ const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
 function showTab(id){currentSection=id;document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');let t=document.querySelector(`[data-tab="${id}"]`);if(t)t.classList.add('active');renderStepBar();renderAll();window.scrollTo(0,0)}
 
+
+function exportClubBackup(){
+ try{
+   save();
+   let payload={
+     type:'MSS Club Management Full Backup',
+     schema:1,
+     appVersion:'0.65',
+     exportedAt:new Date().toISOString(),
+     state:state
+   };
+   let blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+   let a=document.createElement('a');
+   let stamp=new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+   a.href=URL.createObjectURL(blob);
+   a.download=`MSS_Club_Backup_${stamp}.json`;
+   document.body.appendChild(a);a.click();a.remove();
+   setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+   let status=document.getElementById('backupStatus');
+   if(status){status.textContent='Full club backup downloaded successfully.';status.style.color='#067647'}
+ }catch(err){
+   console.error('Backup failed',err);
+   alert(`Backup failed: ${err?.message||err}`);
+ }
+}
+function chooseClubRestore(){
+ let input=document.createElement('input');input.type='file';input.accept='.json,application/json';
+ input.onchange=()=>{let file=input.files&&input.files[0];if(file)restoreClubBackupFile(file)};
+ input.click();
+}
+function restoreClubBackupFile(file){
+ let reader=new FileReader();
+ reader.onload=e=>{
+   try{
+     let parsed=JSON.parse(e.target.result);
+     let restored=parsed?.state||parsed;
+     if(!restored||!Array.isArray(restored.players))throw new Error('This does not appear to be an MSS Club Management backup.');
+     let playerCount=restored.players.length;
+     if(!confirm(`Restore this club backup with ${playerCount} player record(s)? This will replace the data currently stored in this browser.`))return;
+     state=restored;
+     localStorage.setItem(KEY,JSON.stringify(state));
+     alert('Club data restored successfully. The app will reload now.');
+     location.reload();
+   }catch(err){
+     console.error('Restore failed',err);
+     alert(`Restore failed: ${err?.message||err}`);
+   }
+ };
+ reader.readAsText(file);
+}
 function save(){
  readSetup();
  localStorage.setItem(KEY,JSON.stringify(state));
@@ -542,7 +612,7 @@ function cleanupLegacyDemoNames(){
 }
 function load(){
  currentSection='workflow';
- let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV063')||localStorage.getItem('mssClubDemoV062')||localStorage.getItem('mssClubDemoV058')||localStorage.getItem('mssClubDemoV057')||localStorage.getItem('mssClubDemoV056')||localStorage.getItem('mssClubDemoV055')||localStorage.getItem('mssClubDemoV054')||localStorage.getItem('mssClubDemoV053')||localStorage.getItem('mssClubDemoV052')||localStorage.getItem('mssClubDemoV051')||localStorage.getItem('mssClubDemoV050')||localStorage.getItem('mssClubDemoV049')||localStorage.getItem('mssClubDemoV048')||localStorage.getItem('mssClubDemoV047')||localStorage.getItem('mssClubDemoV046')||localStorage.getItem('mssClubDemoV045')||localStorage.getItem('mssClubDemoV044')||localStorage.getItem('mssClubDemoV043')||localStorage.getItem('mssClubDemoV042')||localStorage.getItem('mssClubDemoV041')||localStorage.getItem('mssClubDemoV040')||localStorage.getItem('mssClubDemoV039')||localStorage.getItem('mssClubDemoV038')||localStorage.getItem('mssClubDemoV037')||localStorage.getItem('mssClubDemoV036')||localStorage.getItem('mssClubDemoV035')||localStorage.getItem('mssClubDemoV034')||localStorage.getItem('mssClubDemoV033')||localStorage.getItem('mssClubDemoV032')||localStorage.getItem('mssClubDemoV031')||localStorage.getItem('mssClubDemoV030')||localStorage.getItem('mssClubDemoV029');
+ let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV064')||localStorage.getItem('mssClubDemoV063')||localStorage.getItem('mssClubDemoV062')||localStorage.getItem('mssClubDemoV058')||localStorage.getItem('mssClubDemoV057')||localStorage.getItem('mssClubDemoV056')||localStorage.getItem('mssClubDemoV055')||localStorage.getItem('mssClubDemoV054')||localStorage.getItem('mssClubDemoV053')||localStorage.getItem('mssClubDemoV052')||localStorage.getItem('mssClubDemoV051')||localStorage.getItem('mssClubDemoV050')||localStorage.getItem('mssClubDemoV049')||localStorage.getItem('mssClubDemoV048')||localStorage.getItem('mssClubDemoV047')||localStorage.getItem('mssClubDemoV046')||localStorage.getItem('mssClubDemoV045')||localStorage.getItem('mssClubDemoV044')||localStorage.getItem('mssClubDemoV043')||localStorage.getItem('mssClubDemoV042')||localStorage.getItem('mssClubDemoV041')||localStorage.getItem('mssClubDemoV040')||localStorage.getItem('mssClubDemoV039')||localStorage.getItem('mssClubDemoV038')||localStorage.getItem('mssClubDemoV037')||localStorage.getItem('mssClubDemoV036')||localStorage.getItem('mssClubDemoV035')||localStorage.getItem('mssClubDemoV034')||localStorage.getItem('mssClubDemoV033')||localStorage.getItem('mssClubDemoV032')||localStorage.getItem('mssClubDemoV031')||localStorage.getItem('mssClubDemoV030')||localStorage.getItem('mssClubDemoV029');
  if(x)try{state=JSON.parse(x)}catch(e){console.error('Could not load saved data',e)}
  state.payments??=[];
  state.paymentPlans??=[];
@@ -1461,75 +1531,98 @@ function headshotCell(p){
  return `<div style="display:flex;align-items:center;gap:8px">${pic?`<img class="headshot-thumb" src="${esc(pic)}" alt="Headshot">`:`<div class="headshot-placeholder">${esc(playerInitials(p))}</div>`}<div><button class="green" onclick="takeHeadshot('${p.id}')">📷 ${pic?'Retake':'Take Photo'}</button><br><button class="light" style="margin-top:4px" onclick="chooseHeadshot('${p.id}')">📁 Upload</button>${pic?`<br><button class="light" style="margin-top:4px" onclick="removeHeadshot('${p.id}')">Remove</button>`:''}</div></div>`;
 }
 function takeHeadshot(id){
- let p=state.players.find(x=>x.id===id);if(!p)return;
- webcamPlayerId=id;
- webcamPlayerName.textContent=`${p.first} ${p.last} · ${p.id}`;
- webcamMessage.style.display='none';webcamMessage.textContent='';
- webcamModal.style.display='flex';webcamModal.setAttribute('aria-hidden','false');
+ try{
+   let p=state.players.find(x=>x.id===id);if(!p)return;
+   let modal=document.getElementById('webcamModal');
+   let playerName=document.getElementById('webcamPlayerName');
+   let message=document.getElementById('webcamMessage');
+   let captureBtn=document.getElementById('captureHeadshotBtn');
+   if(!modal||!playerName||!message||!captureBtn){
+     alert('Camera window could not be initialized. Please reload the page and try again.');
+     return;
+   }
+   webcamPlayerId=id;
+   playerName.textContent=`${p.first} ${p.last} · ${p.id}`;
+   message.style.display='block';
+   message.textContent='Preparing camera…';
+   modal.style.display='flex';
+   modal.setAttribute('aria-hidden','false');
+   captureBtn.disabled=true;
 
- // Give immediate feedback before requesting the camera.
- if(!window.isSecureContext){
-   webcamMessage.style.display='block';
-   webcamMessage.innerHTML='<b>Camera cannot open from this local file.</b><br>Live camera access requires HTTPS (such as GitHub Pages) or localhost. You can still use Upload Photo Instead.';
-   captureHeadshotBtn.disabled=true;
-   return;
+   if(!window.isSecureContext){
+     message.innerHTML='<b>Camera cannot open from this local file.</b><br>Live camera access requires HTTPS (such as GitHub Pages) or localhost. You can still use Upload Photo Instead.';
+     return;
+   }
+   if(!navigator.mediaDevices||typeof navigator.mediaDevices.getUserMedia!=='function'){
+     message.innerHTML='<b>Camera API unavailable in this browser.</b><br>Use a current Chrome or Edge browser, or use Upload Photo Instead.';
+     return;
+   }
+   startWebcam();
+ }catch(err){
+   console.error('Take Photo error',err);
+   alert(`Take Photo could not start: ${err?.message||err}`);
  }
- if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
-   webcamMessage.style.display='block';
-   webcamMessage.innerHTML='<b>Camera API unavailable in this browser.</b><br>Try the current Chrome browser with camera permission, or use Upload Photo Instead.';
-   captureHeadshotBtn.disabled=true;
-   return;
- }
- captureHeadshotBtn.disabled=true;
- startWebcam();
 }
 async function startWebcam(){
- stopWebcamStream();
- webcamMessage.style.display='block';
- webcamMessage.textContent='Opening camera…';
- captureHeadshotBtn.disabled=true;
-
- if(!window.isSecureContext){
-   webcamMessage.innerHTML='<b>Camera blocked because this page is not in a secure context.</b><br>Open the app from an HTTPS address such as GitHub Pages, or use Upload Photo Instead.';
+ let message=document.getElementById('webcamMessage');
+ let captureBtn=document.getElementById('captureHeadshotBtn');
+ let video=document.getElementById('webcamVideo');
+ if(!message||!captureBtn||!video){
+   alert('Camera controls are unavailable. Reload the page and try again.');
    return;
  }
- if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
-   webcamMessage.innerHTML='<b>Camera API unavailable.</b><br>Use a current Chrome/Edge browser with camera permission, or use Upload Photo Instead.';
+ stopWebcamStream();
+ message.style.display='block';
+ message.textContent='Opening camera…';
+ captureBtn.disabled=true;
+
+ if(!window.isSecureContext){
+   message.innerHTML='<b>Camera blocked because this page is not in a secure context.</b><br>Open the app from the HTTPS GitHub Pages address, or use Upload Photo Instead.';
+   return;
+ }
+ if(!navigator.mediaDevices||typeof navigator.mediaDevices.getUserMedia!=='function'){
+   message.innerHTML='<b>Camera API unavailable.</b><br>Use a current Chrome/Edge browser or Upload Photo Instead.';
    return;
  }
  try{
-   webcamStream=await navigator.mediaDevices.getUserMedia({
-     video:{facingMode:'user',width:{ideal:640},height:{ideal:480}},
-     audio:false
-   });
-   webcamVideo.srcObject=webcamStream;
-   await webcamVideo.play().catch(()=>{});
-   webcamMessage.style.display='none';
-   captureHeadshotBtn.disabled=false;
+   // First use a broad request for maximum laptop/Chromebook compatibility.
+   webcamStream=await navigator.mediaDevices.getUserMedia({video:true,audio:false});
+   video.srcObject=webcamStream;
+   await video.play();
+   message.style.display='none';
+   captureBtn.disabled=false;
  }catch(err){
    console.error('Camera error',err);
    let detail='Camera access was not available.';
-   if(err?.name==='NotAllowedError')detail='Camera permission was denied or blocked.';
-   else if(err?.name==='NotFoundError')detail='No usable camera was found.';
-   else if(err?.name==='NotReadableError')detail='The camera may already be in use by another app.';
-   else if(err?.name==='OverconstrainedError')detail='The requested camera settings are not supported.';
-   webcamMessage.style.display='block';
-   webcamMessage.innerHTML=`<b>${detail}</b><br>Check Chrome Settings → Privacy and security → Site settings → Camera, then try again. You can also use Upload Photo Instead.`;
-   captureHeadshotBtn.disabled=true;
+   if(err?.name==='NotAllowedError'||err?.name==='SecurityError')detail='Camera permission was denied or blocked.';
+   else if(err?.name==='NotFoundError'||err?.name==='DevicesNotFoundError')detail='No usable camera was found.';
+   else if(err?.name==='NotReadableError'||err?.name==='TrackStartError')detail='The camera may already be in use by another app.';
+   message.style.display='block';
+   message.innerHTML=`<b>${detail}</b><br>${esc(err?.message||'')}<br>Check the browser site permissions for Camera and try again. You can also use Upload Photo Instead.`;
+   captureBtn.disabled=true;
  }
 }
 function stopWebcamStream(){
  if(webcamStream){webcamStream.getTracks().forEach(t=>t.stop());webcamStream=null}
- if(document.getElementById('webcamVideo'))webcamVideo.srcObject=null;
+ let video=document.getElementById('webcamVideo');
+ if(video)video.srcObject=null;
 }
-function closeWebcam(){stopWebcamStream();webcamPlayerId='';webcamModal.style.display='none';webcamModal.setAttribute('aria-hidden','true')}
+function closeWebcam(){
+ stopWebcamStream();webcamPlayerId='';
+ let modal=document.getElementById('webcamModal');
+ if(modal){modal.style.display='none';modal.setAttribute('aria-hidden','true')}
+}
 function captureHeadshot(){
- let p=state.players.find(x=>x.id===webcamPlayerId);if(!p||!webcamVideo.videoWidth)return alert('Camera image is not ready yet.');
- let max=320,scale=Math.min(1,max/Math.max(webcamVideo.videoWidth,webcamVideo.videoHeight)),w=Math.round(webcamVideo.videoWidth*scale),h=Math.round(webcamVideo.videoHeight*scale);
- webcamCanvas.width=w;webcamCanvas.height=h;
- let ctx=webcamCanvas.getContext('2d');
- ctx.save();ctx.translate(w,0);ctx.scale(-1,1);ctx.drawImage(webcamVideo,0,0,w,h);ctx.restore();
- p.photo=webcamCanvas.toDataURL('image/jpeg',0.78);
+ let p=state.players.find(x=>x.id===webcamPlayerId);
+ let video=document.getElementById('webcamVideo'),canvas=document.getElementById('webcamCanvas');
+ if(!p||!video||!canvas)return;
+ if(!video.videoWidth)return alert('Camera image is not ready yet. Wait a moment and try Capture again.');
+ let max=320,scale=Math.min(1,max/Math.max(video.videoWidth,video.videoHeight)),w=Math.max(1,Math.round(video.videoWidth*scale)),h=Math.max(1,Math.round(video.videoHeight*scale));
+ canvas.width=w;canvas.height=h;
+ let ctx=canvas.getContext('2d');
+ // Save exactly what the camera provides; avoids device-specific mirror issues.
+ ctx.drawImage(video,0,0,w,h);
+ p.photo=canvas.toDataURL('image/jpeg',0.78);
  save();closeWebcam();renderAll();
 }
 function chooseHeadshotFile(){

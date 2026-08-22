@@ -1,20 +1,18 @@
-MSS Club Management Suite Demo v0.63 — Tryout Day Camera + Permanent Team Delete
+MSS Club Management Suite Demo v0.65
 
-HEADSHOT / CAMERA
-- Check-In now provides separate Take Photo and Upload buttons.
-- Take Photo opens an in-app webcam window using the laptop/tablet/phone camera.
-- Capture & Save attaches the photo directly to the selected player.
-- Camera stream is stopped immediately when the photo is saved or the window is closed.
-- Upload remains available as a fallback.
-- If browser camera permission is blocked or unavailable, the app explains the issue and offers Upload instead.
+TRYOUT-DAY STABILITY UPDATE
 
-PERMANENT TEAM DELETE
-- Deleted teams now receive a persistent tombstone containing grade + team name.
-- Future data migrations/reconciliation will not automatically recreate a deliberately deleted team.
-- Unlinked Team Data ignores tombstoned teams.
-- Explicitly creating the same team again in Team Setup removes the tombstone and intentionally restores it.
+1. TAKE PHOTO
+- Reworked camera button to use explicit DOM references instead of browser-dependent implicit element globals.
+- Camera dialog now opens before the permission request.
+- Uses a simple video:true request for broader Windows/Chromebook compatibility.
+- Camera errors are displayed in the dialog and a startup failure also triggers an alert.
+- Upload Photo remains available.
 
-NOTE
-- A team deleted in an older version before v0.63 did not have a tombstone. If it reappears on the first v0.63 load, delete it once in v0.63; subsequent versions will preserve that deletion.
+2. FULL BACKUP / RESTORE
+- Download Full Backup exports the entire Club Manager state to one JSON file.
+- Restore Full Backup imports that file on another computer/browser.
+- Includes registrations, check-ins, evaluations, director reviews, placements, teams, offers, parent responses, payment plans, payments, documents, accounting, and settings.
+- Available from Workflow Dashboard and Setup.
 
-Existing v0.62 data migrates automatically.
+Existing v0.64 data migrates automatically.
