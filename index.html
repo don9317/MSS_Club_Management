@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MSS Club Management Demo v0.75</title>
+<title>MSS Club Management Demo v0.76</title>
 <style>
 :root{--navy:#0b2545;--blue:#1d4ed8;--bg:#f4f7fb;--border:#d9e2ec;--muted:#667085;--green:#067647;--amber:#b54708;--red:#b42318}
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#172033}
@@ -93,7 +93,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </style>
 </head>
 <body>
-<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.75 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, Team Readiness, and Team Accounting</div></header>
+<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.76 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, Team Readiness, and Team Accounting</div></header>
 <div class="wrap">
 <div class="tabs no-print">
 <button class="tab active" data-tab="workflow">Workflow Dashboard</button><button class="tab" data-tab="setup">Setup</button>
@@ -241,7 +241,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </section>
 
 <section id="paper" class="section">
-<div class="card no-print"><h2>Paper Evaluation Packets</h2><div class="grid3"><div><label>Evaluator</label><select id="paperEvaluator"></select></div><div><label>Grade</label><select id="paperGrade"></select></div><div><label>Court</label><select id="paperCourt"></select></div></div><div class="actions" style="margin-top:12px"><button onclick="renderPacket()">Preview Named Packet</button><button class="green" onclick="printPacket()">Print Named Packet</button><button class="light" onclick="renderBlankScoreSheet()">Blank Scoresheet</button><button class="light" onclick="printBlankScoreSheet()">Print Blank Scoresheet</button></div></div><div class="card" id="packetOutput"><p class="note">Click Preview to generate a paper evaluation packet.</p></div>
+<div class="card no-print"><h2>Paper Evaluation Packets</h2><div class="grid4"><div><label>Evaluator</label><select id="paperEvaluator" onchange="renderPacket()"></select></div><div><label>Grade</label><select id="paperGrade" onchange="renderPacket()"></select></div><div><label>Court</label><select id="paperCourt" onchange="renderPacket()"></select></div><div><label>Search Player</label><input id="paperSearch" placeholder="First or last name" oninput="renderPacket()"></div></div><div class="actions" style="margin-top:12px"><button onclick="renderPacket()">Preview Named Packet</button><button class="green" onclick="printPacket()">Print Named Packet</button><button class="light" onclick="renderBlankScoreSheet()">Blank Scoresheet</button><button class="light" onclick="printBlankScoreSheet()">Print Blank Scoresheet</button></div></div><div class="card" id="packetOutput"><p class="note">Click Preview to generate a paper evaluation packet.</p></div>
 </section>
 
 
@@ -249,10 +249,11 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 <div class="card">
 <h2>Paper Score Entry</h2>
 <p class="note">All checked-in players are listed below. Filter the list, then select a player to enter or edit the completed paper evaluation. No-shows are excluded.</p>
-<div class="grid4">
+<div class="grid5">
 <div><label>Grade</label><select id="paperEntryGrade" onchange="renderPaperEntryPlayers()"></select></div>
 <div><label>Evaluation Status</label><select id="paperEntryStatus" onchange="renderPaperEntryPlayers()"><option value="">All</option><option>Not Entered</option><option>Entered</option></select></div>
 <div><label>Evaluator</label><select id="paperEntryEvaluator" onchange="renderPaperEntryPlayers()"></select></div>
+<div><label>Search Player</label><input id="paperEntrySearch" placeholder="First or last name" oninput="renderPaperEntryPlayers()"></div>
 <div><label>Entered By</label><input id="paperEntryEnteredBy" value="Club Administrator"></div>
 </div>
 <div id="paperEntryNotice" class="note" style="margin-top:12px"></div><div id="paperEntryList" style="margin-top:14px"></div>
@@ -306,7 +307,29 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </div>
 <div id="teamSetupDetail" class="card" style="display:none"><div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap"><div><h2 id="teamSetupDetailTitle">Team Formation</h2><div id="teamSetupDetailSub" class="note"></div></div><div class="actions"><button class="light" onclick="editFormationTeam()">Edit Setup</button><button class="green" id="activateFormationTeamBtn" onclick="activateFormationTeam()">Activate Team</button><button class="light" onclick="closeFormationTeam()">Close</button></div></div><div id="teamSetupDetailMetrics" class="metricrow"></div><div id="teamSetupPlayerList"></div></div>
 </section>
-<section id="communication" class="section"><div class="card"><h2>Communication Center</h2><p class="note">Review and prepare messages. This prototype opens your email app with a prepared draft; production MSS will send through Gmail or Microsoft OAuth.</p><div class="grid4"><div><label>Group</label><select id="commGroup" onchange="renderCommunicationCenter()"></select></div><div><label>Message Type</label><select id="commMessageType" onchange="renderCommunicationCenter()"><option>Team Offer</option><option>Offer Reminder</option><option>Wait List</option><option>Not Selected</option><option>Payment Reminder</option></select></div><div><label>Send Test To</label><input id="commTestEmail" type="email"></div><div><label>Connected Account</label><input id="commConnectedAccount" readonly></div></div><div class="grid2" style="margin-top:12px"><div><label>Subject</label><input id="commSubject"></div><div><label>Reply-To</label><input id="commReplyDisplay" readonly></div></div><div style="margin-top:12px"><label>Message</label><textarea id="commBody" style="min-height:180px"></textarea></div><div class="actions" style="margin-top:12px"><button class="light" onclick="previewCommunication()">Preview</button><button onclick="sendTestCommunication()">Send Test</button><button class="green" onclick="sendCommunicationQueue()">Send Queue</button><button class="light" onclick="exportCommunicationQueue()">Export Queue CSV</button><button class="light" onclick="saveCommunicationDraft()">Save Draft</button></div></div><div id="commMetrics" class="metricrow"></div><div class="card"><h2>Message Preview</h2><div id="commPreview" class="note">Choose a group and click Preview.</div></div><div class="card"><h2>Outgoing Queue</h2><div id="commQueueTable"></div></div><div class="card"><h2>Team Communication Status</h2><p class="note">Open each team to see offer/response status and use the Group selector above to send to that team.</p><div id="commTeamStatus"></div></div></section><section id="offers" class="section">
+
+<section id="communication" class="section">
+<div class="card">
+<h2>Communication Center</h2>
+<p class="note">Team-first communication workspace. Select a team to see every player and track: Offer Not Sent → Offer Sent → Viewed → Accepted / Declined → Follow-Up Needed.</p>
+<div class="grid4">
+<div><label>Team</label><select id="commTeam" onchange="renderCommunicationCenter()"></select></div>
+<div><label>Message Type</label><select id="commMessageType" onchange="renderCommunicationCenter()"><option>Team Offer</option><option>Offer Reminder</option><option>Wait List</option><option>Not Selected</option><option>Payment Reminder</option></select></div>
+<div><label>Send Test To</label><input id="commTestEmail" type="email"></div>
+<div><label>Connected Account</label><input id="commConnectedAccount" readonly></div>
+</div>
+<div class="grid2" style="margin-top:12px"><div><label>Subject</label><input id="commSubject"></div><div><label>Reply-To</label><input id="commReplyDisplay" readonly></div></div>
+<div style="margin-top:12px"><label>Message</label><textarea id="commBody" style="min-height:180px"></textarea></div>
+<div class="actions" style="margin-top:12px"><button class="light" onclick="previewCommunication()">Preview</button><button onclick="sendTestCommunication()">Send Test</button><button class="green" onclick="sendCommunicationQueue()">Send Team Queue</button><button class="light" onclick="exportCommunicationQueue()">Export Team Queue CSV</button><button class="light" onclick="saveCommunicationDraft()">Save Draft</button></div>
+</div>
+<div id="commMetrics" class="metricrow"></div>
+<div class="card"><h2>Team Communication Status</h2><div id="commTeamStatus"></div></div>
+<div class="card"><h2>Selected Team Players</h2>
+<div class="grid2"><div><label>Search Player</label><input id="commSearch" placeholder="First or last name" oninput="renderCommunicationCenter()"></div><div><label>Status Filter</label><select id="commStatusFilter" onchange="renderCommunicationCenter()"><option value="">All Statuses</option><option>Offer Not Sent</option><option>Offer Sent</option><option>Viewed</option><option>Accepted</option><option>Declined</option><option>Follow-Up Needed</option></select></div></div>
+<div id="commQueueTable" style="margin-top:12px"></div></div>
+<div class="card"><h2>Message Preview</h2><div id="commPreview" class="note">Select a team and click Preview.</div></div>
+</section>
+<section id="offers" class="section">
 <div id="offerMetrics" class="metricrow"></div>
 <div class="card"><h2>Offers & Parent Communication</h2><p class="note">Create offers, generate communications, and track response status. In this standalone demo, messages are recorded but not actually sent.</p><div class="actions"><button onclick="createOffersForPlaced()">Create Offers for Placed Players</button><button class="amber" onclick="createFollowups()">Create Follow-Up Messages</button><button onclick="exportCommunications()">Export Communication List</button></div><div id="offerTable"></div></div>
 </section>
@@ -456,14 +479,14 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </div>
 <div id="budgetTable" style="margin-top:12px"></div>
 </div>
-<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.75 · Prototype</div><script>
+<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.76 · Prototype</div><script>
 function money(v){
  let n=Number(v||0);
  if(!Number.isFinite(n))n=0;
  return n.toLocaleString('en-US',{style:'currency',currency:'USD'});
 }
 
-const KEY='mssClubDemoV075';
+const KEY='mssClubDemoV076';
 let state={
  setup:{orgName:'Oklahoma Swarm',season:'2026-27',eventName:'Oklahoma Swarm Tryouts',evalMethod:'Hybrid',courtCount:4,courts:['HIVE Court 1','HIVE Court 2','HIVE Court 3','HIVE Court 4'],teams:['Elite','Gold','Silver','Development'],notSelected:'Not Selected / Follow-Up',evaluators:['Coach Rob','','Coach Taylor','','Coach David','','Coach Julie',''],gradeTeams:{},offerTemplate:'Congratulations, {Player}! You have been offered a place on {Team}. Please respond by {Deadline}.',notSelectedTemplate:'Thank you for attending tryouts, {Player}. We would like to keep you informed about future opportunities.'},
  players:[],evaluations:{},offers:{},payments:[],directorReviews:{},directorName:'',checkinClosed:false,sessions:[],teamRecords:{},teamHistory:[],communication:{provider:'',connected:false,account:'',fromName:'',replyTo:'',drafts:{},sentLog:[]},requiredDocuments:[{id:'waiver',name:'Participation Waiver',type:'Waiver',version:'1.0',required:true},{id:'conduct',name:'Code of Conduct Acknowledgment',type:'Code of Conduct',version:'1.0',required:true},{id:'emergency',name:'Emergency Contact & Medical Information',type:'Emergency Contact',version:'1.0',required:true},{id:'uniform',name:'Uniform Information',type:'Uniform Information',version:'1.0',required:true}],documentCompletions:{},paymentPlans:[{id:'monthly',name:'Monthly',total:1800,deposit:300,installments:6},{id:'paidfull',name:'Paid in Full',total:1650,deposit:1650,installments:1}],placementsFinal:false
@@ -662,7 +685,7 @@ function cleanupLegacyDemoNames(){
 }
 function load(){
  currentSection='workflow';
- let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV074')||localStorage.getItem('mssClubDemoV073')||localStorage.getItem('mssClubDemoV072')||localStorage.getItem('mssClubDemoV071')||localStorage.getItem('mssClubDemoV070')||localStorage.getItem('mssClubDemoV069')||localStorage.getItem('mssClubDemoV068');
+ let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV075')||localStorage.getItem('mssClubDemoV074')||localStorage.getItem('mssClubDemoV073')||localStorage.getItem('mssClubDemoV072')||localStorage.getItem('mssClubDemoV071')||localStorage.getItem('mssClubDemoV070')||localStorage.getItem('mssClubDemoV069')||localStorage.getItem('mssClubDemoV068');
  if(x)try{state=JSON.parse(x)}catch(e){console.error('Could not load saved data',e)}
  state.payments??=[];
  state.paymentPlans??=[];
@@ -874,31 +897,74 @@ function tourPrev(){if(tourMode&&tourIndex>1){tourIndex--;showTourStep()}}
 function connectEmailProvider(){let p=commProvider.value,a=commReplyTo.value.trim();if(!p)return alert('Choose Gmail or Microsoft 365.');if(!a)return alert('Enter the sending email address.');state.communication={...state.communication,provider:p,connected:true,account:a,replyTo:a,fromName:commFromName.value||state.setup.orgName||'Club Director'};commStatus.value='Connected (Prototype)';save();renderCommunicationCenter();alert(`${p} connection saved for this prototype.`)}
 function disconnectEmailProvider(){state.communication.connected=false;state.communication.account='';state.communication.provider='';commProvider.value='';commStatus.value='Not Connected';save();renderCommunicationCenter()}
 function communicationRecipients(){
- let g=commGroup?.value||'All Offers';
- let selectedTeam=actualTeams().find(t=>displayTeamName(t)===g);
- return state.players.filter(p=>{
-   let o=state.offers?.[p.id];if(!p.email)return false;
-   if(g==='All Offers')return !!o;if(g==='Offer Pending')return o?.status==='Offer Pending';if(g==='Accepted')return o?.status==='Accepted';if(g==='Declined')return o?.status==='Declined';if(g==='Not Selected')return p.team===state.setup.notSelected;
-   if(selectedTeam)return teamEligibleForGrade(selectedTeam,p.grade)&&normalizeTeamPart(p.team)===normalizeTeamPart(selectedTeam.name);
-   return false;
- });
+ let t=selectedCommunicationTeam();return t?communicationTeamPlayers(t).filter(p=>!!p.email):[];
 }
 function defaultCommunicationTemplate(t){let org=state.setup.orgName||'Our Club';if(t==='Team Offer')return{subject:`${org} Team Offer`,body:`Congratulations {Player},\n\nWe are pleased to offer you a position on the {Team} team.\n\nThank you,\n{FromName}`};if(t==='Offer Reminder')return{subject:`Reminder: ${org} Team Offer`,body:`Hello {Player},\n\nYour offer for the {Team} team is awaiting a response.\n\nThank you,\n{FromName}`};if(t==='Wait List')return{subject:`${org} Tryout Update`,body:`Hello {Player},\n\nYou are currently on our wait list.\n\nThank you,\n{FromName}`};if(t==='Not Selected')return{subject:`Thank You for Attending ${org} Tryouts`,body:`Hello {Player},\n\nThank you for attending tryouts.\n\nThank you,\n{FromName}`};return{subject:`${org} Payment Reminder`,body:`Hello {Player},\n\nThis is a reminder regarding the balance for the {Team} team.\n\nThank you,\n{FromName}`}}
 function mergeCommunication(x,p){return String(x||'').replaceAll('{Player}',`${p.first} ${p.last}`).replaceAll('{Team}',p.team||'').replaceAll('{FromName}',state.communication.fromName||state.setup.orgName||'Club Director')}
+
+function playerCommunicationStatus(p){
+ let o=state.offers?.[p.id];
+ if(!o)return 'Offer Not Sent';
+ if(o.status==='Accepted'||o.status==='Declined')return o.status;
+ if(o.followUpNeeded)return 'Follow-Up Needed';
+ if(o.viewedAt||o.status==='Viewed')return 'Viewed';
+ return 'Offer Sent';
+}
+function selectedCommunicationTeam(){
+ let id=document.getElementById('commTeam')?.value||'';
+ return actualTeams().find(t=>t.id===id)||actualTeams()[0]||null;
+}
+function communicationTeamPlayers(t){
+ if(!t)return [];
+ return state.players.filter(p=>teamEligibleForGrade(t,p.grade)&&normalizeTeamPart(p.team)===normalizeTeamPart(t.name));
+}
+function createOfferForPlayer(id){
+ let p=state.players.find(x=>x.id===id);if(!p)return;
+ state.offers??={};state.offers[id]??={};
+ Object.assign(state.offers[id],{status:'Offer Sent',sentAt:new Date().toISOString(),followUpNeeded:false});
+ save();renderCommunicationCenter();
+}
+function markFollowUpNeeded(id){
+ state.offers??={};state.offers[id]??={status:'Offer Sent'};
+ state.offers[id].followUpNeeded=true;save();renderCommunicationCenter();
+}
 function renderCommunicationCenter(){
- if(!document.getElementById('commGroup'))return;
- let teams=actualTeams(),teamNames=teams.map(t=>displayTeamName(t)),cur=commGroup.value;
- commGroup.innerHTML=['All Offers','Offer Pending','Accepted','Declined','Not Selected',...teamNames].map(x=>`<option ${x===cur?'selected':''}>${esc(x)}</option>`).join('');
- let k=commMessageType.value||'Team Offer',d=state.communication.drafts[k],def=defaultCommunicationTemplate(k);commSubject.value=d?.subject||def.subject;commBody.value=d?.body||def.body;commConnectedAccount.value=state.communication.connected?`${state.communication.provider}: ${state.communication.account}`:'Not Connected';commReplyDisplay.value=state.communication.replyTo||'';
- let r=communicationRecipients(),missing=state.players.filter(p=>state.offers?.[p.id]&&!p.email).length;
- commMetrics.innerHTML=`<div class="metric">Ready<b>${r.length}</b></div><div class="metric">Missing Email<b>${missing}</b></div><div class="metric">Sent Log<b>${state.communication.sentLog.length}</b></div><div class="metric">Teams<b>${teams.length}</b></div>`;
- commQueueTable.innerHTML='<table><tr><th>Player</th><th>Team</th><th>Email</th><th>Status</th><th>Type</th></tr>'+r.map(p=>`<tr><td>${esc(p.first)} ${esc(p.last)}</td><td>${esc(p.team||'')}</td><td>${esc(p.email||'-')}</td><td>${esc(state.offers?.[p.id]?.status||'')}</td><td>${esc(k)}</td></tr>`).join('')+'</table>';
- let ts=document.getElementById('commTeamStatus');if(ts)ts.innerHTML='<table><tr><th>Team</th><th>Players</th><th>Offer Sent/Pending</th><th>Accepted</th><th>Declined</th><th>Missing Email</th><th>Last Send</th><th>Action</th></tr>'+teams.map(t=>{let ps=placementCandidatesForTeam(t),accepted=ps.filter(p=>state.offers?.[p.id]?.status==='Accepted').length,declined=ps.filter(p=>state.offers?.[p.id]?.status==='Declined').length,pending=ps.filter(p=>state.offers?.[p.id]&&!['Accepted','Declined'].includes(state.offers[p.id].status)).length,missing=ps.filter(p=>!p.email).length,last=[...state.communication.sentLog].reverse().find(x=>x.group===displayTeamName(t));return`<tr><td><b>${esc(displayTeamName(t))}</b></td><td>${ps.length}</td><td>${pending}</td><td>${accepted}</td><td>${declined}</td><td>${missing}</td><td>${last?new Date(last.date).toLocaleString():'-'}</td><td><button onclick="commGroup.value='${esc(displayTeamName(t))}';renderCommunicationCenter()">Select Team</button></td></tr>`}).join('')+'</table>';
+ if(!document.getElementById('commTeam'))return;
+ let teams=actualTeams(),teamEl=document.getElementById('commTeam'),old=teamEl.value;
+ teamEl.innerHTML=teams.length?teams.map(t=>`<option value="${t.id}">${esc(displayTeamName(t))}</option>`).join(''):'<option value="">No teams created</option>';
+ if(old&&teams.some(t=>t.id===old))teamEl.value=old;
+ let t=selectedCommunicationTeam(),k=commMessageType.value||'Team Offer',d=state.communication.drafts[k],def=defaultCommunicationTemplate(k);
+ commSubject.value=d?.subject||def.subject;commBody.value=d?.body||def.body;
+ commConnectedAccount.value=state.communication.connected?`${state.communication.provider}: ${state.communication.account}`:'Not Connected';
+ commReplyDisplay.value=state.communication.replyTo||'';
+
+ let ps=t?communicationTeamPlayers(t):[],search=(commSearch?.value||'').toLowerCase(),filter=commStatusFilter?.value||'';
+ let shown=ps.filter(p=>(!filter||playerCommunicationStatus(p)===filter)&&(!search||`${p.first} ${p.last}`.toLowerCase().includes(search)));
+ let count=s=>ps.filter(p=>playerCommunicationStatus(p)===s).length;
+ commMetrics.innerHTML=`<div class="metric">Players<b>${ps.length}</b></div><div class="metric">Not Sent<b>${count('Offer Not Sent')}</b></div><div class="metric">Sent / Viewed<b>${count('Offer Sent')+count('Viewed')}</b></div><div class="metric">Accepted<b>${count('Accepted')}</b></div><div class="metric">Declined<b>${count('Declined')}</b></div><div class="metric">Follow-Up<b>${count('Follow-Up Needed')}</b></div>`;
+
+ commTeamStatus.innerHTML=teams.length?'<table><tr><th>Team</th><th>Players</th><th>Not Sent</th><th>Sent</th><th>Viewed</th><th>Accepted</th><th>Declined</th><th>Follow-Up</th><th></th></tr>'+teams.map(team=>{
+   let arr=communicationTeamPlayers(team),c=s=>arr.filter(p=>playerCommunicationStatus(p)===s).length;
+   return `<tr><td><b>${esc(displayTeamName(team))}</b></td><td>${arr.length}</td><td>${c('Offer Not Sent')}</td><td>${c('Offer Sent')}</td><td>${c('Viewed')}</td><td>${c('Accepted')}</td><td>${c('Declined')}</td><td>${c('Follow-Up Needed')}</td><td><button onclick="commTeam.value='${team.id}';renderCommunicationCenter()">Open Team</button></td></tr>`;
+ }).join('')+'</table>':'<p class="note">No teams created.</p>';
+
+ commQueueTable.innerHTML=shown.length?'<table><tr><th>Player</th><th>Email</th><th>Status</th><th>Sent</th><th>Viewed</th><th>Response</th><th>Action</th></tr>'+shown.map(p=>{
+   let o=state.offers?.[p.id]||{},s=playerCommunicationStatus(p);
+   return `<tr><td><b>${esc(p.first)} ${esc(p.last)}</b><br><span class="small">${esc(p.grade)}</span></td><td>${esc(p.email||'-')}</td><td>${esc(s)}</td><td>${o.sentAt?new Date(o.sentAt).toLocaleString():'-'}</td><td>${o.viewedAt?new Date(o.viewedAt).toLocaleString():'-'}</td><td>${o.respondedAt?new Date(o.respondedAt).toLocaleString():'-'}</td><td>${s==='Offer Not Sent'?`<button onclick="createOfferForPlayer('${p.id}')">Create Offer</button>`:`<button class="light" onclick="markFollowUpNeeded('${p.id}')">Follow-Up</button>`}</td></tr>`;
+ }).join('')+'</table>':'<p class="note">No players match this team/search/status.</p>';
 }
 function previewCommunication(){let p=communicationRecipients()[0];if(!p)return alert('No recipients match this group.');commPreview.innerHTML=`<div class="card"><p><b>To:</b> ${esc(p.email)}</p><p><b>Subject:</b> ${esc(mergeCommunication(commSubject.value,p))}</p><hr><div style="white-space:pre-wrap">${esc(mergeCommunication(commBody.value,p))}</div></div>`}
 function openMailDraft(to,sub,body){window.location.href=`mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(sub)}&body=${encodeURIComponent(body)}`}
 function sendTestCommunication(){let e=commTestEmail.value.trim();if(!e)return alert('Enter a test email address.');let p=communicationRecipients()[0]||{first:'Test',last:'Player',team:'Sample Team'};openMailDraft(e,mergeCommunication(commSubject.value,p),mergeCommunication(commBody.value,p))}
-function sendCommunicationQueue(){if(!state.communication.connected)return alert('Connect Gmail or Microsoft 365 in Setup first.');let r=communicationRecipients();if(!r.length)return alert('No recipients match this group.');let p=r[0];state.communication.sentLog.push({date:new Date().toISOString(),type:commMessageType.value,count:r.length,group:commGroup.value});save();openMailDraft(p.email,mergeCommunication(commSubject.value,p),mergeCommunication(commBody.value,p))}
+function sendCommunicationQueue(){
+ if(!state.communication.connected)return alert('Connect Gmail or Microsoft 365 in Setup first.');
+ let t=selectedCommunicationTeam(),r=communicationRecipients();if(!t)return alert('Select a team.');if(!r.length)return alert('No players on this team have an email address.');
+ let now=new Date().toISOString();
+ r.forEach(p=>{state.offers??={};state.offers[p.id]??={};let o=state.offers[p.id];if(!o.status)o.status='Offer Sent';if(!o.sentAt)o.sentAt=now});
+ state.communication.sentLog.push({date:now,type:commMessageType.value,count:r.length,group:displayTeamName(t),teamId:t.id});
+ save();renderCommunicationCenter();
+ let p=r[0];openMailDraft(p.email,mergeCommunication(commSubject.value,p),mergeCommunication(commBody.value,p));
+}
 function saveCommunicationDraft(){let k=commMessageType.value;state.communication.drafts[k]={subject:commSubject.value,body:commBody.value};saveProgress()}
 function exportCommunicationQueue(){let t=commMessageType.value,rows=[['Player','Team','Email','Message Type','Subject','Body']];communicationRecipients().forEach(p=>rows.push([`${p.first} ${p.last}`,p.team,p.email,t,mergeCommunication(commSubject.value,p),mergeCommunication(commBody.value,p)]));downloadCSV('MSS_Communication_Queue.csv',rows)}
 
@@ -2036,25 +2102,15 @@ function saveEvaluationRecord(playerId,data){
 
 
 function renderPaperEntryPlayers(){
- let g=document.getElementById('paperEntryGrade')?.value||'',
-     status=document.getElementById('paperEntryStatus')?.value||'',
-     evaluator=document.getElementById('paperEntryEvaluator')?.value||'';
-
- let players=state.players.filter(p=>p.checkedIn&&(!g||p.grade===g));
+ let g=paperEntryGrade?.value||'',status=paperEntryStatus?.value||'',evaluator=paperEntryEvaluator?.value||'',search=(document.getElementById('paperEntrySearch')?.value||'').toLowerCase();
+ let players=state.players.filter(p=>p.checkedIn&&(!g||p.grade===g)&&(!search||`${p.first} ${p.last}`.toLowerCase().includes(search)));
  if(status)players=players.filter(p=>status==='Entered'?!!paperEvaluationForPlayer(p):!paperEvaluationForPlayer(p));
  if(evaluator)players=players.filter(p=>p.evaluator===evaluator||paperEvaluationForPlayer(p)?.[0]===evaluator);
-
+ players.sort((a,b)=>{let d=tryoutGradeOrder(a.grade)-tryoutGradeOrder(b.grade);if(d)return d;d=String(a.first||'').localeCompare(String(b.first||''));return d||String(a.last||'').localeCompare(String(b.last||''))});
  let list=document.getElementById('paperEntryList');if(!list)return;
- if(!players.length){
-   list.innerHTML='<div class="card"><b>No checked-in players match these filters.</b><p class="note">Try clearing the evaluator or status filter. If no players appear, confirm they were marked Checked In.</p></div>';
-   return;
- }
- list.innerHTML='<table><tr><th>Player</th><th>Grade / Year</th><th>Court</th><th>Evaluator</th><th>Status</th><th>Rating</th><th>Recommendation</th><th>Entered By</th><th>Action</th></tr>'+players.map(p=>{
-   let pe=paperEvaluationForPlayer(p),name=pe?.[0]||p.evaluator||'',e=pe?.[1],vals=(e?.scores||[]).map(Number).filter(v=>v>0),rating=vals.length?(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2):'-';
-   return `<tr><td><b>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</b></td><td>${esc(p.grade)} / ${esc(p.grad)}</td><td>${esc(p.court||'-')}</td><td>${esc(name||'-')}</td><td><span class="badge ${e?'success':'warn'}">${e?'Entered':'Not Entered'}</span></td><td>${esc(rating)}</td><td>${esc(e?.recommendation||'-')}</td><td>${esc(e?.enteredBy||'-')}</td><td><button onclick="selectPaperEntryPlayer('${p.id}')">${e?'Edit Scores Below ↓':'Enter Scores Below ↓'}</button></td></tr>`;
- }).join('')+'</table>';
+ if(!players.length){list.innerHTML='<div class="card"><b>No checked-in players match these filters/search.</b></div>';return}
+ list.innerHTML='<table><tr><th>Player</th><th>Grade / Year</th><th>Court</th><th>Evaluator</th><th>Status</th><th>Rating</th><th>Recommendation</th><th>Entered By</th><th>Action</th></tr>'+players.map(p=>{let pe=paperEvaluationForPlayer(p),name=pe?.[0]||p.evaluator||'',e=pe?.[1],vals=(e?.scores||[]).map(Number).filter(v=>v>0),rating=vals.length?(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2):'-';return `<tr><td><b>${esc(p.id)} — ${esc(p.first)} ${esc(p.last)}</b></td><td>${esc(p.grade)} / ${esc(p.grad)}</td><td>${esc(p.court||'-')}</td><td>${esc(name||'-')}</td><td><span class="badge ${e?'success':'warn'}">${e?'Entered':'Not Entered'}</span></td><td>${rating}</td><td>${esc(e?.recommendation||'-')}</td><td>${esc(e?.enteredBy||'-')}</td><td><button onclick="selectPaperEntryPlayer('${p.id}')">${e?'Edit Scores Below ↓':'Enter Scores Below ↓'}</button></td></tr>`}).join('')+'</table>';
 }
-
 function selectPaperEntryPlayer(id){selectedPaperEntryPlayerId=id;paperEntryNotice.innerHTML='<b>Selected:</b> complete the evaluation in the box directly below the list.';renderPaperEntryForm();setTimeout(()=>paperEntryForm.scrollIntoView({behavior:'smooth',block:'center'}),50)}
 function renderPaperEntryForm(){
  let p=state.players.find(x=>x.id===selectedPaperEntryPlayerId);
@@ -2090,12 +2146,13 @@ function savePaperEvaluation(){
  paperEntryNotice.innerHTML='<span class="badge success">✓ Evaluation Saved</span> Scores, recommendation, and notes are stored.';
 }
 function renderPacket(){
- let evaluator=document.getElementById('paperEvaluator')?.value||'',grade=document.getElementById('paperGrade')?.value||'',court=document.getElementById('paperCourt')?.value||'';
- let players=state.players.filter(p=>p.checkedIn&&(!evaluator||p.evaluator===evaluator)&&(!grade||p.grade===grade)&&(!court||p.court===court));
+ let evaluator=paperEvaluator?.value||'',grade=paperGrade?.value||'',court=paperCourt?.value||'',search=(document.getElementById('paperSearch')?.value||'').toLowerCase();
+ let players=state.players.filter(p=>p.checkedIn&&(!evaluator||p.evaluator===evaluator)&&(!grade||p.grade===grade)&&(!court||p.court===court)&&(!search||`${p.first} ${p.last}`.toLowerCase().includes(search)));
+ players.sort((a,b)=>{let d=tryoutGradeOrder(a.grade)-tryoutGradeOrder(b.grade);if(d)return d;d=String(a.first||'').localeCompare(String(b.first||''));return d||String(a.last||'').localeCompare(String(b.last||''))});
  let out=document.getElementById('packetOutput');if(!out)return;
- if(!players.length){out.innerHTML='<b>No checked-in players match these filters.</b>';return}
- let keyGrade=grade||players[0]?.grade||'';
- out.innerHTML=`<h2>${esc(state.setup.orgName)} Evaluation Packet</h2><p>Evaluator: ${esc(evaluator||'All')} · Grade: ${esc(grade||'All')} · Court: ${esc(court||'All')}</p><p class="note">5 Excellent · 4 Above Average · 3 Average · 2 Below Average · 1 Poor · NR Not Rated (excluded from average).</p><p><b>${esc(recommendationKeyForGrade(keyGrade,''))}</b></p><table><tr><th>Player</th><th>Athleticism</th><th>Skill</th><th>IQ</th><th>Effort</th><th>Coachability</th><th>Recommendation</th><th>Notes</th></tr>${players.map(p=>`<tr><td><b>${esc(p.id)}</b><br>${esc(p.first)} ${esc(p.last)}</td>${Array(5).fill('<td>○1 ○2 ○3 ○4 ○5 ○NR</td>').join('')}<td>____________</td><td>____________________<br>____________________</td></tr>`).join('')}</table>`;
+ if(!players.length){out.innerHTML='<b>No checked-in players match these filters/search.</b>';return}
+ let keyGrade=grade||players[0].grade||'';
+ out.innerHTML=`<h2>${esc(state.setup.orgName)} Evaluation Packet</h2><p>Evaluator: ${esc(evaluator||'All')} · Grade: ${esc(grade||'All')} · Court: ${esc(court||'All')}</p><p class="note">5 Excellent · 4 Above Average · 3 Average · 2 Below Average · 1 Poor · NR Not Rated.</p><p><b>${esc(recommendationKeyForGrade(keyGrade,''))}</b></p><table><tr><th>Player</th><th>Grade</th><th>Athleticism</th><th>Skill</th><th>IQ</th><th>Effort</th><th>Coachability</th><th>Recommendation</th><th>Notes</th></tr>${players.map(p=>`<tr><td><b>${esc(p.id)}</b><br>${esc(p.first)} ${esc(p.last)}</td><td>${esc(p.grade)}</td>${Array(5).fill('<td>○1 ○2 ○3 ○4 ○5 ○NR</td>').join('')}<td>____________</td><td>____________________</td></tr>`).join('')}</table>`;
 }
 function printPacket(){renderPacket();document.querySelectorAll('.section').forEach(x=>x.classList.remove('print-target'));paper.classList.add('print-target');print()}
 function renderBlankScoreSheet(){

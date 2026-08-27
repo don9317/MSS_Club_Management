@@ -1,0 +1,1 @@
+v0.76: Team-first Communication Center with player offer statuses/timestamps; Paper Packets and Paper Score Entry grade sorting repaired; search added to both paper tiles. Existing v0.75 data migrates forward.
