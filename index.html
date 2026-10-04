@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MSS Club Management Demo v0.80</title>
+<title>MSS Club Management Demo v0.81</title>
 <style>
 :root{--navy:#0b2545;--blue:#1d4ed8;--bg:#f4f7fb;--border:#d9e2ec;--muted:#667085;--green:#067647;--amber:#b54708;--red:#b42318}
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#172033}
@@ -96,7 +96,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </style>
 </head>
 <body>
-<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.80 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, Team Readiness, and Team Accounting</div></header>
+<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.81 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, Team Readiness, and Team Accounting</div></header>
 <div class="wrap">
 <div class="main-nav no-print" id="mainNav">
 <button data-area="dashboard" class="active" onclick="openArea('dashboard')">Dashboard</button>
@@ -499,14 +499,19 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 <div id="monthlyBudgetTable" style="overflow-x:auto"></div>
 <div id="budgetTable" style="display:none"></div>
 </div>
-<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.80 · Prototype</div><script>
+<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.81 · Prototype</div><script>
 function money(v){
  let n=Number(v||0);
  if(!Number.isFinite(n))n=0;
  return n.toLocaleString('en-US',{style:'currency',currency:'USD'});
 }
 
-const KEY='mssClubDemoV080';
+const KEY='mssClubManagementData';
+const DB_NAME='MSSClubManagement';
+const DB_VERSION=1;
+const DB_STORE='appData';
+const DB_STATE_KEY='clubState';
+const LEGACY_KEYS=['mssClubDemoV080','mssClubDemoV079','mssClubDemoV078','mssClubDemoV077','mssClubDemoV076','mssClubDemoV075','mssClubDemoV074','mssClubDemoV073','mssClubDemoV072','mssClubDemoV071','mssClubDemoV070','mssClubDemoV069','mssClubDemoV068'];
 let state={
  setup:{orgName:'Oklahoma Swarm',season:'2026-27',eventName:'Oklahoma Swarm Tryouts',evalMethod:'Hybrid',courtCount:4,courts:['HIVE Court 1','HIVE Court 2','HIVE Court 3','HIVE Court 4'],teams:['Elite','Gold','Silver','Development'],notSelected:'Not Selected / Follow-Up',evaluators:['Coach Rob','','Coach Taylor','','Coach David','','Coach Julie',''],gradeTeams:{},offerTemplate:'Congratulations, {Player}! You have been offered a place on {Team}. Please respond by {Deadline}.',notSelectedTemplate:'Thank you for attending tryouts, {Player}. We would like to keep you informed about future opportunities.'},
  players:[],evaluations:{},offers:{},payments:[],directorReviews:{},directorName:'',checkinClosed:false,sessions:[],teamRecords:{},teamHistory:[],communication:{provider:'',connected:false,account:'',fromName:'',replyTo:'',drafts:{},sentLog:[]},requiredDocuments:[{id:'waiver',name:'Participation Waiver',type:'Waiver',version:'1.0',required:true},{id:'conduct',name:'Code of Conduct Acknowledgment',type:'Code of Conduct',version:'1.0',required:true},{id:'emergency',name:'Emergency Contact & Medical Information',type:'Emergency Contact',version:'1.0',required:true},{id:'uniform',name:'Uniform Information',type:'Uniform Information',version:'1.0',required:true}],documentCompletions:{},paymentPlans:[{id:'monthly',name:'Monthly',total:1800,deposit:300,installments:6},{id:'paidfull',name:'Paid in Full',total:1650,deposit:1650,installments:1}],placementsFinal:false
@@ -635,7 +640,7 @@ function exportClubBackup(){
    let payload={
      type:'MSS Club Management Full Backup',
      schema:1,
-     appVersion:'0.65',
+     appVersion:'0.81',
      exportedAt:new Date().toISOString(),
      state:state
    };
@@ -668,9 +673,7 @@ function restoreClubBackupFile(file){
      let playerCount=restored.players.length;
      if(!confirm(`Restore this club backup with ${playerCount} player record(s)? This will replace the data currently stored in this browser.`))return;
      state=restored;
-     localStorage.setItem(KEY,JSON.stringify(state));
-     alert('Club data restored successfully. The app will reload now.');
-     location.reload();
+     dbPutState(state).then(()=>{cleanupLegacyVersionStores();alert('Club data restored successfully. The app will reload now.');location.reload()}).catch(err=>alert('Restore save failed: '+err.message));
    }catch(err){
      console.error('Restore failed',err);
      alert(`Restore failed: ${err?.message||err}`);
@@ -686,7 +689,7 @@ function setSaveIndicator(message='Saved'){
 }
 function exportClubData(){
  save();
- let blob=new Blob([JSON.stringify({app:'MSS Club Management',version:'0.75',exportedAt:new Date().toISOString(),state},null,2)],{type:'application/json'});
+ let blob=new Blob([JSON.stringify({app:'MSS Club Management',version:'0.81',exportedAt:new Date().toISOString(),state},null,2)],{type:'application/json'});
  let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`MSS_Club_Backup_${new Date().toISOString().slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500);
 }
 function chooseRestoreClubData(){document.getElementById('restoreClubDataFile')?.click()}
@@ -698,78 +701,88 @@ function restoreClubDataFromFile(file){
    try{
      let x=JSON.parse(r.result),incoming=x.state||x;
      if(!incoming||!Array.isArray(incoming.players))throw new Error('This is not a valid Club Manager backup.');
-     state=incoming;localStorage.setItem(KEY,JSON.stringify(state));renderAll();setSaveIndicator('✓ Backup restored');alert('Club data restored successfully.');
+     state=incoming;dbPutState(state).then(()=>{cleanupLegacyVersionStores();renderAll();setSaveIndicator('✓ Backup restored');alert('Club data restored successfully.');}).catch(err=>alert('Restore save failed: '+err.message));
    }catch(e){alert('Restore failed: '+e.message)}
  };
  r.readAsText(file);
 }
+function openClubDB(){
+ return new Promise((resolve,reject)=>{
+   if(!('indexedDB' in window))return reject(new Error('IndexedDB is not available in this browser.'));
+   let req=indexedDB.open(DB_NAME,DB_VERSION);
+   req.onupgradeneeded=()=>{let db=req.result;if(!db.objectStoreNames.contains(DB_STORE))db.createObjectStore(DB_STORE)};
+   req.onsuccess=()=>resolve(req.result);
+   req.onerror=()=>reject(req.error||new Error('Could not open browser database.'));
+ });
+}
+async function dbGetState(){
+ let db=await openClubDB();
+ return new Promise((resolve,reject)=>{let tx=db.transaction(DB_STORE,'readonly'),req=tx.objectStore(DB_STORE).get(DB_STATE_KEY);req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error);tx.oncomplete=()=>db.close()});
+}
+async function dbPutState(value){
+ let db=await openClubDB();
+ return new Promise((resolve,reject)=>{let tx=db.transaction(DB_STORE,'readwrite');tx.objectStore(DB_STORE).put(value,DB_STATE_KEY);tx.oncomplete=()=>{db.close();resolve()};tx.onerror=()=>{db.close();reject(tx.error||new Error('Database save failed.'))};tx.onabort=()=>{db.close();reject(tx.error||new Error('Database save was aborted.'))}});
+}
+function latestLegacyState(){
+ for(let key of LEGACY_KEYS){let raw=localStorage.getItem(key);if(raw){try{return {key,state:JSON.parse(raw)}}catch(e){console.warn('Could not parse legacy key',key,e)}}}
+ let raw=localStorage.getItem(KEY);if(raw){try{return {key:KEY,state:JSON.parse(raw)}}catch(e){}}
+ return null;
+}
+function cleanupLegacyVersionStores(){
+ LEGACY_KEYS.forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});
+ try{localStorage.removeItem(KEY)}catch(e){}
+}
+let saveTimer=null,saveInFlight=false,saveAgain=false;
+async function persistState(showIndicator=true){
+ if(saveInFlight){saveAgain=true;return}
+ saveInFlight=true;
+ try{
+   await dbPutState(state);
+   if(showIndicator){let now=new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit',second:'2-digit'});setSaveIndicator(`✓ Saved ${now}`)}
+ }catch(e){
+   console.error('Persistent save failed',e);
+   setSaveIndicator('⚠ Save failed');
+   alert('Browser database save failed: '+(e?.message||e)+'. Please use Backup Club Data before closing this page.');
+ }finally{
+   saveInFlight=false;
+   if(saveAgain){saveAgain=false;persistState(showIndicator)}
+ }
+}
 function save(){
  readSetup();
- localStorage.setItem(KEY,JSON.stringify(state));
- let now=new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit',second:'2-digit'});
- setSaveIndicator(`✓ Saved ${now}`);
+ clearTimeout(saveTimer);
+ saveTimer=setTimeout(()=>persistState(true),60);
 }
 function cleanupLegacyDemoNames(){
  // v0.59 migration: older demo generators reused the same visible player names.
- // Keep every player record and ID intact, but make demo identities unique so the
- // same child does not appear multiple times in Paper Entry, Director Review or Placement.
  let seen=new Map();
  let firstPool=['Ava','Emma','Olivia','Sophia','Mia','Harper','Ella','Grace','Lily','Riley','Kennedy','Avery','Brooklyn','Addison','Claire','Natalie','Lucy','Zoey','Piper','Audrey','Caroline','Madeline','Quinn','Reagan','Sydney','Paige','Morgan','Lauren','Jenna','Kendall','Jordan','Parker','Reese','Cameron','Skylar','Peyton','Rowan','Emery','Blake','Bailey','Casey','Drew','Logan','Aubrey','Hayden','Kelsey'];
  let lastPool=['Smith','Johnson','Brown','Davis','Wilson','Moore','Taylor','Anderson','Thomas','Jackson','Harris','Martin','Clark','Lewis','Walker','Young','Hall','Allen','King','Wright','Scott','Green','Baker','Adams','Nelson','Carter','Mitchell','Perez','Roberts','Turner','Campbell','Phillips','Evans','Edwards','Collins','Stewart','Sanchez','Morris','Rogers','Reed','Cook','Morgan','Bell','Murphy','Bailey','Rivera','Cooper','Richardson'];
- state.players.forEach((p,i)=>{
-   let key=((p.first||'')+' '+(p.last||'')).trim().toLowerCase();
-   let n=(seen.get(key)||0)+1; seen.set(key,n);
-   if(n>1 && /@example\.com$/i.test(p.email||p.parentEmail||'')){
-     let seed=i*11+n*17;
-     let candidate='',tries=0;
-     do{
-       candidate=firstPool[(seed+tries)%firstPool.length]+' '+lastPool[(seed*3+tries*7)%lastPool.length];
-       tries++;
-     }while(seen.has(candidate.toLowerCase())&&tries<500);
-     let parts=candidate.split(' ');p.first=parts.shift();p.last=parts.join(' ');
-     seen.set(candidate.toLowerCase(),1);
-   }
- });
+ state.players.forEach((p,i)=>{let key=((p.first||'')+' '+(p.last||'')).trim().toLowerCase(),n=(seen.get(key)||0)+1;seen.set(key,n);if(n>1&&/@example\.com$/i.test(p.email||p.parentEmail||'')){let seed=i*11+n*17,candidate='',tries=0;do{candidate=firstPool[(seed+tries)%firstPool.length]+' '+lastPool[(seed*3+tries*7)%lastPool.length];tries++}while(seen.has(candidate.toLowerCase())&&tries<500);let parts=candidate.split(' ');p.first=parts.shift();p.last=parts.join(' ');seen.set(candidate.toLowerCase(),1)}});
  state.demoNameCleanupV059=true;
 }
-function load(){
+async function load(){
  currentSection='workflow';
- let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV079')||localStorage.getItem('mssClubDemoV078')||localStorage.getItem('mssClubDemoV077')||localStorage.getItem('mssClubDemoV076')||localStorage.getItem('mssClubDemoV075')||localStorage.getItem('mssClubDemoV074')||localStorage.getItem('mssClubDemoV073')||localStorage.getItem('mssClubDemoV072')||localStorage.getItem('mssClubDemoV071')||localStorage.getItem('mssClubDemoV070')||localStorage.getItem('mssClubDemoV069')||localStorage.getItem('mssClubDemoV068');
- if(x)try{state=JSON.parse(x)}catch(e){console.error('Could not load saved data',e)}
- state.payments??=[];
- state.paymentPlans??=[];
- state.players??=[];
- state.directorReviews??={};
- state.directorName??='';
- state.checkinClosed??=false;
- state.setup??={};
- state.setup.courts??=['HIVE Court 1','HIVE Court 2','HIVE Court 3','HIVE Court 4'];
- state.setup.teams??=['Elite','Gold','Silver','Development'];
- state.setup.coaches??=(state.setup.evaluators||['Coach Rob','Coach Taylor','Coach David','Coach Julie']).filter(Boolean).map((name,i)=>({id:'legacy'+i,name,email:'',phone:'',notes:'',active:true}));
- state.sessions??=[];
- state.teamRecords??={};
- state.teamHistory??=[];state.communication??={provider:'',connected:false,account:'',fromName:'',replyTo:'',drafts:{},sentLog:[]};state.communication.drafts??={};state.communication.sentLog??=[];state.requiredDocuments??=[];state.documentCompletions??={};state.teamAccounting??={budgets:{},ledger:[],receipts:[]};state.teamAccounting.budgets??={};state.teamAccounting.ledger??=[];state.teamAccounting.receipts??=[];
- state.teamAccounting.stripePayments??=[];
- state.teamAccounting.feeConfig??={};
- state.teamAccounting.donations??=[];
- state.teamAccounting.teamPlanSettings??={};
- state.teamCatalog??=[];
- state.selectedTeamKey??='';
- state.teamTemplates??=[];
- state.evaluations??={};
- state.offers??={};
- state.sessions??=[];
- state.communication??={provider:'',connected:false,account:'',fromName:'',replyTo:'',drafts:{},sentLog:[]};
- state.communication.drafts??={};
- state.communication.sentLog??=[];
- state.requiredDocuments??=[];
- state.documentCompletions??={};
- cleanupLegacyDemoNames();
- bindSetup();
- if(!state.players.length){
-   setRegistrationLoadStatus('LIVE MODE: No registration data loaded. Import your real registration CSV to begin.');
+ let stored=null,migratedFrom='';
+ try{stored=await dbGetState()}catch(e){console.warn('IndexedDB read unavailable',e)}
+ if(stored){state=stored}
+ else{
+   let legacy=latestLegacyState();
+   if(legacy){state=legacy.state;migratedFrom=legacy.key}
  }
+ state.payments??=[];state.paymentPlans??=[];state.players??=[];state.directorReviews??={};state.directorName??='';state.checkinClosed??=false;state.setup??={};
+ state.setup.courts??=['HIVE Court 1','HIVE Court 2','HIVE Court 3','HIVE Court 4'];state.setup.teams??=['Elite','Gold','Silver','Development'];
+ state.setup.coaches??=(state.setup.evaluators||['Coach Rob','Coach Taylor','Coach David','Coach Julie']).filter(Boolean).map((name,i)=>({id:'legacy'+i,name,email:'',phone:'',notes:'',active:true}));
+ state.sessions??=[];state.teamRecords??={};state.teamHistory??=[];state.communication??={provider:'',connected:false,account:'',fromName:'',replyTo:'',drafts:{},sentLog:[]};state.communication.drafts??={};state.communication.sentLog??=[];state.requiredDocuments??=[];state.documentCompletions??={};
+ state.teamAccounting??={budgets:{},ledger:[],receipts:[]};state.teamAccounting.budgets??={};state.teamAccounting.ledger??=[];state.teamAccounting.receipts??=[];state.teamAccounting.stripePayments??=[];state.teamAccounting.feeConfig??={};state.teamAccounting.donations??=[];state.teamAccounting.teamPlanSettings??={};
+ state.teamCatalog??=[];state.selectedTeamKey??='';state.teamTemplates??=[];state.evaluations??={};state.offers??={};
+ cleanupLegacyDemoNames();bindSetup();
+ if(!state.players.length)setRegistrationLoadStatus('LIVE MODE: No registration data loaded. Import your real registration CSV to begin.');
  renderAll();
+ if(migratedFrom){
+   try{await dbPutState(state);cleanupLegacyVersionStores();setSaveIndicator('✓ Data migrated to v0.81 storage');console.log('Migrated legacy MSS data from',migratedFrom,'to IndexedDB')}
+   catch(e){console.error('Migration save failed',e);setSaveIndicator('⚠ Migration not completed');alert('v0.81 loaded your existing data, but could not complete the storage migration. Please download a Club Data backup before closing this page. '+(e?.message||e))}
+ }
 }
 function readSetup(){
  state.setup.orgName=orgName.value;
@@ -2772,7 +2785,7 @@ function renderAll(){
  let names=['renderCoachMasterList','renderSessions','fillSelects','renderSetupSummary','bindRegistrationCsv','renderRegistrations','renderCheckin','renderNoShowFollowup','renderAssignments','renderCoach','renderPaperEntryPlayers','renderPacket','renderReview','renderBoard','renderTeamSetup','renderTeamsMaster','renderCommunicationCenter','renderOffers','renderParentPortal','renderDocuments','loadTeamPlanSettings','renderPayments','renderTeamAccounting','renderTeamAdmin','renderWorkflow','renderStepBar'];
  names.forEach(name=>{try{let fn=window[name];if(typeof fn==='function')fn();else console.warn('Missing render function:',name)}catch(e){console.error(name,e)}});
 ;updateHubCards();renderAppNav();}
-load();setTimeout(()=>setSaveIndicator('Ready'),0);
+load().then(()=>setTimeout(()=>{if(!document.getElementById('globalSaveIndicator')?.textContent.includes('migrated'))setSaveIndicator('Ready · v0.81 database')},0)).catch(e=>{console.error('Startup failed',e);alert('Startup failed: '+(e?.message||e))});
 </script>
 
 <div id="webcamModal" class="webcam-modal" aria-hidden="true">
