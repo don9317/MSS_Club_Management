@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MSS Club Management Demo v0.79</title>
+<title>MSS Club Management Demo v0.80</title>
 <style>
 :root{--navy:#0b2545;--blue:#1d4ed8;--bg:#f4f7fb;--border:#d9e2ec;--muted:#667085;--green:#067647;--amber:#b54708;--red:#b42318}
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:#172033}
@@ -96,7 +96,7 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 </style>
 </head>
 <body>
-<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.79 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, Team Readiness, and Team Accounting</div></header>
+<header><h1>My Sport Space Club Management Suite</h1><div>Demo v0.80 — Check-In, Evaluation, Placement, Parent Acceptance, Payment Plans, Online/Offline Payments, Team Readiness, and Team Accounting</div></header>
 <div class="wrap">
 <div class="main-nav no-print" id="mainNav">
 <button data-area="dashboard" class="active" onclick="openArea('dashboard')">Dashboard</button>
@@ -499,14 +499,14 @@ table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}th,td{b
 <div id="monthlyBudgetTable" style="overflow-x:auto"></div>
 <div id="budgetTable" style="display:none"></div>
 </div>
-<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.79 · Prototype</div><script>
+<div class="card"><h2>Charges / Credits</h2><div class="grid5"><div><label>Player</label><select id="chargePlayer"></select></div><div><label>Type</label><select id="chargeType"><option>Season Fee</option><option>Season Extension</option><option>Uniform</option><option>Tournament</option><option>Travel</option><option>Scholarship / Credit</option><option>Adjustment</option></select></div><div><label>Description</label><input id="chargeDescription"></div><div><label>Amount</label><input id="chargeAmount" type="number" step=".01"></div><div style="align-self:end"><button onclick="addAccountingCharge()">Post</button></div></div><p class="small">Enter a scholarship/credit as a positive amount and choose Scholarship / Credit.</p></div><div class="card"><h2>Offline Payment & Receipt</h2><div class="grid5"><div><label>Player</label><select id="acctPayPlayer"></select></div><div><label>Method</label><select id="acctPayMethod"><option>Cash</option><option>Check</option><option>ACH / Other</option></select></div><div><label>Amount</label><input id="acctPayAmount" type="number" step=".01"></div><div><label>Reference / Note</label><input id="acctPayNote"></div><div style="align-self:end"><button class="green" onclick="recordAccountingPayment()">Record & Receipt</button></div></div><div id="acctReceipt"></div></div><div class="card"><h2>Stripe Integration — MVP Simulation</h2><p class="note">Production flow: Parent Pay Now → Stripe Checkout → successful webhook → payment posted to this Team Accounting ledger. The ledger remains the source of truth for Stripe, cash, check, credits and adjustments.</p><div class="grid3"><div><label>Mode</label><input value="Prototype / Simulated" readonly></div><div><label>Future Connection</label><input value="Stripe Connect + Checkout" readonly></div><div><label>Posting</label><input value="Webhook → Team Ledger" readonly></div></div></div></section><section id="teamadmin" class="section"><div class="card"><h2>Extend Team Season</h2><p class="note">Keep the same team and roster while extending the end date.</p><div class="grid5"><div><label>Team</label><select id="adminTeam" onchange="renderTeamAdmin()"></select></div><div><label>Current End Date</label><input id="teamCurrentEnd" readonly></div><div><label>New End Date</label><input id="teamNewEnd" type="date"></div><div><label>Additional Fee Per Player</label><input id="teamExtensionFee" type="number" value="0"></div><div style="align-self:end"><button onclick="extendTeam()">Extend Team</button></div></div></div><div class="card"><h2>Transfer Player</h2><div class="grid5"><div><label>Player</label><select id="transferPlayer" onchange="renderTeamAdmin()"></select></div><div><label>From Team</label><input id="transferFrom" readonly></div><div><label>To Team</label><select id="transferTo"></select></div><div><label>Fee Adjustment</label><input id="transferAdjustment" type="number" value="0"></div><div style="align-self:end"><button onclick="transferPlayer()">Transfer Player</button></div></div><div style="margin-top:12px"><label>Notes</label><textarea id="transferNotes"></textarea></div></div><div class="card"><h2>Team History</h2><div id="teamHistoryTable"></div></div></section></div><div id="helpModal" class="modal-backdrop"><div class="modal-card"><div style="display:flex;justify-content:space-between"><div><div id="helpStep" class="small"></div><h2 id="helpTitle"></h2></div><button class="light" onclick="closeHelpModal()">Close</button></div><div id="helpBody"></div><div class="actions" style="margin-top:18px;justify-content:space-between"><button class="light" id="helpPrev" onclick="tourPrev()">◀ Previous</button><button id="helpNext" onclick="tourNext()">Next ▶</button></div></div></div><div id="saveToast" class="save-toast">Progress saved</div><div class="version-footer">My Sport Space Club Management Suite · Version 0.80 · Prototype</div><script>
 function money(v){
  let n=Number(v||0);
  if(!Number.isFinite(n))n=0;
  return n.toLocaleString('en-US',{style:'currency',currency:'USD'});
 }
 
-const KEY='mssClubDemoV079';
+const KEY='mssClubDemoV080';
 let state={
  setup:{orgName:'Oklahoma Swarm',season:'2026-27',eventName:'Oklahoma Swarm Tryouts',evalMethod:'Hybrid',courtCount:4,courts:['HIVE Court 1','HIVE Court 2','HIVE Court 3','HIVE Court 4'],teams:['Elite','Gold','Silver','Development'],notSelected:'Not Selected / Follow-Up',evaluators:['Coach Rob','','Coach Taylor','','Coach David','','Coach Julie',''],gradeTeams:{},offerTemplate:'Congratulations, {Player}! You have been offered a place on {Team}. Please respond by {Deadline}.',notSelectedTemplate:'Thank you for attending tryouts, {Player}. We would like to keep you informed about future opportunities.'},
  players:[],evaluations:{},offers:{},payments:[],directorReviews:{},directorName:'',checkinClosed:false,sessions:[],teamRecords:{},teamHistory:[],communication:{provider:'',connected:false,account:'',fromName:'',replyTo:'',drafts:{},sentLog:[]},requiredDocuments:[{id:'waiver',name:'Participation Waiver',type:'Waiver',version:'1.0',required:true},{id:'conduct',name:'Code of Conduct Acknowledgment',type:'Code of Conduct',version:'1.0',required:true},{id:'emergency',name:'Emergency Contact & Medical Information',type:'Emergency Contact',version:'1.0',required:true},{id:'uniform',name:'Uniform Information',type:'Uniform Information',version:'1.0',required:true}],documentCompletions:{},paymentPlans:[{id:'monthly',name:'Monthly',total:1800,deposit:300,installments:6},{id:'paidfull',name:'Paid in Full',total:1650,deposit:1650,installments:1}],placementsFinal:false
@@ -734,7 +734,7 @@ function cleanupLegacyDemoNames(){
 }
 function load(){
  currentSection='workflow';
- let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV078')||localStorage.getItem('mssClubDemoV077')||localStorage.getItem('mssClubDemoV076')||localStorage.getItem('mssClubDemoV075')||localStorage.getItem('mssClubDemoV074')||localStorage.getItem('mssClubDemoV073')||localStorage.getItem('mssClubDemoV072')||localStorage.getItem('mssClubDemoV071')||localStorage.getItem('mssClubDemoV070')||localStorage.getItem('mssClubDemoV069')||localStorage.getItem('mssClubDemoV068');
+ let x=localStorage.getItem(KEY)||localStorage.getItem('mssClubDemoV079')||localStorage.getItem('mssClubDemoV078')||localStorage.getItem('mssClubDemoV077')||localStorage.getItem('mssClubDemoV076')||localStorage.getItem('mssClubDemoV075')||localStorage.getItem('mssClubDemoV074')||localStorage.getItem('mssClubDemoV073')||localStorage.getItem('mssClubDemoV072')||localStorage.getItem('mssClubDemoV071')||localStorage.getItem('mssClubDemoV070')||localStorage.getItem('mssClubDemoV069')||localStorage.getItem('mssClubDemoV068');
  if(x)try{state=JSON.parse(x)}catch(e){console.error('Could not load saved data',e)}
  state.payments??=[];
  state.paymentPlans??=[];
@@ -2664,6 +2664,15 @@ function gradeFromRegistrationFields(gradeValue,programValue){
  return normalizeImportedGrade(gradeValue)||normalizeImportedGrade(programValue)||'';
 }
 
+function splitParticipantName(full){
+ let s=String(full||'').trim().replace(/\s+/g,' ');
+ if(!s)return {first:'',last:''};
+ // MSS native exports use "Participant" as a full-name field.
+ // Preserve everything after the first word as the last/display remainder so compound surnames are not discarded.
+ let parts=s.split(' ');
+ if(parts.length===1)return {first:parts[0],last:''};
+ return {first:parts.shift(),last:parts.join(' ')};
+}
 function importRegistrationCSVText(text){
  let lines=String(text||'').replace(/^\uFEFF/,'').split(/\r?\n/).filter(x=>x.trim()!=='');
  if(lines.length<2)return 0;
@@ -2672,55 +2681,54 @@ function importRegistrationCSVText(text){
  let h=originalHeaders.map(x=>x.toLowerCase().replace(/\s+/g,' ').trim()),added=0;
 
  let ix=(...names)=>{
-   for(let n of names){
-     let exact=h.indexOf(n);
-     if(exact>=0)return exact;
-   }
+   for(let n of names){let exact=h.indexOf(n);if(exact>=0)return exact}
    return -1;
  };
  let containsHeader=(...terms)=>{
-   for(let term of terms){
-     let i=h.findIndex(x=>x.includes(term));
-     if(i>=0)return i;
-   }
+   for(let term of terms){let i=h.findIndex(x=>x.includes(term));if(i>=0)return i}
    return -1;
  };
 
  let cols={
    id:ix('player id','tryout number','player number'),
+   participant:ix('participant','participant name','player','player name'),
    first:ix('first name','first','participant first name','player first name'),
    last:ix('last name','last','participant last name','player last name'),
-   grade:ix('grade','player grade','participant grade'),
+   grade:ix('current grade','grade','player grade','participant grade'),
    program:containsHeader('program'),
    grad:ix('graduation year','grad year'),
-   email:ix('parent email','email','guardian email'),
+   email:ix('parent email','email','guardian email','registered by email'),
    phone:ix('parent phone','phone','guardian phone'),
+   registeredBy:ix('registered by','parent','parent name','guardian','guardian name'),
+   type:ix('type','registration type'),status:ix('status','registration status'),
+   paid:ix('paid','amount paid'),payment:ix('payment','payment method'),signedUp:ix('signed up','registration date','registered date'),
+   clubTeam:ix('most recent club team name','club team','previous team'),school:ix('current school','school'),
+   position:ix('position'),height:ix('height'),skill:ix('player skill level','skill level'),shirt:ix('shirt size','t-shirt size','tshirt size'),
    photo:ix('headshot url','photo')
  };
 
  for(let line of lines){
    let a=parseCSVLine(line),get=k=>cols[k]>=0?(a[cols[k]]||'').trim():'';
-   let id=get('id')||uid(),first=get('first'),last=get('last');
+   let id=get('id')||uid(),first=get('first'),last=get('last'),participant=get('participant');
+   if(!first&&!last&&participant){let n=splitParticipantName(participant);first=n.first;last=n.last}
    if(!first&&!last)continue;
-   if(state.players.some(p=>p.id===id))continue;
+   let email=get('email');
+   // Avoid duplicating the same MSS registration when a file is imported twice.
+   if(state.players.some(p=>(get('id')&&p.id===id)||(`${p.first} ${p.last}`.trim().toLowerCase()===`${first} ${last}`.trim().toLowerCase()&&String(p.email||'').toLowerCase()===String(email||'').toLowerCase())))continue;
 
-   let program=get('program');
-   let rawGrade=get('grade');
-   let grade=normalizeImportedGrade(rawGrade)||normalizeImportedGrade(program);
-
+   let program=get('program'),rawGrade=get('grade'),grade=normalizeImportedGrade(rawGrade)||normalizeImportedGrade(program);
    state.players.push({
-     id,first,last,grade,program,rawImportedGrade:rawGrade,grad:get('grad'),
-     email:get('email'),phone:get('phone'),photo:get('photo'),
-     status:'Registered',checkedIn:false,court:'',evaluator:'',team:'',
-     offerStatus:'Not Created',paymentPlanId:'',depositPaid:false,
-     rosterStatus:'Not Active',sessionId:''
+     id,first,last,grade,program,rawImportedGrade:rawGrade,grad:get('grad'),email,phone:get('phone'),photo:get('photo'),
+     registeredBy:get('registeredBy'),registrationType:get('type'),registrationStatus:get('status'),amountPaid:get('paid'),paymentMethod:get('payment'),signedUp:get('signedUp'),
+     mostRecentClubTeam:get('clubTeam'),school:get('school'),position:get('position'),height:get('height'),skillLevel:get('skill'),shirtSize:get('shirt'),
+     status:'Registered',checkedIn:false,court:'',evaluator:'',team:'',offerStatus:'Not Created',paymentPlanId:'',depositPaid:false,rosterStatus:'Not Active',sessionId:''
    });
    added++;
  }
 
- // Store import diagnostics so the operator can see what headings were recognized.
  state.lastRegistrationImport={
    headers:originalHeaders,
+   participantHeader:cols.participant>=0?originalHeaders[cols.participant]:'',
    programHeader:cols.program>=0?originalHeaders[cols.program]:'',
    gradeHeader:cols.grade>=0?originalHeaders[cols.grade]:'',
    importedAt:new Date().toISOString()
@@ -2741,7 +2749,7 @@ function bindRegistrationCsv(){
        let diag=state.lastRegistrationImport||{};
        let recognized=state.players.filter(p=>p.grade).length;
        let missing=state.players.filter(p=>!p.grade).length;
-       let msg=`SUCCESS: ${added} registration(s) imported. Program column recognized as "${diag.programHeader||'NOT FOUND'}". ${recognized} player(s) have a grade; ${missing} need grade review.`;
+       let msg=`SUCCESS: ${added} registration(s) imported. Player field: "${diag.participantHeader||'First/Last Name'}". Grade field: "${diag.gradeHeader||diag.programHeader||'NOT FOUND'}". ${recognized} player(s) have a grade; ${missing} need grade review.`;
        setRegistrationLoadStatus(msg,missing===0);
        alert(msg);
      }catch(e){
